@@ -5,9 +5,11 @@
       <section class="catalogo-header">
         <div>
           <h1>Catálogo de <span class="text-primary">Productos</span></h1>
-          <p class="text-muted">{{ productosFiltrados.length }} productos disponibles</p>
+          <p class="text-muted">
+            <span v-if="cargando">Cargando productos...</span>
+            <span v-else>{{ productosFiltrados.length }} productos disponibles</span>
+          </p>
         </div>
-        <!-- Buscador -->
         <div class="search-box">
           <span class="search-icon">🔍</span>
           <input
@@ -20,22 +22,33 @@
         </div>
       </section>
 
+      <!-- Error de conexión -->
+      <div v-if="errorMsg" class="alert alert-danger" id="catalogo-error">
+        ⚠️ {{ errorMsg }}
+        <button class="btn btn-sm btn-ghost" style="margin-left: var(--space-4)" @click="cargarProductos">Reintentar</button>
+      </div>
+
       <!-- Filtros por categoría -->
-      <div class="categoria-filters" id="filtros-categoria">
+      <div v-if="!cargando" class="categoria-filters" id="filtros-categoria">
         <button
           v-for="cat in categorias"
           :key="cat"
           class="cat-btn"
           :class="{ active: categoriaActiva === cat }"
-          :id="`filter-${cat.toLowerCase().replace(' ', '-')}`"
+          :id="`filter-cat-${cat === 'Todos' ? 'todos' : cat.toLowerCase().replace(/\s+/g, '-')}`"
           @click="categoriaActiva = cat"
         >
           {{ cat }}
         </button>
       </div>
 
+      <!-- Skeleton loader -->
+      <div v-if="cargando" class="products-grid">
+        <div v-for="n in 8" :key="n" class="skeleton-card"></div>
+      </div>
+
       <!-- Grid de productos -->
-      <div class="products-grid" id="products-grid">
+      <div v-else class="products-grid" id="products-grid">
         <transition-group name="slide-up">
           <ProductCard
             v-for="p in productosFiltrados"
@@ -46,53 +59,91 @@
       </div>
 
       <!-- Sin resultados -->
-      <div v-if="productosFiltrados.length === 0" class="empty-state" id="empty-catalogo">
+      <div v-if="!cargando && productosFiltrados.length === 0 && !errorMsg" class="empty-state" id="empty-catalogo">
         <span>🔍</span>
-        <p>No se encontraron productos para "<strong>{{ busqueda }}</strong>"</p>
+        <p>No se encontraron productos<span v-if="busqueda"> para "<strong>{{ busqueda }}</strong>"</span></p>
+      </div>
+
+      <!-- Banner de descuento por volumen -->
+      <div class="descuento-banner" id="banner-descuento-volumen">
+        <span class="banner-icon">🎉</span>
+        <div>
+          <strong>¡Descuento automático del 10%!</strong>
+          <p>Aplica cuando tu carrito tiene más de 4 artículos. ¡Aprovecha!</p>
+        </div>
       </div>
     </div>
   </main>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import ProductCard from '@/components/ProductCard.vue'
+import { ServiciosSupabase } from '@/servicios/ServiciosSupabase.js'
+import { isMockup } from '@/lib/supabase.js'
 
-const busqueda = ref('')
+const busqueda        = ref('')
 const categoriaActiva = ref('Todos')
+const productos       = ref([])
+const cargando        = ref(true)
+const errorMsg        = ref('')
 
-// Datos mockup de productos FERREMAS
-const productos = [
-  { id: 'P001', sku: 'SKU-001', nombre: 'Taladro Percutor 700W',     categoria: 'Herramientas Eléctricas', precio: 79990,  stock: 12, emoji: '🔨' },
-  { id: 'P002', sku: 'SKU-002', nombre: 'Sierra Circular 1400W',      categoria: 'Herramientas Eléctricas', precio: 124990, stock: 8,  emoji: '⚙️', descuento: 10, precioOriginal: 138900 },
-  { id: 'P003', sku: 'SKU-003', nombre: 'Destornillador Eléctrico',   categoria: 'Herramientas Eléctricas', precio: 34990,  stock: 25, emoji: '🪛' },
-  { id: 'P004', sku: 'SKU-004', nombre: 'Martillo 500g Mango Fibra',  categoria: 'Herramientas Manuales',   precio: 12990,  stock: 40, emoji: '🔨' },
-  { id: 'P005', sku: 'SKU-005', nombre: 'Llave Inglesa 10"',          categoria: 'Herramientas Manuales',   precio: 8990,   stock: 30, emoji: '🔧' },
-  { id: 'P006', sku: 'SKU-006', nombre: 'Set Brocas HSS 19 piezas',   categoria: 'Herramientas Manuales',   precio: 19990,  stock: 3,  emoji: '🪛' },
-  { id: 'P007', sku: 'SKU-007', nombre: 'Cemento 25kg Portland',      categoria: 'Construcción',            precio: 7490,   stock: 60, emoji: '🏗️' },
-  { id: 'P008', sku: 'SKU-008', nombre: 'Pintura Látex Blanca 4L',    categoria: 'Pintura',                 precio: 18990,  stock: 18, emoji: '🖌️' },
-  { id: 'P009', sku: 'SKU-009', nombre: 'Rodillo 22cm Lana',          categoria: 'Pintura',                 precio: 4990,   stock: 35, emoji: '🖌️' },
-  { id: 'P010', sku: 'SKU-010', nombre: 'Extensión 10m 3 Enchufes',   categoria: 'Electricidad',            precio: 14990,  stock: 22, emoji: '🔌' },
-  { id: 'P011', sku: 'SKU-011', nombre: 'Casco de Seguridad HDPE',    categoria: 'Seguridad',               precio: 9990,   stock: 0,  emoji: '⛑️' },
-  { id: 'P012', sku: 'SKU-012', nombre: 'Guantes de Cuero Trabajo',   categoria: 'Seguridad',               precio: 5990,   stock: 50, emoji: '🧤' },
+// Datos de fallback para modo mockup
+const PRODUCTOS_MOCKUP = [
+  { id: 1,  nombre: 'Taladro Percutor 700W',     descripcion: 'Taladro con percusión para mampostería',   precio: 79990,  stock: 12, categoria: 'Herramientas Eléctricas', activo: true },
+  { id: 2,  nombre: 'Sierra Circular 1400W',      descripcion: 'Sierra de alta potencia para maderas',     precio: 124990, stock: 8,  categoria: 'Herramientas Eléctricas', activo: true },
+  { id: 3,  nombre: 'Destornillador Eléctrico',   descripcion: 'Batería de larga duración 18V',            precio: 34990,  stock: 25, categoria: 'Herramientas Eléctricas', activo: true },
+  { id: 4,  nombre: 'Martillo 500g Mango Fibra',  descripcion: 'Mango ergonómico antideslizante',          precio: 12990,  stock: 40, categoria: 'Herramientas Manuales',   activo: true },
+  { id: 5,  nombre: 'Llave Inglesa 10"',           descripcion: 'Acero forjado resistente',                precio: 8990,   stock: 30, categoria: 'Herramientas Manuales',   activo: true },
+  { id: 6,  nombre: 'Set Brocas HSS 19 piezas',   descripcion: 'Para metal, madera y plástico',            precio: 19990,  stock: 3,  categoria: 'Herramientas Manuales',   activo: true },
+  { id: 7,  nombre: 'Cemento 25kg Portland',       descripcion: 'Alta resistencia, uso general',           precio: 7490,   stock: 60, categoria: 'Construcción',            activo: true },
+  { id: 8,  nombre: 'Pintura Látex Blanca 4L',    descripcion: 'Interior/exterior, lavable',               precio: 18990,  stock: 18, categoria: 'Pintura',                 activo: true },
+  { id: 9,  nombre: 'Rodillo 22cm Lana',           descripcion: 'Para superficies lisas y semilisas',      precio: 4990,   stock: 35, categoria: 'Pintura',                 activo: true },
+  { id: 10, nombre: 'Extensión 10m 3 Enchufes',   descripcion: 'Cable 2.5mm², uso industrial',             precio: 14990,  stock: 22, categoria: 'Electricidad',            activo: true },
+  { id: 11, nombre: 'Casco de Seguridad HDPE',    descripcion: 'Certificado ANSI Z89.1',                   precio: 9990,   stock: 0,  categoria: 'Seguridad',               activo: true },
+  { id: 12, nombre: 'Guantes de Cuero Trabajo',   descripcion: 'Talla M/L/XL disponible',                  precio: 5990,   stock: 50, categoria: 'Seguridad',               activo: true },
 ]
 
+async function cargarProductos() {
+  cargando.value = true
+  errorMsg.value = ''
+  try {
+    if (isMockup) {
+      await new Promise(r => setTimeout(r, 400))
+      productos.value = PRODUCTOS_MOCKUP
+    } else {
+      productos.value = await ServiciosSupabase.obtenerProductos()
+    }
+  } catch (err) {
+    errorMsg.value = `No se pudieron cargar los productos: ${err.message}`
+    productos.value = PRODUCTOS_MOCKUP  // fallback
+  } finally {
+    cargando.value = false
+  }
+}
+
 const categorias = computed(() => {
-  const cats = [...new Set(productos.map(p => p.categoria))]
-  return ['Todos', ...cats]
+  const cats = [...new Set(productos.value.map(p => p.categoria).filter(Boolean))]
+  return ['Todos', ...cats.sort()]
 })
 
 const productosFiltrados = computed(() => {
-  let lista = productos
+  let lista = productos.value
   if (categoriaActiva.value !== 'Todos') {
     lista = lista.filter(p => p.categoria === categoriaActiva.value)
   }
   if (busqueda.value.trim()) {
     const q = busqueda.value.toLowerCase()
-    lista = lista.filter(p => p.nombre.toLowerCase().includes(q) || p.categoria.toLowerCase().includes(q))
+    lista = lista.filter(p =>
+      p.nombre.toLowerCase().includes(q) ||
+      p.categoria?.toLowerCase().includes(q) ||
+      p.descripcion?.toLowerCase().includes(q)
+    )
   }
   return lista
 })
+
+onMounted(cargarProductos)
 </script>
 
 <style scoped>
@@ -143,14 +194,28 @@ const productosFiltrados = computed(() => {
 .cat-btn.active {
   background: var(--color-primary);
   border-color: var(--color-primary);
-  color: #fff;
+  color: #071A14;
+  font-weight: 700;
 }
 
 .products-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: var(--space-6);
-  margin-bottom: var(--space-12);
+  margin-bottom: var(--space-10);
+}
+
+/* Skeleton */
+.skeleton-card {
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  height: 320px;
+  animation: shimmer 1.5s infinite;
+}
+@keyframes shimmer {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 0.8; }
 }
 
 .empty-state {
@@ -164,4 +229,18 @@ const productosFiltrados = computed(() => {
   gap: var(--space-4);
 }
 .empty-state span { font-size: 4rem; }
+
+.descuento-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  background: linear-gradient(135deg, rgba(45,212,191,0.08), rgba(56,189,248,0.06));
+  border: 1px solid rgba(45,212,191,0.2);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5) var(--space-6);
+  margin-bottom: var(--space-8);
+}
+.banner-icon { font-size: 2rem; }
+.descuento-banner strong { color: var(--color-primary); }
+.descuento-banner p { color: var(--color-text-muted); font-size: var(--font-size-sm); margin-top: 2px; }
 </style>

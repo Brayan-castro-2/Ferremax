@@ -9,39 +9,46 @@
         <span class="badge badge-info" style="font-size: 0.85rem; padding: 0.5rem 1rem;">💼 Vendedor</span>
       </div>
 
-      <!-- Tabla de pedidos -->
-      <div class="card" id="tabla-pedidos-vendedor">
+      <div v-if="cargando" class="loading-center"><div class="spinner"></div></div>
+      <div v-else-if="errorMsg" class="alert alert-danger">{{ errorMsg }}</div>
+
+      <div v-else class="card" id="tabla-pedidos-vendedor">
         <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4)">
-          <h3>Pedidos Recientes</h3>
-          <button class="btn btn-primary btn-sm" id="btn-nuevo-pedido">+ Nuevo Pedido</button>
+          <h3>Pedidos ({{ pedidos.length }} total)</h3>
         </div>
         <div class="table-wrapper">
           <table>
             <thead>
               <tr>
-                <th>ID Pedido</th>
+                <th>#</th>
                 <th>Cliente</th>
                 <th>Total</th>
-                <th>Descuento</th>
+                <th>Entrega</th>
                 <th>Estado</th>
-                <th>Expira</th>
-                <th>Acción</th>
+                <th>Fecha</th>
+                <th>Cambiar Estado</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="p in pedidosMockup" :key="p.id">
-                <td class="text-muted" style="font-family: monospace">{{ p.id }}</td>
-                <td>{{ p.cliente }}</td>
-                <td style="font-weight:600">${{ formatPrice(p.total) }}</td>
+              <tr v-for="p in pedidos" :key="p.id">
+                <td class="text-muted" style="font-family:monospace">{{ p.id }}</td>
                 <td>
-                  <span v-if="p.descuento" class="badge badge-success">Sí 10%</span>
-                  <span v-else class="text-muted">No</span>
+                  <div>{{ p.cliente_nombre || '—' }}</div>
+                  <div class="text-muted" style="font-size:0.7rem">{{ p.cliente_email }}</div>
                 </td>
+                <td style="font-weight:600">${{ formatPrice(p.total) }}</td>
+                <td>{{ p.tipo_entrega === 'despacho' ? '🚚 Despacho' : '🏪 Retiro' }}</td>
                 <td><span :class="['badge', estadoBadge(p.estado)]">{{ p.estado }}</span></td>
-                <td class="text-muted" style="font-size:0.75rem">{{ p.expira }}</td>
+                <td class="text-muted" style="font-size:0.75rem">{{ formatFecha(p.creado_en) }}</td>
                 <td>
-                  <select class="form-input btn-sm" style="width:auto; padding: 0.3rem 0.5rem" @change="cambiarEstado(p, $event)">
-                    <option v-for="e in estados" :key="e" :value="e" :selected="p.estado === e">{{ e }}</option>
+                  <select
+                    class="form-input btn-sm"
+                    style="width:auto; padding: 0.3rem 0.5rem"
+                    :value="p.estado"
+                    @change="cambiarEstado(p, $event)"
+                    :id="`select-estado-${p.id}`"
+                  >
+                    <option v-for="e in estados" :key="e" :value="e">{{ e }}</option>
                   </select>
                 </td>
               </tr>
@@ -54,32 +61,64 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { ServiciosSupabase } from '@/servicios/ServiciosSupabase.js'
+import { OrquestadorDePedidos } from '@/orquestadores/OrquestadorDePedidos.js'
+import { isMockup } from '@/lib/supabase.js'
 
-const estados = ['Pendiente', 'Pagado', 'Preparado', 'Despachado', 'Cancelado']
+const estados  = ['pendiente', 'pagado', 'preparado', 'despachado', 'cancelado']
+const pedidos  = ref([])
+const cargando = ref(true)
+const errorMsg = ref('')
 
-const pedidosMockup = ref([
-  { id: 'PED-001', cliente: 'Pedro García',   total: 189970, descuento: true,  estado: 'Pendiente',  expira: '14:32' },
-  { id: 'PED-002', cliente: 'María López',    total: 79990,  descuento: false, estado: 'Pagado',     expira: '—'     },
-  { id: 'PED-003', cliente: 'Juan Pérez',     total: 245000, descuento: true,  estado: 'Preparado',  expira: '—'     },
-  { id: 'PED-004', cliente: 'Sofía Rojas',    total: 34990,  descuento: false, estado: 'Despachado', expira: '—'     },
-  { id: 'PED-005', cliente: 'Diego Muñoz',    total: 124990, descuento: false, estado: 'Pendiente',  expira: '15:00' },
-])
+const PEDIDOS_MOCKUP = [
+  { id: 1, cliente_nombre: 'Pedro García',   cliente_email: 'pedro@mail.cl',  total: 189970, tipo_entrega: 'despacho', estado: 'pendiente',  creado_en: new Date().toISOString() },
+  { id: 2, cliente_nombre: 'María López',    cliente_email: 'maria@mail.cl',  total: 79990,  tipo_entrega: 'retiro',   estado: 'pagado',     creado_en: new Date().toISOString() },
+  { id: 3, cliente_nombre: 'Juan Pérez',     cliente_email: 'juan@mail.cl',   total: 245000, tipo_entrega: 'despacho', estado: 'preparado',  creado_en: new Date().toISOString() },
+  { id: 4, cliente_nombre: 'Sofía Rojas',    cliente_email: 'sofia@mail.cl',  total: 34990,  tipo_entrega: 'retiro',   estado: 'despachado', creado_en: new Date().toISOString() },
+]
 
-function formatPrice(val) { return Number(val).toLocaleString('es-CL') }
-
-function estadoBadge(estado) {
-  const map = { Pendiente: 'badge-warning', Pagado: 'badge-info', Preparado: 'badge-primary', Despachado: 'badge-success', Cancelado: 'badge-danger' }
-  return map[estado] || 'badge-primary'
+async function cargarPedidos() {
+  cargando.value = true
+  try {
+    if (isMockup) {
+      await new Promise(r => setTimeout(r, 500))
+      pedidos.value = PEDIDOS_MOCKUP
+    } else {
+      pedidos.value = await ServiciosSupabase.obtenerTodosPedidos()
+    }
+  } catch (err) {
+    errorMsg.value = `Error: ${err.message}`
+  } finally {
+    cargando.value = false
+  }
 }
 
-function cambiarEstado(pedido, event) {
-  pedido.estado = event.target.value
+async function cambiarEstado(pedido, event) {
+  const nuevoEstado = event.target.value
+  try {
+    if (!isMockup) {
+      await OrquestadorDePedidos.gestionarEstado(pedido.id, nuevoEstado)
+    }
+    pedido.estado = nuevoEstado
+  } catch (err) {
+    alert(`Error al cambiar estado: ${err.message}`)
+    event.target.value = pedido.estado
+  }
 }
+
+function formatPrice(val)   { return Number(val).toLocaleString('es-CL') }
+function formatFecha(fecha) { return fecha ? new Date(fecha).toLocaleDateString('es-CL') : '—' }
+function estadoBadge(e)     {
+  return { pendiente: 'badge-warning', pagado: 'badge-info', preparado: 'badge-primary', despachado: 'badge-success', cancelado: 'badge-danger' }[e] || 'badge-primary'
+}
+
+onMounted(cargarPedidos)
 </script>
 
 <style scoped>
 .dashboard-header { display:flex; align-items:center; justify-content:space-between; margin-bottom: var(--space-8); }
 .dashboard-header h1 { font-size: var(--font-size-3xl); font-weight: 800; }
+.loading-center { display:flex; justify-content:center; padding: var(--space-12); }
 .card h3 { font-size: var(--font-size-xl); font-weight: 700; }
 </style>

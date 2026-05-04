@@ -1,53 +1,23 @@
-// servicios/ServiciosSupabase.js
-import { createClient } from '@supabase/supabase-js';
+// src/servicios/ServiciosSupabase.js
+// Capa de datos — adaptada al schema real de FERREMAS en Supabase
 
-// Configuración Stateless: Las credenciales deben venir de variables de entorno
-const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || 'https://tu-proyecto.supabase.co';
-const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || 'tu-anon-key';
-
-export const supabase = createClient(supabaseUrl, supabaseKey);
+import { supabase, isMockup } from '@/lib/supabase.js'
 
 /**
- * Módulo: ServiciosSupabase (Capa de Datos)
- * Este módulo maneja la interacción directa con la base de datos Supabase de forma Stateless.
- * Se asume que el inventario consultado aquí es la "Única Fuente de Verdad" para todas las sucursales.
+ * ServiciosSupabase — CRUD sobre el schema real de Supabase.
+ * Todas las funciones lanzan Error si Supabase no está disponible en modo mockup.
  */
 export const ServiciosSupabase = {
-  
+
   // ==========================================
-  // TABLA: productos
+  // TABLA: roles
   // ==========================================
 
-  /**
-   * Obtiene la información de stock de un producto específico.
-   * @param {string} idProducto - El ID del producto.
-   * @returns {Promise<Object>} Datos del producto incluyendo stock_fisico y stock_disponible.
-   */
-  async obtenerStockProducto(idProducto) {
-    const { data, error } = await supabase
-      .from('productos')
-      .select('stock_fisico, stock_disponible')
-      .eq('id', idProducto)
-      .single();
-
-    if (error) throw new Error(`Error al obtener stock: ${error.message}`);
-    return data;
-  },
-
-  /**
-   * Actualiza el stock disponible (reserva lógica o liberación).
-   * @param {string} idProducto - El ID del producto.
-   * @param {number} nuevoStockDisponible - El nuevo valor del stock disponible.
-   */
-  async actualizarStockDisponible(idProducto, nuevoStockDisponible) {
-    const { data, error } = await supabase
-      .from('productos')
-      .update({ stock_disponible: nuevoStockDisponible })
-      .eq('id', idProducto)
-      .select();
-
-    if (error) throw new Error(`Error al actualizar stock disponible: ${error.message}`);
-    return data;
+  /** Obtiene todos los roles del sistema */
+  async obtenerRoles() {
+    const { data, error } = await supabase.from('roles').select('*').order('id')
+    if (error) throw new Error(`Error al obtener roles: ${error.message}`)
+    return data
   },
 
   // ==========================================
@@ -55,73 +25,251 @@ export const ServiciosSupabase = {
   // ==========================================
 
   /**
-   * Autentica u obtiene el rol del usuario, verificando si necesita cambio de contraseña.
-   * Roles soportados: Administrador, Vendedor, Bodeguero, Contador, Cliente.
-   * @param {string} email - Correo del usuario.
-   * @returns {Promise<Object>} Datos del usuario incluyendo rol y cambio_password_obligatorio.
+   * Busca un usuario por email y trae su rol mediante JOIN.
+   * NOTA: La verificación de contraseña se realiza en el backend/Edge Function.
+   * En este cliente frontend solo se consulta la existencia del usuario.
+   * @param {string} email
+   * @returns {Promise<Object>} Usuario con rol_nombre incluido
    */
-  async obtenerUsuario(email) {
+  async obtenerUsuarioPorEmail(email) {
     const { data, error } = await supabase
       .from('usuarios')
-      .select('id, rol, cambio_password_obligatorio')
+      .select('id, nombre, email, rol_id, activo, roles(nombre)')
       .eq('email', email)
-      .single();
+      .eq('activo', true)
+      .single()
 
-    if (error) throw new Error(`Error al obtener usuario: ${error.message}`);
-    return data;
+    if (error) throw new Error(`Usuario no encontrado: ${error.message}`)
+
+    // Aplanar el JOIN: roles.nombre → rol_nombre
+    return {
+      ...data,
+      rol_nombre: data.roles?.nombre || null,
+      roles: undefined
+    }
+  },
+
+  /**
+   * Obtiene todos los usuarios (solo para Administrador)
+   */
+  async obtenerUsuarios() {
+    const { data, error } = await supabase
+      .from('usuarios')
+      .select('id, nombre, email, rol_id, activo, creado_en, roles(nombre)')
+      .order('creado_en', { ascending: false })
+
+    if (error) throw new Error(`Error al obtener usuarios: ${error.message}`)
+    return data.map(u => ({ ...u, rol_nombre: u.roles?.nombre, roles: undefined }))
   },
 
   // ==========================================
-  // TABLA: pedidos y detalles_pedido
+  // TABLA: productos
   // ==========================================
 
   /**
-   * Crea un nuevo pedido y sus detalles. Representa la persistencia de las transacciones digitales.
-   * @param {Object} pedido - Datos del pedido (id_usuario, total, estado, etc.).
-   * @param {Array} detalles - Lista de artículos del pedido.
-   * @returns {Promise<Object>} El pedido creado en base de datos.
+   * Obtiene todos los productos activos del catálogo.
+   */
+  async obtenerProductos() {
+    const { data, error } = await supabase
+      .from('productos')
+      .select('id, nombre, descripcion, precio, stock, categoria, activo')
+      .eq('activo', true)
+      .order('id')
+
+    if (error) throw new Error(`Error al obtener productos: ${error.message}`)
+    return data
+  },
+
+  /**
+   * Obtiene el stock actual de un producto.
+   * @param {number} productoId
+   */
+  async obtenerStockProducto(productoId) {
+    const { data, error } = await supabase
+      .from('productos')
+      .select('id, nombre, stock')
+      .eq('id', productoId)
+      .single()
+
+    if (error) throw new Error(`Error al obtener stock: ${error.message}`)
+    return data
+  },
+
+  /**
+   * Actualiza el stock de un producto (uso interno del orquestador).
+   * @param {number} productoId
+   * @param {number} nuevoStock
+   */
+  async actualizarStock(productoId, nuevoStock) {
+    const { data, error } = await supabase
+      .from('productos')
+      .update({ stock: nuevoStock })
+      .eq('id', productoId)
+      .select()
+      .single()
+
+    if (error) throw new Error(`Error al actualizar stock: ${error.message}`)
+    return data
+  },
+
+  // ==========================================
+  // TABLA: inventario
+  // ==========================================
+
+  /**
+   * Obtiene el inventario completo con JOIN a productos.
+   */
+  async obtenerInventario() {
+    const { data, error } = await supabase
+      .from('inventario')
+      .select('id, cantidad, ubicacion, productos(id, nombre, categoria, precio, stock)')
+      .order('id')
+
+    if (error) throw new Error(`Error al obtener inventario: ${error.message}`)
+    return data
+  },
+
+  // ==========================================
+  // TABLA: pedidos + detalle_pedido
+  // ==========================================
+
+  /**
+   * Crea un pedido completo con sus detalles en una sola operación.
+   * @param {Object} pedido - { usuario_id, estado, tipo_entrega, direccion, total }
+   * @param {Array}  detalles - [{ producto_id, cantidad, precio_unitario }]
+   * @returns {Promise<Object>} Pedido creado
    */
   async crearPedidoConDetalles(pedido, detalles) {
-    // 1. Crear la cabecera del pedido
+    // 1. Crear cabecera del pedido
     const { data: pedidoCreado, error: errorPedido } = await supabase
       .from('pedidos')
       .insert([pedido])
       .select()
-      .single();
+      .single()
 
-    if (errorPedido) throw new Error(`Error al crear pedido: ${errorPedido.message}`);
+    if (errorPedido) throw new Error(`Error al crear pedido: ${errorPedido.message}`)
 
-    // 2. Asociar el ID del pedido recién creado a los detalles
-    const detallesConPedidoId = detalles.map(d => ({ ...d, id_pedido: pedidoCreado.id }));
-
-    // 3. Insertar los detalles del pedido
+    // 2. Insertar detalles con el id del pedido recién creado
+    const detallesConId = detalles.map(d => ({ ...d, pedido_id: pedidoCreado.id }))
     const { error: errorDetalles } = await supabase
-      .from('detalles_pedido')
-      .insert(detallesConPedidoId);
+      .from('detalle_pedido')
+      .insert(detallesConId)
 
     if (errorDetalles) {
-      // Compensación manual si falla la inserción de detalles para mantener integridad
-      await supabase.from('pedidos').delete().eq('id', pedidoCreado.id);
-      throw new Error(`Error al crear detalles del pedido: ${errorDetalles.message}`);
+      // Rollback manual
+      await supabase.from('pedidos').delete().eq('id', pedidoCreado.id)
+      throw new Error(`Error al crear detalle_pedido: ${errorDetalles.message}`)
     }
 
-    return pedidoCreado;
+    // 3. Registrar en historial
+    await supabase.from('historial_pedidos').insert([{
+      pedido_id: pedidoCreado.id,
+      estado: pedido.estado
+    }])
+
+    return pedidoCreado
   },
 
   /**
-   * Actualiza el estado de un pedido existente.
-   * @param {string} idPedido - ID del pedido.
-   * @param {string} nuevoEstado - El nuevo estado (Pendiente, Pagado, Preparado, Despachado).
+   * Obtiene los pedidos de un usuario con sus detalles.
+   * @param {string} usuarioId - UUID
    */
-  async actualizarEstadoPedido(idPedido, nuevoEstado) {
+  async obtenerPedidosUsuario(usuarioId) {
+    const { data, error } = await supabase
+      .from('pedidos')
+      .select(`
+        id, estado, tipo_entrega, direccion, total, creado_en,
+        detalle_pedido(id, cantidad, precio_unitario, productos(nombre, categoria))
+      `)
+      .eq('usuario_id', usuarioId)
+      .order('creado_en', { ascending: false })
+
+    if (error) throw new Error(`Error al obtener pedidos: ${error.message}`)
+    return data
+  },
+
+  /**
+   * Obtiene todos los pedidos (para Vendedor/Admin).
+   */
+  async obtenerTodosPedidos() {
+    const { data, error } = await supabase
+      .from('pedidos')
+      .select(`
+        id, estado, tipo_entrega, total, creado_en,
+        usuarios(nombre, email)
+      `)
+      .order('creado_en', { ascending: false })
+      .limit(50)
+
+    if (error) throw new Error(`Error al obtener pedidos: ${error.message}`)
+    return data.map(p => ({
+      ...p,
+      cliente_nombre: p.usuarios?.nombre,
+      cliente_email:  p.usuarios?.email,
+      usuarios: undefined
+    }))
+  },
+
+  /**
+   * Actualiza el estado de un pedido y registra en historial.
+   * @param {number} pedidoId
+   * @param {string} nuevoEstado
+   */
+  async actualizarEstadoPedido(pedidoId, nuevoEstado) {
     const { data, error } = await supabase
       .from('pedidos')
       .update({ estado: nuevoEstado })
-      .eq('id', idPedido)
+      .eq('id', pedidoId)
       .select()
-      .single();
+      .single()
 
-    if (error) throw new Error(`Error al actualizar estado del pedido: ${error.message}`);
-    return data;
+    if (error) throw new Error(`Error al actualizar estado: ${error.message}`)
+
+    // Registrar en historial
+    await supabase.from('historial_pedidos').insert([{
+      pedido_id: pedidoId,
+      estado: nuevoEstado
+    }])
+
+    return data
+  },
+
+  // ==========================================
+  // TABLA: pagos
+  // ==========================================
+
+  /**
+   * Registra un pago para un pedido.
+   * @param {Object} pago - { pedido_id, metodo, estado }
+   */
+  async registrarPago(pago) {
+    const { data, error } = await supabase
+      .from('pagos')
+      .insert([pago])
+      .select()
+      .single()
+
+    if (error) throw new Error(`Error al registrar pago: ${error.message}`)
+    return data
+  },
+
+  // ==========================================
+  // TABLA: promociones
+  // ==========================================
+
+  /**
+   * Obtiene las promociones activas vigentes a la fecha de hoy.
+   */
+  async obtenerPromocionesActivas() {
+    const hoy = new Date().toISOString().split('T')[0]
+    const { data, error } = await supabase
+      .from('promociones')
+      .select('*')
+      .eq('activa', true)
+      .lte('fecha_inicio', hoy)
+      .gte('fecha_fin', hoy)
+
+    if (error) throw new Error(`Error al obtener promociones: ${error.message}`)
+    return data
   }
-};
+}

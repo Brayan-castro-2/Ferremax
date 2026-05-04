@@ -1,51 +1,88 @@
-// modelos/TiposDeDatos.js
+// src/modelos/TiposDeDatos.js
+// Tipos de datos que reflejan el schema real de Supabase FERREMAS
 
 /**
- * Módulo: Modelos de Datos
- * Este archivo documenta las estructuras de datos esperadas para interactuar con la capa de servicios 
- * y los orquestadores. Sirve como referencia técnica para mantener la consistencia entre el Frontend y el Backend 
- * dentro de la arquitectura desacoplada de FERREMAS.
+ * @typedef {Object} Rol
+ * @property {number} id
+ * @property {string} nombre - 'Administrador' | 'Vendedor' | 'Bodeguero' | 'Contador' | 'Cliente'
  */
 
 /**
- * Representa a un usuario en el sistema (Autenticación y Autorización).
  * @typedef {Object} Usuario
- * @property {string} id - Identificador único del usuario (UUID de Supabase).
- * @property {string} email - Correo electrónico del usuario (login).
- * @property {string} rol - Rol asignado. Valores permitidos: 'Administrador' | 'Vendedor' | 'Bodeguero' | 'Contador' | 'Cliente'.
- * @property {boolean} cambio_password_obligatorio - Bandera para forzar cambio de contraseña en el primer inicio de sesión.
+ * @property {string}  id          - UUID (gen_random_uuid)
+ * @property {string}  nombre
+ * @property {string}  email       - único
+ * @property {string}  password_hash
+ * @property {number}  rol_id      - FK → roles.id
+ * @property {boolean} activo
+ * @property {string}  creado_en
+ * @property {string}  [rol_nombre] - JOIN desde roles.nombre (calculado)
  */
 
 /**
- * Representa un ítem del catálogo de ferretería.
  * @typedef {Object} Producto
- * @property {string} id - Código SKU o UUID del producto.
- * @property {string} nombre - Nombre descriptivo del producto.
- * @property {number} precio - Valor comercial unitario.
- * @property {number} stock_fisico - Cantidad real de productos almacenados en la bodega.
- * @property {number} stock_disponible - Cantidad disponible para la venta en tiempo real (stock_fisico menos las reservas lógicas vigentes).
+ * @property {number}  id
+ * @property {string}  nombre
+ * @property {string}  descripcion
+ * @property {number}  precio
+ * @property {number}  stock       - stock disponible directo en la tabla
+ * @property {string}  categoria
+ * @property {boolean} activo
  */
 
 /**
- * Representa una transacción digital de compra.
+ * @typedef {Object} Inventario
+ * @property {number} id
+ * @property {number} producto_id  - FK → productos.id
+ * @property {number} cantidad
+ * @property {string} ubicacion
+ */
+
+/**
  * @typedef {Object} Pedido
- * @property {string} id - Identificador único del pedido generado por la base de datos.
- * @property {string} id_usuario - Referencia al cliente que realiza la orden.
- * @property {number} total - Valor monetario total calculado tras posibles reglas de descuento.
- * @property {boolean} aplica_descuento - Indica si el pedido cumplió la regla de descuento (ej: >4 artículos).
- * @property {string} estado - Ciclo de vida: 'Pendiente' | 'Pagado' | 'Preparado' | 'Despachado' | 'Cancelado'.
- * @property {string} fecha_expiracion_reserva - Timestamp (ISO 8601) indicando el final del TTL de 15 minutos para la reserva.
+ * @property {number} id
+ * @property {string} usuario_id   - UUID FK → usuarios.id
+ * @property {string} estado       - 'pendiente' | 'pagado' | 'preparado' | 'despachado' | 'cancelado'
+ * @property {string} tipo_entrega - 'retiro' | 'despacho'
+ * @property {string} direccion
+ * @property {number} total
+ * @property {string} creado_en
  */
 
 /**
- * Representa un artículo específico dentro de un pedido.
  * @typedef {Object} DetallePedido
- * @property {string} id_pedido - Referencia a la cabecera del pedido.
- * @property {string} id_producto - Referencia al producto comprado.
- * @property {number} cantidad - Unidades solicitadas en esta orden.
- * @property {number} precio_unitario - Precio congelado al momento de efectuar la compra (histórico).
+ * @property {number} id
+ * @property {number} pedido_id    - FK → pedidos.id
+ * @property {number} producto_id  - FK → productos.id
+ * @property {number} cantidad
+ * @property {number} precio_unitario
  */
 
-// Se exporta un objeto vacío ya que esto actúa como un archivo de definiciones de tipos/documentación 
-// para JSDoc en un entorno JavaScript puro.
-export default {};
+/**
+ * @typedef {Object} Pago
+ * @property {number} id
+ * @property {number} pedido_id    - FK → pedidos.id
+ * @property {string} metodo       - 'transferencia' | 'tarjeta' | 'efectivo'
+ * @property {string} estado       - 'pendiente' | 'aprobado' | 'rechazado'
+ * @property {string} fecha
+ */
+
+/**
+ * @typedef {Object} Promocion
+ * @property {number}  id
+ * @property {string}  nombre
+ * @property {number}  descuento_porcentaje
+ * @property {string}  fecha_inicio
+ * @property {string}  fecha_fin
+ * @property {boolean} activa
+ */
+
+/**
+ * @typedef {Object} HistorialPedido
+ * @property {number} id
+ * @property {number} pedido_id
+ * @property {string} estado
+ * @property {string} fecha
+ */
+
+export default {}
