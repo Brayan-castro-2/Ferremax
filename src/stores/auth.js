@@ -1,5 +1,5 @@
 // src/stores/auth.js
-// Store de autenticación con soporte para Supabase real y modo mockup
+// Store de autenticación con soporte para Supabase Auth real
 
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
@@ -16,6 +16,7 @@ const MOCKUP_USERS = {
 
 export const useAuthStore = defineStore('auth', () => {
   const user    = ref(null)
+  const session = ref(null)
   const loading = ref(false)
   const error   = ref(null)
 
@@ -24,12 +25,8 @@ export const useAuthStore = defineStore('auth', () => {
   const isAdmin         = computed(() => userRole.value === 'Administrador')
 
   /**
-   * Login — en producción consulta la tabla `usuarios` con JOIN a `roles`.
-   * IMPORTANTE: El schema usa password_hash, lo que requiere verificación
-   * server-side. Por ahora se verifica solo la existencia del usuario por email
-   * (flujo académico). Para producción real, implementar Edge Function o backend.
-   *
-   * En modo mockup, usa los usuarios de prueba con contraseña "12345".
+   * Login — Usa Supabase Auth oficial para verificar contraseñas.
+   * Al loguear con éxito, busca el perfil del usuario en la tabla 'public.usuarios'.
    */
   async function login(email, password) {
     loading.value = true
@@ -47,35 +44,38 @@ export const useAuthStore = defineStore('auth', () => {
         return { ok: true }
       }
 
-      // ── MODO PRODUCCIÓN — Supabase ────────────────────────────
-      // Paso 1: buscar usuario en tabla `usuarios` con su rol
-      const { data: usuarioData, error: sbError } = await supabase
+      // ── MODO PRODUCCIÓN — Supabase Auth ────────────────────────
+      
+      // 1. Autenticar con Supabase (GoTrue)
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: email.toLowerCase().trim(),
+        password
+      })
+
+      if (authError) throw authError
+
+      session.value = authData.session
+
+      // 2. Buscar perfil en la tabla public.usuarios para obtener el ROL
+      // NOTA: El ID del auth.user coincide con public.usuarios.id gracias al trigger.
+      const { data: profile, error: profError } = await supabase
         .from('usuarios')
-        .select('id, nombre, email, rol_id, activo, roles(nombre)')
-        .eq('email', email.toLowerCase().trim())
-        .eq('activo', true)
+        .select('id, nombre, email, rol_id, roles(nombre)')
+        .eq('id', authData.user.id)
         .single()
 
-      if (sbError || !usuarioData) {
-        throw new Error('Usuario no encontrado o inactivo.')
+      if (profError || !profile) {
+        // Si el perfil no existe, es un error de sincronización de la DB
+        console.error('Error al obtener perfil:', profError)
+        throw new Error('Tu cuenta de usuario no tiene un perfil asociado en Ferremas.')
       }
 
-      // Paso 2: Verificación de contraseña
-      // NOTA ACADÉMICA: El schema guarda password_hash. Para verificar bcrypt
-      // correctamente desde el frontend necesitarías una Edge Function.
-      // Aquí verificamos existencia + un campo simple.
-      // TODO: Implementar Edge Function para verificación real de hash.
-      //
-      // Alternativa: migrar a Supabase Auth (recomendado para producción)
-      //   supabase.auth.signInWithPassword({ email, password })
-
       user.value = {
-        id:         usuarioData.id,
-        nombre:     usuarioData.nombre,
-        email:      usuarioData.email,
-        rol_id:     usuarioData.rol_id,
-        rol_nombre: usuarioData.roles?.nombre || 'Cliente',
-        activo:     usuarioData.activo
+        id:         profile.id,
+        nombre:     profile.nombre,
+        email:      profile.email,
+        rol_id:     profile.rol_id,
+        rol_nombre: profile.roles?.nombre || 'Cliente'
       }
 
       return { ok: true }
@@ -88,10 +88,49 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  /**
+   * Logout — Cierra sesión en Supabase y limpia el estado local.
+   */
   async function logout() {
+    if (!isMockup) {
+      await supabase.auth.signOut()
+    }
     user.value = null
+    session.value = null
     error.value = null
   }
 
-  return { user, loading, error, isAuthenticated, userRole, isAdmin, login, logout }
+  /**
+   * Inicializar sesión — para mantener al usuario logueado al recargar la página.
+   */
+  async function initialize() {
+    if (isMockup) return
+
+    const { data: { session: activeSession } } = await supabase.auth.getSession()
+    if (activeSession) {
+      session.value = activeSession
+      // Cargar perfil automáticamente
+      try {
+        const { data: profile } = await supabase
+          .from('usuarios')
+          .select('id, nombre, email, rol_id, roles(nombre)')
+          .eq('id', activeSession.user.id)
+          .single()
+
+        if (profile) {
+          user.value = {
+            id:         profile.id,
+            nombre:     profile.nombre,
+            email:      profile.email,
+            rol_id:     profile.rol_id,
+            rol_nombre: profile.roles?.nombre || 'Cliente'
+          }
+        }
+      } catch (e) {
+        console.error('No se pudo restaurar la sesión:', e)
+      }
+    }
+  }
+
+  return { user, loading, error, isAuthenticated, userRole, isAdmin, login, logout, initialize }
 })
