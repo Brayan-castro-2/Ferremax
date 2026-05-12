@@ -3,18 +3,19 @@
 
 const express  = require('express')
 const router   = express.Router()
+const ordersController = require('../controllers/orders.controller')
 const { verifyToken }    = require('../middlewares/auth.middleware')
 const { requireRoles, requirePasswordChanged } = require('../middlewares/roles.middleware')
 
 /**
  * POST /api/orders
- * Cliente o Vendedor — crea un pedido (dispara crearReserva internamente)
+ * Cliente o Vendedor — crea un pedido (validación de stock, descuento por volumen)
  */
 router.post('/',
   verifyToken,
   requirePasswordChanged,
   requireRoles('Cliente', 'Vendedor', 'Administrador'),
-  (req, res) => res.json({ mensaje: 'TODO: implementar crearPedido con reserva lógica' })
+  ordersController.crearPedido
 )
 
 /**
@@ -25,7 +26,7 @@ router.get('/mis-pedidos',
   verifyToken,
   requirePasswordChanged,
   requireRoles('Cliente'),
-  (req, res) => res.json({ mensaje: 'TODO: obtener pedidos del usuario autenticado' })
+  ordersController.listarMisPedidos
 )
 
 /**
@@ -36,7 +37,7 @@ router.get('/',
   verifyToken,
   requirePasswordChanged,
   requireRoles('Administrador', 'Vendedor'),
-  (req, res) => res.json({ mensaje: 'TODO: obtener todos los pedidos' })
+  ordersController.listarTodos
 )
 
 /**
@@ -47,7 +48,7 @@ router.patch('/:id/estado',
   verifyToken,
   requirePasswordChanged,
   requireRoles('Administrador', 'Vendedor'),
-  (req, res) => res.json({ mensaje: 'TODO: actualizar estado del pedido' })
+  ordersController.cambiarEstado
 )
 
 module.exports = router

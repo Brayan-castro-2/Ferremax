@@ -42,22 +42,52 @@ const loginUsuario = async (email, password) => {
 }
 
 /**
- * cambiarPassword — Delegado a Supabase Auth.
- * 
- * @param {string} token - El token de sesión del usuario
+ * cambiarPassword — Verifica la contraseña actual y actualiza vía Admin API.
+ *
+ * @param {string} userId         - UUID (req.user.id)
+ * @param {string} passwordActual
  * @param {string} passwordNuevo
+ * @returns {Promise<{ mensaje: string }>}
  */
-const cambiarPassword = async (token, passwordNuevo) => {
-  // Para actualizar el password en Supabase Auth necesitamos el cliente con la sesión
-  // O usar el admin client
-  const { error } = await supabase.auth.admin.updateUserById(
-    // Aquí necesitaríamos el ID que viene en el token decodificado
-  )
-  
-  // Por simplicidad en este flujo, se recomienda hacerlo desde el frontend usando:
-  // supabase.auth.updateUser({ password: new_password })
-  
-  throw new Error('El cambio de contraseña debe realizarse preferiblemente desde el cliente usando supabase.auth.updateUser.')
+const cambiarPassword = async (userId, passwordActual, passwordNuevo) => {
+  const { data: usuario, error: errUsuario } = await supabaseAdmin
+    .from('usuarios')
+    .select('email')
+    .eq('id', userId)
+    .single()
+
+  if (errUsuario || !usuario?.email) {
+    const err = new Error('Usuario no encontrado.')
+    err.status = 400
+    throw err
+  }
+
+  const email = usuario.email.toLowerCase().trim()
+
+  const { error: errSignIn } = await supabase.auth.signInWithPassword({
+    email,
+    password: passwordActual
+  })
+
+  if (errSignIn) {
+    const err = new Error('La contraseña actual no es correcta.')
+    err.status = 400
+    throw err
+  }
+
+  const { error: errUpdate } = await supabaseAdmin.auth.admin.updateUserById(userId, {
+    password: passwordNuevo
+  })
+
+  if (errUpdate) {
+    const err = new Error(
+      errUpdate.message || 'No se pudo actualizar la contraseña. Revisa los requisitos de seguridad.'
+    )
+    err.status = 400
+    throw err
+  }
+
+  return { mensaje: 'Contraseña actualizada exitosamente.' }
 }
 
 module.exports = { loginUsuario, cambiarPassword }

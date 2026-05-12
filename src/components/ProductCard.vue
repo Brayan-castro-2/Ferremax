@@ -13,8 +13,11 @@
 
       <div class="product-footer">
         <div class="product-price">
-          <span class="price-current">${{ formatPrice(producto.precio) }}</span>
-          <span v-if="producto.precioOriginal" class="price-original">${{ formatPrice(producto.precioOriginal) }}</span>
+          <div class="price-clp-block">
+            <span class="price-current">${{ formatPrice(producto.precio) }}</span>
+            <span v-if="producto.precioOriginal" class="price-original">${{ formatPrice(producto.precioOriginal) }}</span>
+          </div>
+          <span v-if="precioEnUsd != null" class="price-usd text-muted">≈ USD {{ precioEnUsd }}</span>
         </div>
         <button
           class="btn btn-primary btn-sm"
@@ -44,13 +47,24 @@ import { ref, computed } from 'vue'
 import { useCarritoStore } from '@/stores/carrito.js'
 
 const props = defineProps({
-  producto: { type: Object, required: true }
+  producto: { type: Object, required: true },
+  /** CLP por 1 USD; si no hay tipo de cambio, no se muestra USD */
+  valorDolarClp: { type: Number, default: null }
 })
 
 const carrito = useCarritoStore()
 const agregado = ref(false)
 
 const stockPercent = computed(() => Math.min((props.producto.stock / 50) * 100, 100))
+
+const precioEnUsd = computed(() => {
+  const tipo = props.valorDolarClp
+  if (tipo == null || !Number.isFinite(tipo) || tipo <= 0) return null
+  const usd = Number(props.producto.precio) / tipo
+  if (!Number.isFinite(usd)) return null
+  return usd.toFixed(2)
+})
+
 const stockClass = computed(() => {
   if (stockPercent.value > 60) return 'stock-high'
   if (stockPercent.value > 25) return 'stock-mid'
@@ -141,9 +155,26 @@ function agregarAlCarrito() {
 
 .product-footer {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
   margin-top: var(--space-2);
+}
+.product-price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+}
+.price-clp-block {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1);
+}
+.price-usd {
+  font-size: var(--font-size-xs);
+  font-weight: 500;
 }
 .price-current {
   font-size: var(--font-size-lg);

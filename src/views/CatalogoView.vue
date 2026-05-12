@@ -22,6 +22,10 @@
         </div>
       </section>
 
+      <p v-if="badgeDolarTexto" id="badge-dolar-clp" class="dolar-badge" role="status">
+        {{ badgeDolarTexto }}
+      </p>
+
       <!-- Error de conexión -->
       <div v-if="errorMsg" class="alert alert-danger" id="catalogo-error">
         ⚠️ {{ errorMsg }}
@@ -54,6 +58,7 @@
             v-for="p in productosFiltrados"
             :key="p.id"
             :producto="p"
+            :valor-dolar-clp="valorDolarClp"
           />
         </transition-group>
       </div>
@@ -87,6 +92,8 @@ const categoriaActiva = ref('Todos')
 const productos       = ref([])
 const cargando        = ref(true)
 const errorMsg        = ref('')
+/** Tipo de cambio CLP por 1 USD (backend); null si falla la carga */
+const valorDolarClp   = ref(null)
 
 // Datos de fallback para modo mockup
 const PRODUCTOS_MOCKUP = [
@@ -127,6 +134,31 @@ const categorias = computed(() => {
   return ['Todos', ...cats.sort()]
 })
 
+const badgeDolarTexto = computed(() => {
+  const v = valorDolarClp.value
+  if (v == null || !Number.isFinite(v) || v <= 0) return ''
+  const fmt = Number(v).toLocaleString('es-CL', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+  })
+  return `1 USD = $${fmt} CLP`
+})
+
+async function cargarValorDolar() {
+  try {
+    const base = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '')
+    const url = base ? `${base}/api/currency/dolar` : '/api/currency/dolar'
+    const res = await fetch(url)
+    if (!res.ok) return
+    const data = await res.json()
+    if (typeof data.valorDolar === 'number' && data.valorDolar > 0) {
+      valorDolarClp.value = data.valorDolar
+    }
+  } catch {
+    // fail silencioso: sin badge ni USD en tarjetas
+  }
+}
+
 const productosFiltrados = computed(() => {
   let lista = productos.value
   if (categoriaActiva.value !== 'Todos') {
@@ -143,7 +175,10 @@ const productosFiltrados = computed(() => {
   return lista
 })
 
-onMounted(cargarProductos)
+onMounted(() => {
+  cargarProductos()
+  cargarValorDolar()
+})
 </script>
 
 <style scoped>
@@ -172,6 +207,22 @@ onMounted(cargarProductos)
   pointer-events: none;
 }
 .search-box .form-input { padding-left: 3rem; }
+
+.dolar-badge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  padding: var(--space-2) var(--space-4);
+  margin: 0 0 var(--space-5);
+  letter-spacing: 0.02em;
+}
 
 .categoria-filters {
   display: flex;
