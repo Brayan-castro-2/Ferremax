@@ -1,22 +1,15 @@
 <template>
-  <main class="page-wrapper">
-    <div class="container not-found-page">
-      <span>404</span>
-      <h1>Página no encontrada</h1>
-      <p class="text-muted">La ruta que buscas no existe en el sistema FERREMAS</p>
-      <router-link to="/" class="btn btn-primary btn-lg" id="btn-volver-inicio">Volver al Inicio</router-link>
+  <main class="flex min-h-[80vh] flex-col items-center justify-center bg-surface px-margin-mobile py-24 font-inter text-center">
+    <p class="font-geist text-[11px] font-semibold uppercase tracking-[0.35em] text-tertiary">404</p>
+    <h1 class="mt-4 max-w-lg font-sora text-4xl font-semibold tracking-tight text-primary md:text-5xl">Esta ruta no existe en el mapa.</h1>
+    <p class="mt-4 max-w-md text-on-surface-variant">Revisa la URL o vuelve al catálogo — el resto del sistema sigue intacto.</p>
+    <div class="mt-10 flex flex-wrap justify-center gap-3">
+      <RouterLink to="/catalogo" class="rounded-full bg-primary px-8 py-3 font-geist text-[11px] font-semibold uppercase tracking-[0.14em] text-on-primary shadow-ambient transition hover:-translate-y-0.5 hover:shadow-lg" id="btn-volver-inicio">
+        Catálogo
+      </RouterLink>
+      <RouterLink to="/dashboard" class="rounded-full border border-outline-variant px-8 py-3 font-geist text-[11px] font-semibold uppercase tracking-[0.14em] text-on-surface transition hover:border-primary/30">
+        Panel
+      </RouterLink>
     </div>
   </main>
 </template>
-<style scoped>
-.not-found-page {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  min-height: 70vh; text-align: center; gap: var(--space-4);
-}
-.not-found-page > span {
-  font-size: 8rem; font-weight: 900; line-height: 1;
-  background: linear-gradient(135deg, var(--color-primary), #EC4899);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
-.not-found-page h1 { font-size: var(--font-size-3xl); font-weight: 800; }
-</style>

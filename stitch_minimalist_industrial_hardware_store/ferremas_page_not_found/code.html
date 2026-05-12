@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&amp;family=Inter:wght@400;500&amp;family=Geist:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#5d5f5f",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed-variant": "#474746",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed": "#1c1b1b",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "inverse-on-surface": "#f1f1f1",
+                        "inverse-surface": "#2f3131",
+                        "surface-container-low": "#f4f3f3",
+                        "on-tertiary-fixed-variant": "#6e3900",
+                        "outline-variant": "#c4c7c7",
+                        "outline": "#747878",
+                        "on-error": "#ffffff",
+                        "background": "#f9f9f9",
+                        "on-tertiary-fixed": "#2f1500",
+                        "surface-dim": "#dadada",
+                        "secondary-container": "#dcdddd",
+                        "surface-tint": "#5f5e5e",
+                        "primary-fixed": "#e5e2e1",
+                        "on-primary-container": "#858383",
+                        "on-secondary-fixed-variant": "#454747",
+                        "tertiary-fixed-dim": "#ffb77d",
+                        "surface-container-highest": "#e2e2e2",
+                        "secondary-fixed": "#e2e2e2",
+                        "on-surface-variant": "#444748",
+                        "surface-bright": "#f9f9f9",
+                        "on-background": "#1a1c1c",
+                        "on-surface": "#1a1c1c",
+                        "tertiary-container": "#2f1500",
+                        "secondary-fixed-dim": "#c6c6c7",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#000000",
+                        "primary": "#000000",
+                        "inverse-primary": "#c8c6c5",
+                        "surface-container-lowest": "#ffffff",
+                        "surface": "#f9f9f9",
+                        "primary-fixed-dim": "#c8c6c5",
+                        "primary-container": "#1c1b1b",
+                        "on-tertiary-container": "#c76c00",
+                        "surface-variant": "#e2e2e2",
+                        "surface-container-high": "#e8e8e8",
+                        "surface-container": "#eeeeee",
+                        "tertiary-fixed": "#ffdcc3",
+                        "on-secondary-container": "#5f6161",
+                        "error-container": "#ffdad6",
+                        "on-tertiary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "margin-mobile": "20px",
+                        "container-max": "1280px",
+                        "gutter": "24px",
+                        "margin-desktop": "64px",
+                        "section-gap": "120px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "headline-xl-mobile": ["Sora"],
+                        "label-sm": ["Geist"],
+                        "body-md": ["Inter"],
+                        "headline-xl": ["Sora"],
+                        "display-lg-mobile": ["Sora"],
+                        "display-lg": ["Sora"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                        "headline-xl-mobile": ["24px", {"lineHeight": "1.3", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                        "headline-xl": ["32px", {"lineHeight": "1.2", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "display-lg-mobile": ["40px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "700"}],
+                        "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "0.02em", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+        .canvas-bg {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30 shadow-sm transition-all duration-300 ease-in-out">
+<div class="flex justify-between items-center px-margin-desktop py-4 max-w-container-max mx-auto">
+<div class="font-display-lg text-headline-xl font-bold tracking-tighter text-primary">FERREMAS</div>
+<div class="hidden md:flex gap-gutter items-center">
+<a class="font-label-sm text-label-sm uppercase tracking-widest text-secondary hover:text-primary transition-opacity duration-300" href="#">SHOP</a>
+<a class="font-label-sm text-label-sm uppercase tracking-widest text-secondary hover:text-primary transition-opacity duration-300" href="#">COLLECTIONS</a>
+<a class="font-label-sm text-label-sm uppercase tracking-widest text-secondary hover:text-primary transition-opacity duration-300" href="#">SERVICES</a>
+<a class="font-label-sm text-label-sm uppercase tracking-widest text-secondary hover:text-primary transition-opacity duration-300" href="#">PHILOSOPHY</a>
+</div>
+<div class="flex gap-gutter items-center">
+<button class="hover:opacity-70 transition-opacity duration-300">
+<span class="material-symbols-outlined text-primary">search</span>
+</button>
+<button class="hover:opacity-70 transition-opacity duration-300">
+<span class="material-symbols-outlined text-primary">person</span>
+</button>
+<button class="hover:opacity-70 transition-opacity duration-300">
+<span class="material-symbols-outlined text-primary">shopping_bag</span>
+</button>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas (404 Focus) -->
+<main class="min-h-screen flex flex-col items-center justify-center pt-32 pb-section-gap px-margin-mobile md:px-margin-desktop">
+<!-- Large Minimal 404 Typography Section -->
+<section class="max-w-container-max w-full grid grid-cols-1 md:grid-cols-12 items-center">
+<!-- Left Editorial Text -->
+<div class="md:col-start-2 md:col-end-6 flex flex-col gap-unit">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-on-tertiary-container mb-2">Error Code 404</span>
+<h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-primary leading-tight">Lost in the Workshop</h1>
+<p class="font-body-lg text-body-lg text-secondary mt-gutter max-w-md">
+                    The precision-engineered path you are seeking does not exist or has been relocated to another station. Like a misaligned gear, this request cannot be fulfilled.
+                </p>
+<div class="mt-section-gap flex flex-col md:flex-row gap-gutter">
+<a class="bg-primary text-on-primary px-8 py-4 rounded-lg font-label-sm text-label-sm tracking-widest uppercase text-center hover:opacity-90 transition-all flex items-center justify-center gap-2" href="/">
+<span class="material-symbols-outlined text-[18px]">home</span>
+                        Return to Homepage
+                    </a>
+<button class="bg-secondary-container text-primary px-8 py-4 rounded-lg font-label-sm text-label-sm tracking-widest uppercase text-center hover:bg-surface-container-high transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">support</span>
+                        System Support
+                    </button>
+</div>
+</div>
+<!-- Right Visual Component (Asymmetric Big 404) -->
+<div class="md:col-start-7 md:col-end-12 mt-16 md:mt-0 relative">
+<div class="relative z-10">
+<h2 class="font-display-lg text-[120px] md:text-[240px] font-black text-surface-container-highest tracking-tighter select-none leading-none opacity-50">404</h2>
+<!-- Abstract Industrial Element -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4/5 aspect-square bg-surface-container rounded-full opacity-20 blur-3xl"></div>
+</div>
+<!-- Floating Decorative Image with Studio Lighting -->
+<div class="absolute -bottom-8 -right-4 w-48 md:w-64 aspect-[4/5] bg-surface shadow-xl rounded-lg overflow-hidden border border-outline-variant/10 z-20 hidden md:block">
+<img class="w-full h-full object-cover" data-alt="A macro studio shot of a high-precision stainless steel industrial gear sitting on a matte black workbench. The lighting is cold and clinical, casting soft ambient shadows against a neutral warm gray background. The composition follows Japanese minimalist principles with significant negative space. The aesthetic is clean, professional, and reflects technical excellence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDruAVeXSLcI07c1FCkEwEEJybm3YFvRtaUI0EXToZDRkaZBvM5hhE7u2Z7F0P9DLQbBLUjeUHtwUysx_oRwq3yrp2-VEvCcRfOdMfcGQ3Tg2Z-jR-HCMOb1OQTkupowD-yjEgec2OJ9JdYG3MOj_rIjQl3St4a9pC1-jmITt-K9DrzE5wm4Shbg6ph1zSdlAW1bR5QY0zAcR4k_vE-9Zdn75ua5wJ5qi3SK_g3iRmY_MHUR9aPFhmuupaVOrIF1kQghmSUOG2yPQ3d"/>
+</div>
+</div>
+</section>
+<!-- Technical Breadcrumb/Status Bento -->
+<section class="max-w-container-max w-full mt-section-gap">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<div class="bg-surface-container/50 p-gutter rounded-xl border border-outline-variant/20">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary">terminal</span>
+<h3 class="font-label-sm text-label-sm uppercase tracking-widest text-primary">Status Check</h3>
+</div>
+<p class="font-label-sm text-secondary">System integrity verified. The requested resource 'url_handle' was not identified in our central inventory database.</p>
+</div>
+<div class="bg-surface-container/50 p-gutter rounded-xl border border-outline-variant/20">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary">inventory_2</span>
+<h3 class="font-label-sm text-label-sm uppercase tracking-widest text-primary">Latest Catalog</h3>
+</div>
+<p class="font-label-sm text-secondary">Our workshop is currently stocking new industrial grade tools. Explore the 2024 Collection for precision gear.</p>
+</div>
+<div class="bg-surface-container/50 p-gutter rounded-xl border border-outline-variant/20">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary">location_on</span>
+<h3 class="font-label-sm text-label-sm uppercase tracking-widest text-primary">Quick Search</h3>
+</div>
+<p class="font-label-sm text-secondary">Try searching for specific model numbers or hardware categories to get back on track efficiently.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-section-gap bg-surface border-t border-outline-variant/20">
+<div class="flex flex-col md:flex-row justify-between items-center px-margin-desktop gap-gutter max-w-container-max mx-auto">
+<div class="flex flex-col gap-2">
+<div class="font-display-lg text-body-md font-black text-primary">FERREMAS</div>
+<p class="font-label-sm text-label-sm tracking-tight text-secondary">© 2024 FERREMAS INDUSTRIAL. PRECISION ENGINEERED.</p>
+</div>
+<div class="flex gap-gutter">
+<a class="font-label-sm text-label-sm tracking-tight text-secondary hover:text-primary transition-colors duration-300" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm tracking-tight text-secondary hover:text-primary transition-colors duration-300" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm tracking-tight text-secondary hover:text-primary transition-colors duration-300" href="#">Compliance</a>
+<a class="font-label-sm text-label-sm tracking-tight text-secondary hover:text-primary transition-colors duration-300" href="#">Warranty</a>
+</div>
+</div>
+</footer>
+</body></html>

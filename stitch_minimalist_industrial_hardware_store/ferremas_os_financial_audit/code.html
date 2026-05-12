@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FERREMAS | Accountant Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Sora:wght@600;700&amp;family=Geist:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#5d5f5f",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed-variant": "#474746",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed": "#1c1b1b",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "inverse-on-surface": "#f1f1f1",
+                        "inverse-surface": "#2f3131",
+                        "surface-container-low": "#f4f3f3",
+                        "on-tertiary-fixed-variant": "#6e3900",
+                        "outline-variant": "#c4c7c7",
+                        "outline": "#747878",
+                        "on-error": "#ffffff",
+                        "background": "#f9f9f9",
+                        "on-tertiary-fixed": "#2f1500",
+                        "surface-dim": "#dadada",
+                        "secondary-container": "#dcdddd",
+                        "surface-tint": "#5f5e5e",
+                        "primary-fixed": "#e5e2e1",
+                        "on-primary-container": "#858383",
+                        "on-secondary-fixed-variant": "#454747",
+                        "tertiary-fixed-dim": "#ffb77d",
+                        "surface-container-highest": "#e2e2e2",
+                        "secondary-fixed": "#e2e2e2",
+                        "on-surface-variant": "#444748",
+                        "surface-bright": "#f9f9f9",
+                        "on-background": "#1a1c1c",
+                        "on-surface": "#1a1c1c",
+                        "tertiary-container": "#2f1500",
+                        "secondary-fixed-dim": "#c6c6c7",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#000000",
+                        "primary": "#000000",
+                        "inverse-primary": "#c8c6c5",
+                        "surface-container-lowest": "#ffffff",
+                        "surface": "#f9f9f9",
+                        "primary-fixed-dim": "#c8c6c5",
+                        "primary-container": "#1c1b1b",
+                        "on-tertiary-container": "#c76c00",
+                        "surface-variant": "#e2e2e2",
+                        "surface-container-high": "#e8e8e8",
+                        "surface-container": "#eeeeee",
+                        "tertiary-fixed": "#ffdcc3",
+                        "on-secondary-container": "#5f6161",
+                        "error-container": "#ffdad6",
+                        "on-tertiary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "margin-mobile": "20px",
+                        "container-max": "1280px",
+                        "gutter": "24px",
+                        "margin-desktop": "64px",
+                        "section-gap": "120px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "headline-xl-mobile": ["Sora"],
+                        "label-sm": ["Geist"],
+                        "body-md": ["Inter"],
+                        "headline-xl": ["Sora"],
+                        "display-lg-mobile": ["Sora"],
+                        "display-lg": ["Sora"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                        "headline-xl-mobile": ["24px", {"lineHeight": "1.3", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                        "headline-xl": ["32px", {"lineHeight": "1.2", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "display-lg-mobile": ["40px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "700"}],
+                        "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "0.02em", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .shadow-ambient {
+            box-shadow: 0px 4px 20px rgba(0,0,0,0.04);
+        }
+        body {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface antialiased">
+<!-- SideNavBar (Authority: JSON & Style Guidance) -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-surface-container border-r border-outline-variant flex flex-col p-gutter gap-unit z-50">
+<div class="mb-gutter">
+<h1 class="font-display-lg text-body-lg font-bold text-primary">FERREMAS OS</h1>
+<p class="font-body-md text-label-sm text-secondary">Industrial Management</p>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container-high px-4 py-3 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-body-md text-label-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container-high px-4 py-3 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-body-md text-label-sm">Inventory</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container-high px-4 py-3 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+<span class="font-body-md text-label-sm">Orders</span>
+</a>
+<!-- Active State: Accountancy (Accountant Role) -->
+<a class="flex items-center gap-3 bg-primary text-on-primary rounded-lg px-4 py-3 scale-98 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="payments" style="font-variation-settings: 'FILL' 1;">payments</span>
+<span class="font-body-md text-label-sm">Accountancy</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container-high px-4 py-3 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="conveyor_belt">conveyor_belt</span>
+<span class="font-body-md text-label-sm">Logistics</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container-high px-4 py-3 rounded-lg hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-body-md text-label-sm">Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-gutter border-t border-outline-variant/20 flex flex-col gap-2">
+<div class="flex items-center gap-3 px-4 py-2 mb-4">
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-container" data-icon="person">person</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm font-bold uppercase">Accountant</p>
+<p class="font-label-sm text-[10px] text-secondary">ID: FR-0992</p>
+</div>
+</div>
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container-high px-4 py-2 rounded-lg text-label-sm" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+                Support
+            </a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container-high px-4 py-2 rounded-lg text-label-sm" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                Logout
+            </a>
+<div class="px-4 mt-2">
+<span class="text-[10px] text-on-tertiary-container font-label-sm flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container animate-pulse"></span>
+                    System Status: Active
+                </span>
+</div>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="ml-64 min-h-screen p-margin-desktop">
+<!-- Header / Actions -->
+<header class="flex justify-between items-end mb-section-gap">
+<div>
+<h2 class="font-headline-xl text-headline-xl text-primary tracking-tighter">Financial Summaries</h2>
+<p class="font-body-md text-secondary mt-2">Fiscal Year 2024 • Q3 Performance Overview</p>
+</div>
+<div class="flex gap-4">
+<button class="bg-secondary-container text-on-secondary-container font-label-sm text-label-sm px-gutter py-3 rounded-lg flex items-center gap-2 hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined" data-icon="filter_list">filter_list</span>
+                    PERIOD
+                </button>
+<button class="bg-primary text-on-primary font-label-sm text-label-sm px-gutter py-3 rounded-lg flex items-center gap-2 hover:translate-y-[-2px] transition-all shadow-ambient">
+<span class="material-symbols-outlined" data-icon="file_download">file_download</span>
+                    EXPORT REPORTS
+                </button>
+</div>
+</header>
+<!-- Financial Metrics Bento Grid -->
+<div class="grid grid-cols-12 gap-gutter mb-section-gap">
+<!-- Main Revenue Card -->
+<div class="col-span-12 md:col-span-8 bg-surface-container-lowest p-gutter rounded-xl shadow-ambient flex flex-col justify-between min-h-[320px]">
+<div class="flex justify-between items-start">
+<div>
+<span class="text-label-sm font-label-sm text-secondary uppercase tracking-widest">Net Revenue</span>
+<h3 class="text-display-lg font-display-lg text-primary mt-unit">$4,829,200.45</h3>
+</div>
+<div class="text-on-tertiary-container flex items-center gap-1 font-label-sm text-label-sm bg-tertiary-fixed px-3 py-1 rounded-full">
+<span class="material-symbols-outlined text-[16px]" data-icon="trending_up">trending_up</span>
+                        +12.4%
+                    </div>
+</div>
+<div class="mt-gutter h-32 w-full flex items-end gap-2">
+<div class="flex-1 bg-surface-container-high h-1/2 rounded-t-sm"></div>
+<div class="flex-1 bg-surface-container-high h-2/3 rounded-t-sm"></div>
+<div class="flex-1 bg-surface-container-high h-1/3 rounded-t-sm"></div>
+<div class="flex-1 bg-primary h-full rounded-t-sm"></div>
+<div class="flex-1 bg-surface-container-high h-3/4 rounded-t-sm"></div>
+<div class="flex-1 bg-surface-container-high h-1/2 rounded-t-sm"></div>
+<div class="flex-1 bg-surface-container-high h-2/3 rounded-t-sm"></div>
+</div>
+</div>
+<!-- Tax Liability -->
+<div class="col-span-12 md:col-span-4 bg-surface-container-lowest p-gutter rounded-xl shadow-ambient flex flex-col border-l-4 border-on-tertiary-container">
+<span class="text-label-sm font-label-sm text-secondary uppercase tracking-widest">Est. Tax Liability</span>
+<h3 class="text-headline-xl font-headline-xl text-primary mt-unit">$842,100.00</h3>
+<p class="text-label-sm font-label-sm text-secondary mt-auto">Next Payment: Oct 15</p>
+<div class="mt-4 w-full bg-surface-container h-1 rounded-full overflow-hidden">
+<div class="bg-on-tertiary-container h-full w-[65%]"></div>
+</div>
+</div>
+<!-- Secondary Metrics -->
+<div class="col-span-12 md:col-span-4 bg-surface-container-lowest p-gutter rounded-xl shadow-ambient">
+<span class="text-label-sm font-label-sm text-secondary uppercase tracking-widest">Operating Costs</span>
+<h3 class="text-headline-xl font-headline-xl text-primary mt-unit">$1,204,500</h3>
+<div class="flex items-center gap-2 mt-4 text-label-sm text-error">
+<span class="material-symbols-outlined" data-icon="warning">warning</span>
+                    Above budget (2.1%)
+                </div>
+</div>
+<div class="col-span-12 md:col-span-4 bg-surface-container-lowest p-gutter rounded-xl shadow-ambient">
+<span class="text-label-sm font-label-sm text-secondary uppercase tracking-widest">Accounts Payable</span>
+<h3 class="text-headline-xl font-headline-xl text-primary mt-unit">$312,040</h3>
+<p class="text-label-sm font-label-sm text-secondary mt-4 italic">14 pending transactions</p>
+</div>
+<div class="col-span-12 md:col-span-4 bg-surface-container-lowest p-gutter rounded-xl shadow-ambient">
+<span class="text-label-sm font-label-sm text-secondary uppercase tracking-widest">Cash on Hand</span>
+<h3 class="text-headline-xl font-headline-xl text-primary mt-unit">$2,105,600</h3>
+<p class="text-label-sm font-label-sm text-secondary mt-4">Liquidity Ratio: 1.84</p>
+</div>
+</div>
+<!-- Invoice Management Table -->
+<section class="mb-section-gap">
+<div class="flex justify-between items-center mb-gutter">
+<h3 class="font-headline-xl text-headline-xl text-primary">Invoice Management</h3>
+<div class="flex gap-2">
+<div class="relative">
+<input class="bg-surface-container border-none focus:ring-0 text-label-sm font-label-sm rounded-lg pl-10 pr-4 py-2 w-64 transition-all" placeholder="Search Invoices..." type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]" data-icon="search">search</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl shadow-ambient overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant/30">
+<th class="px-gutter py-4 font-label-sm text-label-sm text-secondary uppercase tracking-widest">Invoice ID</th>
+<th class="px-gutter py-4 font-label-sm text-label-sm text-secondary uppercase tracking-widest">Entity / Client</th>
+<th class="px-gutter py-4 font-label-sm text-label-sm text-secondary uppercase tracking-widest">Date Issued</th>
+<th class="px-gutter py-4 font-label-sm text-label-sm text-secondary uppercase tracking-widest">Amount</th>
+<th class="px-gutter py-4 font-label-sm text-label-sm text-secondary uppercase tracking-widest">Status</th>
+<th class="px-gutter py-4 font-label-sm text-label-sm text-secondary uppercase tracking-widest text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<tr class="hover:bg-surface transition-colors group">
+<td class="px-gutter py-5 font-label-sm text-label-sm font-bold">INV-882910</td>
+<td class="px-gutter py-5">
+<div class="font-body-md text-label-sm font-semibold">Takamura Heavy Ind.</div>
+<div class="text-[10px] text-secondary uppercase">VAT ID: 992-10-XX</div>
+</td>
+<td class="px-gutter py-5 font-body-md text-label-sm">Sept 12, 2024</td>
+<td class="px-gutter py-5 font-body-md text-label-sm font-bold">$124,500.00</td>
+<td class="px-gutter py-5">
+<span class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full text-[10px] font-label-sm uppercase">Paid</span>
+</td>
+<td class="px-gutter py-5 text-right">
+<button class="p-2 hover:bg-surface-container rounded-lg transition-colors">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface transition-colors group">
+<td class="px-gutter py-5 font-label-sm text-label-sm font-bold">INV-882911</td>
+<td class="px-gutter py-5">
+<div class="font-body-md text-label-sm font-semibold">Saito Logistics Ltd.</div>
+<div class="text-[10px] text-secondary uppercase">VAT ID: 104-55-XX</div>
+</td>
+<td class="px-gutter py-5 font-body-md text-label-sm">Sept 14, 2024</td>
+<td class="px-gutter py-5 font-body-md text-label-sm font-bold">$52,100.00</td>
+<td class="px-gutter py-5">
+<span class="bg-tertiary-fixed text-on-tertiary-container px-3 py-1 rounded-full text-[10px] font-label-sm uppercase">Pending</span>
+</td>
+<td class="px-gutter py-5 text-right">
+<button class="p-2 hover:bg-surface-container rounded-lg transition-colors">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface transition-colors group">
+<td class="px-gutter py-5 font-label-sm text-label-sm font-bold">INV-882912</td>
+<td class="px-gutter py-5">
+<div class="font-body-md text-label-sm font-semibold">Kuroda Steel Works</div>
+<div class="text-[10px] text-secondary uppercase">VAT ID: 887-22-XX</div>
+</td>
+<td class="px-gutter py-5 font-body-md text-label-sm">Sept 15, 2024</td>
+<td class="px-gutter py-5 font-body-md text-label-sm font-bold">$210,000.00</td>
+<td class="px-gutter py-5">
+<span class="bg-error-container text-on-error-container px-3 py-1 rounded-full text-[10px] font-label-sm uppercase">Overdue</span>
+</td>
+<td class="px-gutter py-5 text-right">
+<button class="p-2 hover:bg-surface-container rounded-lg transition-colors">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface transition-colors group">
+<td class="px-gutter py-5 font-label-sm text-label-sm font-bold">INV-882913</td>
+<td class="px-gutter py-5">
+<div class="font-body-md text-label-sm font-semibold">Industrial Components Co.</div>
+<div class="text-[10px] text-secondary uppercase">VAT ID: 312-88-XX</div>
+</td>
+<td class="px-gutter py-5 font-body-md text-label-sm">Sept 16, 2024</td>
+<td class="px-gutter py-5 font-body-md text-label-sm font-bold">$18,400.00</td>
+<td class="px-gutter py-5">
+<span class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full text-[10px] font-label-sm uppercase">Paid</span>
+</td>
+<td class="px-gutter py-5 text-right">
+<button class="p-2 hover:bg-surface-container rounded-lg transition-colors">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="px-gutter py-4 border-t border-outline-variant/30 flex justify-between items-center bg-surface-container-low">
+<p class="text-label-sm font-label-sm text-secondary">Showing 4 of 1,204 invoices</p>
+<div class="flex gap-2">
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant bg-primary text-on-primary">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant hover:bg-surface-container transition-colors">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Tax Reporting Metrics & Visuals -->
+<div class="grid grid-cols-12 gap-gutter mb-section-gap">
+<div class="col-span-12 md:col-span-4 bg-primary text-on-primary p-gutter rounded-xl shadow-ambient">
+<h4 class="font-headline-xl text-body-lg mb-gutter">Compliance Audit</h4>
+<div class="flex items-center gap-4 mb-4">
+<div class="relative w-24 h-24">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-on-primary/10" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-on-primary" cx="48" cy="48" fill="transparent" r="40" stroke="currentColor" stroke-dasharray="251.2" stroke-dashoffset="25.1" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center font-bold">90%</div>
+</div>
+<p class="text-label-sm font-label-sm leading-relaxed opacity-80">All tax documentation verified for Q3. 10% requires manual partner signature.</p>
+</div>
+<button class="w-full py-3 bg-on-primary text-primary rounded-lg font-label-sm text-label-sm uppercase font-bold tracking-widest hover:opacity-90">View Audit Logs</button>
+</div>
+<div class="col-span-12 md:col-span-8 bg-surface-container-highest p-gutter rounded-xl relative overflow-hidden flex items-center">
+<div class="relative z-10 w-1/2">
+<h4 class="font-headline-xl text-headline-xl text-primary mb-2">Automated Tax Accrual</h4>
+<p class="font-body-md text-secondary mb-gutter">FERREMAS OS now automatically allocates 19% of every transaction to your tax reserve account.</p>
+<div class="flex gap-gutter">
+<div>
+<p class="text-[10px] uppercase text-secondary font-bold tracking-tighter">Reserve Enabled</p>
+<p class="text-body-lg font-bold">YES</p>
+</div>
+<div>
+<p class="text-[10px] uppercase text-secondary font-bold tracking-tighter">Current Reserve</p>
+<p class="text-body-lg font-bold">$1,402,120</p>
+</div>
+</div>
+</div>
+<div class="absolute right-0 top-0 bottom-0 w-1/2 overflow-hidden">
+<img class="w-full h-full object-cover grayscale opacity-20" data-alt="A highly sophisticated abstract visual representation of financial data streams and crystalline structures. The style is sharp and architectural, using a monochrome palette of deep grays and blacks with subtle orange accents. Soft studio lighting highlights the geometric precision and clean lines, creating a premium and methodical mood consistent with industrial Japanese minimalism." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkcr4_Iq9lzOUAdOTLqNZ52zMmUALvpROXR7Z6SpYRdso-bkmIqxR3ENWrMPgOVg7V0LF9TVFShokt7QY3WYA3DtfBCFPPZBKH49PN4MrrtEHsO1y5KWjRLNXSz8iOy-3Cs2ULPBib0hHzQZ_DmJlHl3KeTlj40SBbTUoosUwa8vDBsRJnFf4pYhT6UELdOfG-QZRk7j3dvKhlJBVy3XLKk07DRFh6AX41PkePtvKesd0dwWXNO5EVL2ehF4Ak-43oUjUir6xrAp7j"/>
+</div>
+</div>
+</div>
+<!-- Footer (Authority: JSON) -->
+<footer class="w-full py-section-gap border-t border-outline-variant/20 flex flex-col md:flex-row justify-between items-center gap-gutter">
+<div class="font-display-lg text-body-md font-black uppercase text-primary">FERREMAS</div>
+<p class="font-label-sm text-label-sm tracking-tight text-secondary">© 2024 FERREMAS INDUSTRIAL. PRECISION ENGINEERED.</p>
+<div class="flex gap-gutter">
+<a class="text-label-sm font-label-sm text-secondary hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="text-label-sm font-label-sm text-secondary hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="text-label-sm font-label-sm text-secondary hover:text-primary transition-colors" href="#">Compliance</a>
+<a class="text-label-sm font-label-sm text-secondary hover:text-primary transition-colors" href="#">Warranty</a>
+</div>
+</footer>
+</main>
+</body></html>

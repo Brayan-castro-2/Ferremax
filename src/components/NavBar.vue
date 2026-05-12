@@ -1,52 +1,152 @@
 <template>
-  <header class="navbar" :class="{ scrolled: isScrolled }">
-    <div class="container navbar-inner">
-      <!-- Logo -->
-      <router-link to="/catalogo" class="navbar-logo" id="nav-logo">
-        <span class="logo-icon">⚙️</span>
-        <span class="logo-text">FERRE<span class="text-primary">MAS</span></span>
-      </router-link>
+  <header
+    class="fixed inset-x-0 top-0 z-[100] border-b border-outline-variant/40 bg-surface-container-lowest/85 backdrop-blur-xl transition-shadow duration-300"
+    :class="{ 'shadow-ambient': isScrolled }"
+  >
+    <div class="mx-auto flex h-16 max-w-container-max items-center justify-between gap-4 px-margin-mobile md:h-[4.25rem] md:px-margin-desktop">
+      <RouterLink
+        to="/catalogo"
+        class="group flex shrink-0 items-baseline gap-1 font-sora text-lg font-bold tracking-tight text-primary md:text-xl"
+        id="nav-logo"
+      >
+        <span>FERRE</span>
+        <span class="text-tertiary transition group-hover:text-primary">MAS</span>
+      </RouterLink>
 
-      <!-- Navegación central (desktop) -->
-      <nav class="navbar-links hide-mobile" id="nav-links">
-        <router-link to="/catalogo" class="nav-link" active-class="nav-link--active">Catálogo</router-link>
-        <template v-if="auth.isAuthenticated">
-          <router-link v-if="auth.userRole === 'Cliente'" to="/mis-pedidos" class="nav-link" active-class="nav-link--active">Mis Pedidos</router-link>
-          <router-link v-if="auth.userRole === 'Administrador'" to="/admin" class="nav-link" active-class="nav-link--active">Admin</router-link>
-          <router-link v-if="['Vendedor','Administrador'].includes(auth.userRole)" to="/vendedor" class="nav-link" active-class="nav-link--active">Ventas</router-link>
-          <router-link v-if="['Bodeguero','Administrador'].includes(auth.userRole)" to="/bodeguero" class="nav-link" active-class="nav-link--active">Bodega</router-link>
-          <router-link v-if="['Contador','Administrador'].includes(auth.userRole)" to="/contador" class="nav-link" active-class="nav-link--active">Finanzas</router-link>
-        </template>
+      <nav class="hidden items-center gap-1 md:flex" aria-label="Principal">
+        <RouterLink
+          v-for="link in desktopLinks"
+          :key="link.to"
+          :to="link.to"
+          class="rounded-full px-4 py-2 font-geist text-[11px] font-medium uppercase tracking-[0.14em] text-on-surface-variant transition hover:bg-surface-container-low hover:text-primary"
+          active-class="bg-surface-container-low text-primary ring-1 ring-outline-variant/60"
+        >
+          {{ link.label }}
+        </RouterLink>
       </nav>
 
-      <!-- Acciones derecha -->
-      <div class="navbar-actions">
-        <!-- Carrito (solo clientes) -->
-        <router-link v-if="auth.userRole === 'Cliente' || !auth.isAuthenticated" to="/carrito" class="btn-icon" id="btn-carrito" title="Mi Carrito">
-          🛒
-          <span v-if="carrito.totalItems > 0" class="cart-badge">{{ carrito.totalItems }}</span>
-        </router-link>
+      <div class="flex items-center gap-2 md:gap-3">
+        <RouterLink
+          v-if="auth.isAuthenticated && auth.userRole === 'Cliente'"
+          to="/carrito"
+          class="relative flex h-10 w-10 items-center justify-center rounded-full border border-outline-variant/60 text-on-surface transition hover:border-primary/30 hover:bg-surface-container-low"
+          id="btn-carrito"
+          title="Carrito"
+        >
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <path d="M6 7h15l-1.5 9H7.5L6 7z" />
+            <path d="M6 7 5 3H2" />
+            <circle cx="9" cy="20" r="1" />
+            <circle cx="18" cy="20" r="1" />
+          </svg>
+          <span
+            v-if="carrito.totalItems > 0"
+            class="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-tertiary px-1 font-geist text-[9px] font-bold text-on-tertiary"
+          >
+            {{ carrito.totalItems > 99 ? '99+' : carrito.totalItems }}
+          </span>
+        </RouterLink>
 
-        <!-- Usuario autenticado -->
         <template v-if="auth.isAuthenticated">
-          <div class="user-menu" @click="menuOpen = !menuOpen" id="user-menu-btn">
-            <div class="user-avatar">{{ initials }}</div>
-            <span class="hide-mobile">{{ auth.user.nombre }}</span>
-            <span class="badge badge-primary hide-mobile">{{ auth.user.rol }}</span>
-          </div>
-          <div v-if="menuOpen" class="user-dropdown" id="user-dropdown">
-            <button class="dropdown-item" @click="handleLogout" id="btn-logout">
-              🚪 Cerrar Sesión
+          <RouterLink
+            to="/cuenta"
+            class="hidden h-10 items-center rounded-full border border-outline-variant/60 px-3 font-geist text-[10px] font-semibold uppercase tracking-wider text-on-surface-variant transition hover:border-primary/30 hover:text-primary sm:flex"
+          >
+            Cuenta
+          </RouterLink>
+          <div class="relative">
+            <button
+              type="button"
+              id="user-menu-btn"
+              class="flex max-w-[200px] items-center gap-2 rounded-full border border-outline-variant/70 bg-surface-container-lowest py-1 pl-1 pr-3 transition hover:border-primary/25"
+              aria-haspopup="true"
+              :aria-expanded="menuOpen"
+              @click="menuOpen = !menuOpen"
+            >
+              <span class="flex h-8 w-8 items-center justify-center rounded-full bg-primary font-geist text-xs font-bold text-on-primary">{{ initials }}</span>
+              <span class="hidden min-w-0 truncate text-left font-inter text-sm font-medium text-on-surface lg:inline">{{ auth.user?.nombre }}</span>
             </button>
+            <div
+              v-if="menuOpen"
+              id="user-dropdown"
+              class="absolute right-0 mt-2 w-52 overflow-hidden rounded-xl border border-outline-variant/60 bg-surface-container-lowest py-1 shadow-lg"
+              role="menu"
+            >
+              <p class="border-b border-outline-variant/40 px-4 py-2 font-geist text-[10px] uppercase tracking-wider text-on-surface-variant">
+                {{ auth.userRole }}
+              </p>
+              <RouterLink to="/cuenta" class="block px-4 py-2.5 text-sm text-on-surface hover:bg-surface-container-low" role="menuitem" @click="menuOpen = false">
+                Perfil
+              </RouterLink>
+              <RouterLink
+                v-if="auth.userRole === 'Cliente'"
+                to="/mis-pedidos"
+                class="block px-4 py-2.5 text-sm text-on-surface hover:bg-surface-container-low"
+                role="menuitem"
+                @click="menuOpen = false"
+              >
+                Mis pedidos
+              </RouterLink>
+              <RouterLink to="/dashboard" class="block px-4 py-2.5 text-sm text-on-surface hover:bg-surface-container-low" role="menuitem" @click="menuOpen = false">
+                Panel
+              </RouterLink>
+              <button type="button" class="w-full px-4 py-2.5 text-left text-sm text-error hover:bg-error-container/40" role="menuitem" @click="handleLogout">
+                Cerrar sesión
+              </button>
+            </div>
           </div>
         </template>
 
-        <!-- Sin sesión -->
-        <router-link v-else to="/login" class="btn btn-primary btn-sm" id="btn-login-nav">
-          Iniciar Sesión
-        </router-link>
+        <template v-else>
+          <RouterLink
+            to="/login"
+            class="hidden rounded-full border border-outline-variant px-4 py-2 font-geist text-[11px] font-semibold uppercase tracking-[0.12em] text-on-surface transition hover:border-primary/40 sm:inline-flex"
+            id="btn-login-nav"
+          >
+            Entrar
+          </RouterLink>
+        </template>
+
+        <button
+          type="button"
+          class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-outline-variant/60 md:hidden"
+          :aria-expanded="mobileOpen"
+          aria-controls="mobile-nav"
+          aria-label="Abrir menú"
+          @click="mobileOpen = !mobileOpen"
+        >
+          <span class="font-geist text-xs font-bold">{{ mobileOpen ? '✕' : '≡' }}</span>
+        </button>
       </div>
     </div>
+
+    <Transition name="fade">
+      <div
+        v-if="mobileOpen"
+        id="mobile-nav"
+        class="border-t border-outline-variant/50 bg-surface-container-lowest px-margin-mobile py-4 md:hidden"
+      >
+        <nav class="flex flex-col gap-1" aria-label="Móvil">
+          <RouterLink
+            v-for="link in mobileLinks"
+            :key="link.to + link.label"
+            :to="link.to"
+            class="rounded-xl px-4 py-3 font-geist text-[11px] font-semibold uppercase tracking-[0.14em] text-on-surface hover:bg-surface-container-low"
+            @click="mobileOpen = false"
+          >
+            {{ link.label }}
+          </RouterLink>
+          <template v-if="!auth.isAuthenticated">
+            <RouterLink to="/login" class="mt-2 rounded-xl bg-primary py-3 text-center font-geist text-[11px] font-semibold uppercase tracking-[0.14em] text-on-primary" @click="mobileOpen = false">
+              Entrar
+            </RouterLink>
+            <RouterLink to="/registro" class="rounded-xl py-3 text-center font-geist text-[11px] font-semibold uppercase tracking-[0.14em] text-tertiary" @click="mobileOpen = false">
+              Crear cuenta
+            </RouterLink>
+          </template>
+        </nav>
+      </div>
+    </Transition>
   </header>
 </template>
 
@@ -56,155 +156,61 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.js'
 import { useCarritoStore } from '@/stores/carrito.js'
 
-const auth    = useAuthStore()
+const auth = useAuthStore()
 const carrito = useCarritoStore()
-const router  = useRouter()
+const router = useRouter()
 
 const isScrolled = ref(false)
-const menuOpen   = ref(false)
+const menuOpen = ref(false)
+const mobileOpen = ref(false)
 
 const initials = computed(() => {
   if (!auth.user?.nombre) return '?'
-  return auth.user.nombre.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+  return auth.user.nombre
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase()
 })
 
-function onScroll() { isScrolled.value = window.scrollY > 20 }
+const desktopLinks = computed(() => {
+  if (!auth.isAuthenticated) {
+    return [
+      { label: 'Catálogo', to: '/catalogo' },
+      { label: 'Registro', to: '/registro' },
+      { label: 'Acceso', to: '/login' },
+    ]
+  }
+  const role = auth.userRole
+  const links = [{ label: 'Catálogo', to: '/catalogo' }]
+  if (role === 'Cliente') {
+    links.push({ label: 'Carrito', to: '/carrito' }, { label: 'Checkout', to: '/checkout' }, { label: 'Pedidos', to: '/mis-pedidos' })
+  }
+  links.push({ label: 'Panel', to: '/dashboard' })
+  if (role === 'Administrador') links.push({ label: 'Admin', to: '/admin' })
+  if (['Vendedor', 'Administrador'].includes(role)) links.push({ label: 'Ventas', to: '/vendedor' })
+  if (['Bodeguero', 'Administrador'].includes(role)) links.push({ label: 'Bodega', to: '/bodeguero' })
+  if (['Contador', 'Administrador'].includes(role)) links.push({ label: 'Finanzas', to: '/contador' })
+  return links
+})
+
+const mobileLinks = computed(() => {
+  const extra = [{ label: 'Recuperar acceso', to: '/recuperar' }]
+  return [...desktopLinks.value, ...extra]
+})
+
+function onScroll() {
+  isScrolled.value = window.scrollY > 8
+}
+
 onMounted(() => window.addEventListener('scroll', onScroll))
 onUnmounted(() => window.removeEventListener('scroll', onScroll))
 
 async function handleLogout() {
   menuOpen.value = false
+  mobileOpen.value = false
   await auth.logout()
   router.push('/login')
 }
 </script>
-
-<style scoped>
-.navbar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 100;
-  height: var(--navbar-height);
-  background: rgba(17, 24, 39, 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--color-border);
-  transition: background var(--transition-fast), box-shadow var(--transition-fast);
-}
-.navbar.scrolled {
-  background: rgba(17, 24, 39, 0.96);
-  box-shadow: var(--shadow-md);
-}
-
-.navbar-inner {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-6);
-}
-
-.navbar-logo {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: var(--font-size-xl);
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  transition: transform var(--transition-fast);
-}
-.navbar-logo:hover { transform: scale(1.03); }
-.logo-icon { font-size: 1.5rem; }
-
-.navbar-links {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  flex: 1;
-  justify-content: center;
-}
-.nav-link {
-  padding: 0.4rem var(--space-4);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-sm);
-  font-weight: 500;
-  color: var(--color-text-muted);
-  transition: color var(--transition-fast), background var(--transition-fast);
-}
-.nav-link:hover { color: var(--color-text); background: var(--color-surface-2); }
-.nav-link--active { color: var(--color-primary) !important; background: rgba(45,212,191,0.08); }
-
-.navbar-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  position: relative;
-}
-
-.btn-icon {
-  position: relative;
-  font-size: 1.3rem;
-  width: 2.5rem; height: 2.5rem;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: var(--radius-md);
-  transition: background var(--transition-fast);
-}
-.btn-icon:hover { background: var(--color-surface-2); }
-.cart-badge {
-  position: absolute;
-  top: -4px; right: -4px;
-  background: var(--color-primary);
-  color: #071A14;
-  font-size: 10px;
-  font-weight: 700;
-  min-width: 18px; height: 18px;
-  border-radius: var(--radius-full);
-  display: flex; align-items: center; justify-content: center;
-  padding: 0 4px;
-}
-
-.user-menu {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  cursor: pointer;
-  padding: 0.4rem var(--space-3);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
-  transition: background var(--transition-fast);
-}
-.user-menu:hover { background: var(--color-surface-2); }
-
-.user-avatar {
-  width: 2rem; height: 2rem;
-  background: linear-gradient(135deg, var(--color-primary), #EC4899);
-  border-radius: var(--radius-full);
-  display: flex; align-items: center; justify-content: center;
-  font-size: var(--font-size-xs);
-  font-weight: 700;
-  color: #fff;
-}
-
-.user-dropdown {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  background: var(--color-surface-2);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  min-width: 180px;
-  box-shadow: var(--shadow-lg);
-  z-index: 200;
-  overflow: hidden;
-}
-.dropdown-item {
-  width: 100%;
-  padding: var(--space-3) var(--space-4);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
-  text-align: left;
-  transition: background var(--transition-fast), color var(--transition-fast);
-  display: flex; align-items: center; gap: var(--space-2);
-}
-.dropdown-item:hover { background: var(--color-danger); color: #fff; }
-</style>

@@ -1,88 +1,45 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.js'
 
-// Views - lazy loaded
-const LoginView        = () => import('@/views/LoginView.vue')
-const CatalogoView     = () => import('@/views/CatalogoView.vue')
-const CarritoView      = () => import('@/views/CarritoView.vue')
-const DashboardView    = () => import('@/views/DashboardView.vue')
-const MisPedidosView   = () => import('@/views/MisPedidosView.vue')
-const AdminView        = () => import('@/views/roles/AdminView.vue')
-const VendedorView     = () => import('@/views/roles/VendedorView.vue')
-const BodegueroView    = () => import('@/views/roles/BodegueroView.vue')
-const ContadorView     = () => import('@/views/roles/ContadorView.vue')
-const NotFoundView     = () => import('@/views/NotFoundView.vue')
+const LoginView = () => import('@/views/LoginView.vue')
+const RegisterView = () => import('@/views/auth/RegisterView.vue')
+const ForgotPasswordView = () => import('@/views/auth/ForgotPasswordView.vue')
+const ResetPasswordView = () => import('@/views/auth/ResetPasswordView.vue')
+const CatalogoView = () => import('@/views/CatalogoView.vue')
+const CarritoView = () => import('@/views/CarritoView.vue')
+const CheckoutView = () => import('@/views/CheckoutView.vue')
+const ProductoDetailView = () => import('@/views/ProductoDetailView.vue')
+const PedidoConfirmacionView = () => import('@/views/PedidoConfirmacionView.vue')
+const MisPedidosView = () => import('@/views/MisPedidosView.vue')
+const PedidoDetalleView = () => import('@/views/PedidoDetalleView.vue')
+const PerfilView = () => import('@/views/PerfilView.vue')
+const DashboardView = () => import('@/views/DashboardView.vue')
+const AdminView = () => import('@/views/roles/AdminView.vue')
+const VendedorView = () => import('@/views/roles/VendedorView.vue')
+const BodegueroView = () => import('@/views/roles/BodegueroView.vue')
+const ContadorView = () => import('@/views/roles/ContadorView.vue')
+const NotFoundView = () => import('@/views/NotFoundView.vue')
 
 const routes = [
-  {
-    path: '/',
-    redirect: '/catalogo'
-  },
-  {
-    path: '/login',
-    name: 'Login',
-    component: LoginView,
-    meta: { public: true, title: 'Iniciar Sesión' }
-  },
-  {
-    path: '/catalogo',
-    name: 'Catalogo',
-    component: CatalogoView,
-    meta: { public: true, title: 'Catálogo de Productos' }
-  },
-  {
-    path: '/carrito',
-    name: 'Carrito',
-    component: CarritoView,
-    meta: { requiresAuth: true, roles: ['Cliente'], title: 'Mi Carrito' }
-  },
-  {
-    path: '/mis-pedidos',
-    name: 'MisPedidos',
-    component: MisPedidosView,
-    meta: { requiresAuth: true, roles: ['Cliente'], title: 'Mis Pedidos' }
-  },
-  {
-    path: '/dashboard',
-    name: 'Dashboard',
-    component: DashboardView,
-    meta: { requiresAuth: true, title: 'Dashboard' }
-  },
-  // Panel Administrador
-  {
-    path: '/admin',
-    name: 'Admin',
-    component: AdminView,
-    meta: { requiresAuth: true, roles: ['Administrador'], title: 'Panel Administrador' }
-  },
-  // Panel Vendedor
-  {
-    path: '/vendedor',
-    name: 'Vendedor',
-    component: VendedorView,
-    meta: { requiresAuth: true, roles: ['Vendedor', 'Administrador'], title: 'Panel Vendedor' }
-  },
-  // Panel Bodeguero
-  {
-    path: '/bodeguero',
-    name: 'Bodeguero',
-    component: BodegueroView,
-    meta: { requiresAuth: true, roles: ['Bodeguero', 'Administrador'], title: 'Panel Bodeguero' }
-  },
-  // Panel Contador
-  {
-    path: '/contador',
-    name: 'Contador',
-    component: ContadorView,
-    meta: { requiresAuth: true, roles: ['Contador', 'Administrador'], title: 'Panel Contador' }
-  },
-  // 404
-  {
-    path: '/:pathMatch(.*)*',
-    name: 'NotFound',
-    component: NotFoundView,
-    meta: { public: true, title: 'Página no encontrada' }
-  }
+  { path: '/', redirect: '/catalogo' },
+  { path: '/login', name: 'Login', component: LoginView, meta: { public: true, guestOnly: true, title: 'Iniciar sesión' } },
+  { path: '/registro', name: 'Register', component: RegisterView, meta: { public: true, guestOnly: true, title: 'Crear cuenta' } },
+  { path: '/recuperar', name: 'ForgotPassword', component: ForgotPasswordView, meta: { public: true, guestOnly: true, title: 'Recuperar acceso' } },
+  { path: '/restablecer', name: 'ResetPassword', component: ResetPasswordView, meta: { public: true, title: 'Nueva contraseña' } },
+  { path: '/catalogo', name: 'Catalogo', component: CatalogoView, meta: { public: true, title: 'Catálogo' } },
+  { path: '/producto/:id', name: 'ProductoDetail', component: ProductoDetailView, meta: { public: true, title: 'Producto' } },
+  { path: '/carrito', name: 'Carrito', component: CarritoView, meta: { requiresAuth: true, roles: ['Cliente'], title: 'Carrito' } },
+  { path: '/checkout', name: 'Checkout', component: CheckoutView, meta: { requiresAuth: true, roles: ['Cliente'], title: 'Checkout' } },
+  { path: '/pedido-confirmacion', name: 'PedidoConfirmacion', component: PedidoConfirmacionView, meta: { requiresAuth: true, roles: ['Cliente'], title: 'Pedido confirmado' } },
+  { path: '/mis-pedidos', name: 'MisPedidos', component: MisPedidosView, meta: { requiresAuth: true, roles: ['Cliente'], title: 'Mis pedidos' } },
+  { path: '/pedido/:id', name: 'PedidoDetalle', component: PedidoDetalleView, meta: { requiresAuth: true, roles: ['Cliente'], title: 'Detalle del pedido' } },
+  { path: '/cuenta', name: 'Perfil', component: PerfilView, meta: { requiresAuth: true, title: 'Mi cuenta' } },
+  { path: '/dashboard', name: 'Dashboard', component: DashboardView, meta: { requiresAuth: true, title: 'Panel' } },
+  { path: '/admin', name: 'Admin', component: AdminView, meta: { requiresAuth: true, roles: ['Administrador'], title: 'Administración' } },
+  { path: '/vendedor', name: 'Vendedor', component: VendedorView, meta: { requiresAuth: true, roles: ['Vendedor', 'Administrador'], title: 'Ventas' } },
+  { path: '/bodeguero', name: 'Bodeguero', component: BodegueroView, meta: { requiresAuth: true, roles: ['Bodeguero', 'Administrador'], title: 'Bodega' } },
+  { path: '/contador', name: 'Contador', component: ContadorView, meta: { requiresAuth: true, roles: ['Contador', 'Administrador'], title: 'Finanzas' } },
+  { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFoundView, meta: { public: true, title: 'No encontrado' } },
 ]
 
 const router = createRouter({
@@ -90,17 +47,19 @@ const router = createRouter({
   routes,
   scrollBehavior() {
     return { top: 0 }
-  }
+  },
 })
 
-// Guard de navegación global
-router.beforeEach((to, from, next) => {
-  // Actualizar título de la página
+router.beforeEach((to, _from, next) => {
   document.title = `${to.meta.title || 'FERREMAS'} | FERREMAS`
 
   const authStore = useAuthStore()
   const isAuthenticated = authStore.isAuthenticated
-  const userRole = authStore.user?.rol
+  const userRole = authStore.userRole
+
+  if (to.meta.guestOnly && isAuthenticated) {
+    return next({ name: 'Catalogo' })
+  }
 
   if (to.meta.requiresAuth && !isAuthenticated) {
     return next({ name: 'Login', query: { redirect: to.fullPath } })

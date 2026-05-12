@@ -1,112 +1,163 @@
 <template>
-  <div class="login-page">
-    <!-- Fondo decorativo -->
-    <div class="login-bg">
-      <div class="bg-orb orb-1"></div>
-      <div class="bg-orb orb-2"></div>
+  <main class="relative min-h-screen overflow-hidden bg-surface font-inter text-on-surface">
+    <div class="pointer-events-none absolute inset-0">
+      <div class="absolute -left-1/4 top-0 h-[70vh] w-[70vw] rounded-full bg-gradient-to-br from-tertiary-fixed-dim/25 via-transparent to-transparent blur-3xl" />
+      <div class="absolute -right-1/4 bottom-0 h-[60vh] w-[60vw] rounded-full bg-gradient-to-tl from-primary/5 via-transparent to-transparent blur-3xl" />
     </div>
 
-    <div class="login-card" id="login-form-card">
-      <!-- Logo -->
-      <div class="login-logo">
-        <span>⚙️</span>
-        <h1>FERRE<span class="text-primary">MAS</span></h1>
-      </div>
-      <p class="login-subtitle">Sistema de Gestión E-Commerce</p>
-
-      <!-- Alert de error -->
-      <div v-if="error" class="alert alert-danger" id="login-error-msg">
-        {{ error }}
-      </div>
-
-      <!-- Mockup hint -->
-      <div class="mockup-hint">
-        <strong>Modo Mockup</strong> — usa contraseña <code>12345</code>
-        <div class="mockup-users">
-          <button v-for="u in mockupUsers" :key="u.email" class="user-chip" @click="fillUser(u)" :id="`chip-${u.rol.toLowerCase()}`">
-            {{ u.emoji }} {{ u.rol }}
-          </button>
+    <div class="relative z-10 mx-auto grid min-h-screen max-w-[1200px] lg:grid-cols-2">
+      <section class="hidden flex-col justify-between px-margin-desktop py-16 lg:flex lg:py-24">
+        <div>
+          <p class="font-geist text-[11px] font-semibold uppercase tracking-[0.28em] text-on-surface-variant">FERREMAS / 2026</p>
+          <h1 class="mt-8 max-w-md font-sora text-4xl font-semibold leading-[1.08] tracking-tight text-primary xl:text-5xl">
+            Comercio industrial con calma absoluta.
+          </h1>
+          <p class="mt-6 max-w-sm font-inter text-base leading-relaxed text-on-surface-variant">
+            Herramientas, stock y pedidos en una sola plataforma — diseñada como una vitrina, no como un panel genérico.
+          </p>
         </div>
-      </div>
+        <ul class="space-y-3 font-geist text-[11px] uppercase tracking-[0.18em] text-on-surface-variant">
+          <li class="flex items-center gap-2"><span class="h-1 w-1 rounded-full bg-tertiary" /> Stock y precios en tiempo real</li>
+          <li class="flex items-center gap-2"><span class="h-1 w-1 rounded-full bg-tertiary" /> Roles: cliente, ventas, bodega, finanzas</li>
+          <li class="flex items-center gap-2"><span class="h-1 w-1 rounded-full bg-tertiary" /> Supabase + API Express</li>
+        </ul>
+      </section>
 
-      <!-- Formulario -->
-      <form @submit.prevent="handleLogin" id="login-form">
-        <div class="form-group">
-          <label class="form-label" for="input-email">Correo Electrónico</label>
-          <input
-            id="input-email"
-            v-model="email"
-            type="email"
-            class="form-input"
-            placeholder="usuario@ferremas.cl"
-            required
-            autocomplete="email"
-          />
+      <section class="flex flex-col justify-center px-margin-mobile py-16 sm:px-10 lg:px-margin-desktop lg:py-24">
+        <div class="mx-auto w-full max-w-md rounded-2xl border border-outline-variant/50 bg-surface-container-lowest/95 p-8 shadow-ambient backdrop-blur-md sm:p-10">
+          <header class="mb-8">
+            <p class="font-geist text-[10px] font-semibold uppercase tracking-[0.22em] text-tertiary">Acceso seguro</p>
+            <h2 class="mt-2 font-sora text-2xl font-semibold tracking-tight text-primary sm:text-3xl">Ingresa a tu cuenta</h2>
+          </header>
+
+          <div
+            v-if="mockupHint"
+            class="mb-6 rounded-xl border border-outline-variant/60 bg-surface-container-low p-4"
+          >
+            <p class="font-geist text-[10px] font-semibold uppercase tracking-[0.16em] text-on-surface-variant">Demo rápida</p>
+            <p class="mt-1 text-sm text-on-surface-variant">Contraseña mock: <strong class="text-primary">12345</strong></p>
+            <div class="mt-3 flex flex-wrap gap-2" role="group" aria-label="Cuentas de prueba">
+              <button
+                v-for="u in mockupUsers"
+                :key="u.email"
+                type="button"
+                class="rounded-full border border-outline-variant/70 bg-surface-container-lowest px-3 py-1.5 font-geist text-[10px] font-medium uppercase tracking-wider text-on-surface transition hover:border-primary/40 hover:shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                @click="fillUser(u)"
+              >
+                {{ u.emoji }} {{ u.rol }}
+              </button>
+            </div>
+          </div>
+
+          <p v-if="error" class="mb-5 rounded-xl border border-error/25 bg-error-container/80 px-4 py-3 text-sm text-on-error-container" role="alert">
+            {{ error }}
+          </p>
+
+          <form class="space-y-6" @submit.prevent="handleLogin">
+            <FmInput id="login-email" v-model="email" label="Correo" type="email" autocomplete="email" placeholder="tu@ferremas.cl" />
+            <div>
+              <div class="mb-2 flex items-end justify-between gap-2">
+                <label for="login-password" class="font-geist text-[10px] font-semibold uppercase tracking-[0.16em] text-on-surface-variant">Contraseña</label>
+                <RouterLink to="/recuperar" class="font-geist text-[10px] uppercase tracking-wider text-tertiary underline-offset-4 hover:underline">
+                  ¿Olvidaste?
+                </RouterLink>
+              </div>
+              <input
+                id="login-password"
+                v-model="password"
+                :type="showPassword ? 'text' : 'password'"
+                autocomplete="current-password"
+                required
+                class="w-full rounded-xl border border-outline-variant/80 bg-surface-container-low px-4 py-3 font-inter text-sm text-on-surface shadow-inner transition placeholder:text-outline focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
+                placeholder="••••••••"
+              />
+              <button type="button" class="mt-2 font-geist text-[10px] uppercase tracking-wider text-on-surface-variant hover:text-primary" @click="showPassword = !showPassword">
+                {{ showPassword ? 'Ocultar' : 'Mostrar' }} contraseña
+              </button>
+            </div>
+
+            <FmButton type="submit" native-type="submit" variant="primary" size="lg" block :loading="loading" :disabled="!isValid">
+              Entrar
+            </FmButton>
+          </form>
+
+          <p class="mt-8 text-center font-inter text-sm text-on-surface-variant">
+            ¿Sin cuenta?
+            <RouterLink to="/registro" class="font-semibold text-primary underline-offset-4 hover:underline">Crear cuenta</RouterLink>
+          </p>
         </div>
-
-        <div class="form-group">
-          <label class="form-label" for="input-password">Contraseña</label>
-          <input
-            id="input-password"
-            v-model="password"
-            type="password"
-            class="form-input"
-            placeholder="••••••••"
-            required
-            autocomplete="current-password"
-          />
-        </div>
-
-        <button
-          type="submit"
-          class="btn btn-primary btn-full btn-lg"
-          id="btn-login-submit"
-          :disabled="loading"
-        >
-          <span v-if="loading" class="spinner" style="width:1rem;height:1rem;border-width:2px"></span>
-          <span v-else>Ingresar al Sistema</span>
-        </button>
-      </form>
+      </section>
     </div>
-  </div>
+  </main>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.js'
+import { isMockup } from '@/lib/supabase.js'
+import FmInput from '@/components/ui/FmInput.vue'
+import FmButton from '@/components/ui/FmButton.vue'
 
-const auth   = useAuthStore()
+const auth = useAuthStore()
 const router = useRouter()
-const route  = useRoute()
+const route = useRoute()
 
-const email    = ref('')
+const email = ref('')
 const password = ref('')
-const loading  = ref(false)
-const error    = ref('')
+const loading = ref(false)
+const error = ref('')
+const showPassword = ref(false)
+
+const mockupHint = computed(() => isMockup)
 
 const mockupUsers = [
-  { email: 'admin@ferremas.cl',     rol: 'Admin',      emoji: '👑' },
-  { email: 'vendedor@ferremas.cl',  rol: 'Vendedor',   emoji: '💼' },
-  { email: 'bodeguero@ferremas.cl', rol: 'Bodeguero',  emoji: '📦' },
-  { email: 'contador@ferremas.cl',  rol: 'Contador',   emoji: '💰' },
-  { email: 'cliente@ferremas.cl',   rol: 'Cliente',    emoji: '🛒' },
+  { email: 'admin@ferremas.cl', rol: 'Admin', emoji: '◆' },
+  { email: 'vendedor@ferremas.cl', rol: 'Ventas', emoji: '◇' },
+  { email: 'bodeguero@ferremas.cl', rol: 'Bodega', emoji: '▣' },
+  { email: 'contador@ferremas.cl', rol: 'Finanzas', emoji: '◎' },
+  { email: 'cliente@ferremas.cl', rol: 'Cliente', emoji: '○' },
 ]
 
+const isValid = computed(() => email.value.includes('@') && password.value.length >= 4)
+
 function fillUser(u) {
-  email.value    = u.email
+  email.value = u.email
   password.value = '12345'
 }
 
+async function loginApiJwt() {
+  const base = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '')
+  const endpoint = `${base || ''}/api/auth/login`
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: email.value.trim(), password: password.value }),
+  })
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}))
+    throw new Error(body.error || 'API /api/auth/login no disponible')
+  }
+  const data = await response.json()
+  if (data.token) {
+    localStorage.setItem('ferremas_api_token', data.token)
+  }
+}
+
 async function handleLogin() {
-  error.value   = ''
+  error.value = ''
   loading.value = true
   try {
+    try {
+      await loginApiJwt()
+    } catch {
+      /* JWT opcional: la sesión principal sigue siendo Supabase / mockup */
+    }
     await auth.login(email.value, password.value)
     const redirect = route.query.redirect || getDashboardRoute(auth.userRole)
     router.push(redirect)
   } catch (e) {
-    error.value = e.message
+    error.value = e.message || 'No se pudo iniciar sesión'
   } finally {
     loading.value = false
   }
@@ -115,122 +166,11 @@ async function handleLogin() {
 function getDashboardRoute(rol) {
   const map = {
     Administrador: '/admin',
-    Vendedor:      '/vendedor',
-    Bodeguero:     '/bodeguero',
-    Contador:      '/contador',
-    Cliente:       '/catalogo',
+    Vendedor: '/vendedor',
+    Bodeguero: '/bodeguero',
+    Contador: '/contador',
+    Cliente: '/catalogo',
   }
   return map[rol] || '/catalogo'
 }
 </script>
-
-<style scoped>
-.login-page {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-6);
-  position: relative;
-  overflow: hidden;
-}
-
-.login-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-.bg-orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.12;
-}
-.orb-1 {
-  width: 600px; height: 600px;
-  background: conic-gradient(from 180deg, #0D9488, #0891B2, #1D4ED8);
-  top: -150px; left: -150px;
-  animation: float 8s ease-in-out infinite;
-}
-.orb-2 {
-  width: 400px; height: 400px;
-  background: conic-gradient(from 0deg, #14B8A6, #0EA5E9, #6366F1);
-  bottom: -100px; right: -100px;
-  animation: float 10s ease-in-out infinite reverse;
-}
-@keyframes float {
-  0%, 100% { transform: translate(0, 0); }
-  50% { transform: translate(20px, 20px); }
-}
-
-.login-card {
-  position: relative;
-  z-index: 1;
-  background: rgba(13, 26, 38, 0.85);
-  border: 1px solid rgba(45,212,191,0.12);
-  border-radius: var(--radius-xl);
-  padding: var(--space-10) var(--space-8);
-  width: 100%;
-  max-width: 440px;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-6);
-  box-shadow: var(--shadow-lg), 0 0 40px rgba(20,184,166,0.06);
-  backdrop-filter: blur(24px);
-}
-
-.login-logo {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  font-size: 2rem;
-  font-weight: 800;
-  letter-spacing: -1px;
-}
-.login-logo span:first-child { font-size: 2.5rem; }
-
-.login-subtitle {
-  margin-top: calc(-1 * var(--space-4));
-  color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
-}
-
-.mockup-hint {
-  background: rgba(45,212,191,0.06);
-  border: 1px solid rgba(45,212,191,0.18);
-  border-radius: var(--radius-md);
-  padding: var(--space-4);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
-}
-.mockup-hint code {
-  background: rgba(45,212,191,0.15);
-  color: var(--color-primary);
-  padding: 0 6px;
-  border-radius: 4px;
-  font-size: 0.85em;
-}
-.mockup-users {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  margin-top: var(--space-3);
-}
-.user-chip {
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
-  background: var(--color-surface-2);
-  border: 1px solid var(--color-border);
-  font-size: var(--font-size-xs);
-  color: var(--color-text);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-.user-chip:hover {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: #fff;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
-}
-</style>

@@ -1,44 +1,56 @@
 <template>
-  <main class="page-wrapper">
-    <div class="container">
-      <!-- Header -->
-      <section class="catalogo-header">
-        <div>
-          <h1>Catálogo de <span class="text-primary">Productos</span></h1>
-          <p class="text-muted">
-            <span v-if="cargando">Cargando productos...</span>
-            <span v-else>{{ productosFiltrados.length }} productos disponibles</span>
+  <main class="page-wrapper bg-surface font-inter text-on-surface">
+    <section class="border-b border-outline-variant/40 bg-gradient-to-b from-surface-container-lowest/80 to-surface pb-16 pt-10 md:pb-20 md:pt-14">
+      <div class="mx-auto max-w-container-max px-margin-mobile md:px-margin-desktop">
+        <div class="max-w-3xl">
+          <p class="font-geist text-[11px] font-semibold uppercase tracking-[0.28em] text-tertiary">Catálogo editorial</p>
+          <h1 class="mt-4 font-sora text-4xl font-semibold leading-[1.05] tracking-tight text-primary md:text-5xl lg:text-6xl">Herramientas y materiales, sin ruido.</h1>
+          <p class="mt-5 max-w-xl text-base leading-relaxed text-on-surface-variant md:text-lg">
+            {{ cargando ? 'Sincronizando inventario…' : `${productosFiltrados.length} referencias listas para despacho o retiro.` }}
           </p>
         </div>
-        <div class="search-box">
-          <span class="search-icon">🔍</span>
+
+        <div class="mt-10 flex max-w-xl items-center gap-3 rounded-2xl border border-outline-variant/50 bg-surface-container-lowest/90 px-4 py-3 shadow-inner backdrop-blur-sm md:px-5">
+          <span class="text-on-surface-variant" aria-hidden="true">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" /></svg>
+          </span>
           <input
             id="input-buscar-producto"
             v-model="busqueda"
-            type="text"
-            class="form-input"
-            placeholder="Buscar herramientas, materiales..."
+            type="search"
+            class="min-w-0 flex-1 border-0 bg-transparent font-inter text-sm text-on-surface placeholder:text-outline focus:outline-none focus:ring-0"
+            placeholder="Buscar por nombre, categoría o uso…"
+            autocomplete="off"
           />
         </div>
-      </section>
 
-      <p v-if="badgeDolarTexto" id="badge-dolar-clp" class="dolar-badge" role="status">
-        {{ badgeDolarTexto }}
-      </p>
+        <p v-if="badgeDolarTexto" id="badge-dolar-clp" class="mt-4 inline-flex rounded-full border border-outline-variant/50 bg-surface-container-low px-4 py-1.5 font-geist text-[10px] font-semibold uppercase tracking-[0.16em] text-on-surface-variant" role="status">
+          {{ badgeDolarTexto }}
+        </p>
+      </div>
+    </section>
 
-      <!-- Error de conexión -->
-      <div v-if="errorMsg" class="alert alert-danger" id="catalogo-error">
-        ⚠️ {{ errorMsg }}
-        <button class="btn btn-sm btn-ghost" style="margin-left: var(--space-4)" @click="cargarProductos">Reintentar</button>
+    <div class="mx-auto max-w-container-max px-margin-mobile py-12 md:px-margin-desktop md:py-16">
+      <div v-if="errorMsg" id="catalogo-error" class="mb-8 flex flex-wrap items-center gap-4 rounded-2xl border border-error/25 bg-error-container/60 px-5 py-4 text-sm text-on-error-container" role="alert">
+        {{ errorMsg }}
+        <button type="button" class="rounded-full border border-error/30 px-4 py-1.5 font-geist text-[10px] font-semibold uppercase tracking-wider text-on-error-container transition hover:bg-error-container" @click="cargarProductos">
+          Reintentar
+        </button>
       </div>
 
-      <!-- Filtros por categoría -->
-      <div v-if="!cargando" class="categoria-filters" id="filtros-categoria">
+      <div v-if="!cargando" id="filtros-categoria" class="mb-10 flex flex-wrap gap-2" role="tablist" aria-label="Categorías">
         <button
           v-for="cat in categorias"
           :key="cat"
-          class="cat-btn"
-          :class="{ active: categoriaActiva === cat }"
+          type="button"
+          role="tab"
+          :aria-selected="categoriaActiva === cat"
+          class="rounded-full border px-4 py-2 font-geist text-[10px] font-semibold uppercase tracking-[0.14em] transition"
+          :class="
+            categoriaActiva === cat
+              ? 'border-primary bg-primary text-on-primary shadow-ambient'
+              : 'border-outline-variant/60 bg-surface-container-lowest text-on-surface-variant hover:border-primary/25 hover:text-primary'
+          "
           :id="`filter-cat-${cat === 'Todos' ? 'todos' : cat.toLowerCase().replace(/\s+/g, '-')}`"
           @click="categoriaActiva = cat"
         >
@@ -46,37 +58,33 @@
         </button>
       </div>
 
-      <!-- Skeleton loader -->
-      <div v-if="cargando" class="products-grid">
-        <div v-for="n in 8" :key="n" class="skeleton-card"></div>
+      <div v-if="cargando" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div v-for="n in 8" :key="n" class="h-[380px] animate-pulse rounded-2xl bg-surface-container-low" />
       </div>
 
-      <!-- Grid de productos -->
-      <div v-else class="products-grid" id="products-grid">
+      <div v-else id="products-grid" class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         <transition-group name="slide-up">
-          <ProductCard
-            v-for="p in productosFiltrados"
-            :key="p.id"
-            :producto="p"
-            :valor-dolar-clp="valorDolarClp"
-          />
+          <ProductCard v-for="p in productosFiltrados" :key="p.id" :producto="p" :valor-dolar-clp="valorDolarClp" />
         </transition-group>
       </div>
 
-      <!-- Sin resultados -->
-      <div v-if="!cargando && productosFiltrados.length === 0 && !errorMsg" class="empty-state" id="empty-catalogo">
-        <span>🔍</span>
-        <p>No se encontraron productos<span v-if="busqueda"> para "<strong>{{ busqueda }}</strong>"</span></p>
+      <div v-if="!cargando && productosFiltrados.length === 0 && !errorMsg" id="empty-catalogo" class="mt-20 text-center">
+        <p class="font-sora text-2xl font-semibold text-primary">Sin coincidencias</p>
+        <p class="mt-2 text-on-surface-variant">
+          Prueba otra búsqueda<span v-if="busqueda"> para «{{ busqueda }}»</span>.
+        </p>
       </div>
 
-      <!-- Banner de descuento por volumen -->
-      <div class="descuento-banner" id="banner-descuento-volumen">
-        <span class="banner-icon">🎉</span>
+      <aside id="banner-descuento-volumen" class="mt-20 rounded-2xl border border-outline-variant/40 bg-surface-container-lowest p-8 shadow-ambient md:flex md:items-center md:justify-between md:gap-8 md:p-10">
         <div>
-          <strong>¡Descuento automático del 10%!</strong>
-          <p>Aplica cuando tu carrito tiene más de 4 artículos. ¡Aprovecha!</p>
+          <p class="font-geist text-[10px] font-semibold uppercase tracking-[0.2em] text-tertiary">Volumen</p>
+          <h2 class="mt-2 font-sora text-2xl font-semibold tracking-tight text-primary">10% al superar 4 ítems</h2>
+          <p class="mt-2 max-w-lg text-sm text-on-surface-variant">El descuento se aplica automáticamente en carrito y checkout según la lógica existente del store.</p>
         </div>
-      </div>
+        <div class="mt-6 shrink-0 md:mt-0 md:self-center">
+          <FmButton to="/carrito" variant="secondary">Ver carrito</FmButton>
+        </div>
+      </aside>
     </div>
   </main>
 </template>
@@ -84,31 +92,30 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import ProductCard from '@/components/ProductCard.vue'
+import FmButton from '@/components/ui/FmButton.vue'
 import { ServiciosSupabase } from '@/servicios/ServiciosSupabase.js'
 import { isMockup } from '@/lib/supabase.js'
 
-const busqueda        = ref('')
+const busqueda = ref('')
 const categoriaActiva = ref('Todos')
-const productos       = ref([])
-const cargando        = ref(true)
-const errorMsg        = ref('')
-/** Tipo de cambio CLP por 1 USD (backend); null si falla la carga */
-const valorDolarClp   = ref(null)
+const productos = ref([])
+const cargando = ref(true)
+const errorMsg = ref('')
+const valorDolarClp = ref(null)
 
-// Datos de fallback para modo mockup
 const PRODUCTOS_MOCKUP = [
-  { id: 1,  nombre: 'Taladro Percutor 700W',     descripcion: 'Taladro con percusión para mampostería',   precio: 79990,  stock: 12, categoria: 'Herramientas Eléctricas', activo: true },
-  { id: 2,  nombre: 'Sierra Circular 1400W',      descripcion: 'Sierra de alta potencia para maderas',     precio: 124990, stock: 8,  categoria: 'Herramientas Eléctricas', activo: true },
-  { id: 3,  nombre: 'Destornillador Eléctrico',   descripcion: 'Batería de larga duración 18V',            precio: 34990,  stock: 25, categoria: 'Herramientas Eléctricas', activo: true },
-  { id: 4,  nombre: 'Martillo 500g Mango Fibra',  descripcion: 'Mango ergonómico antideslizante',          precio: 12990,  stock: 40, categoria: 'Herramientas Manuales',   activo: true },
-  { id: 5,  nombre: 'Llave Inglesa 10"',           descripcion: 'Acero forjado resistente',                precio: 8990,   stock: 30, categoria: 'Herramientas Manuales',   activo: true },
-  { id: 6,  nombre: 'Set Brocas HSS 19 piezas',   descripcion: 'Para metal, madera y plástico',            precio: 19990,  stock: 3,  categoria: 'Herramientas Manuales',   activo: true },
-  { id: 7,  nombre: 'Cemento 25kg Portland',       descripcion: 'Alta resistencia, uso general',           precio: 7490,   stock: 60, categoria: 'Construcción',            activo: true },
-  { id: 8,  nombre: 'Pintura Látex Blanca 4L',    descripcion: 'Interior/exterior, lavable',               precio: 18990,  stock: 18, categoria: 'Pintura',                 activo: true },
-  { id: 9,  nombre: 'Rodillo 22cm Lana',           descripcion: 'Para superficies lisas y semilisas',      precio: 4990,   stock: 35, categoria: 'Pintura',                 activo: true },
-  { id: 10, nombre: 'Extensión 10m 3 Enchufes',   descripcion: 'Cable 2.5mm², uso industrial',             precio: 14990,  stock: 22, categoria: 'Electricidad',            activo: true },
-  { id: 11, nombre: 'Casco de Seguridad HDPE',    descripcion: 'Certificado ANSI Z89.1',                   precio: 9990,   stock: 0,  categoria: 'Seguridad',               activo: true },
-  { id: 12, nombre: 'Guantes de Cuero Trabajo',   descripcion: 'Talla M/L/XL disponible',                  precio: 5990,   stock: 50, categoria: 'Seguridad',               activo: true },
+  { id: 1, nombre: 'Taladro Percutor 700W', descripcion: 'Taladro con percusión para mampostería', precio: 79990, stock: 12, categoria: 'Herramientas Eléctricas', activo: true },
+  { id: 2, nombre: 'Sierra Circular 1400W', descripcion: 'Sierra de alta potencia para maderas', precio: 124990, stock: 8, categoria: 'Herramientas Eléctricas', activo: true },
+  { id: 3, nombre: 'Destornillador Eléctrico', descripcion: 'Batería de larga duración 18V', precio: 34990, stock: 25, categoria: 'Herramientas Eléctricas', activo: true },
+  { id: 4, nombre: 'Martillo 500g Mango Fibra', descripcion: 'Mango ergonómico antideslizante', precio: 12990, stock: 40, categoria: 'Herramientas Manuales', activo: true },
+  { id: 5, nombre: 'Llave Inglesa 10"', descripcion: 'Acero forjado resistente', precio: 8990, stock: 30, categoria: 'Herramientas Manuales', activo: true },
+  { id: 6, nombre: 'Set Brocas HSS 19 piezas', descripcion: 'Para metal, madera y plástico', precio: 19990, stock: 3, categoria: 'Herramientas Manuales', activo: true },
+  { id: 7, nombre: 'Cemento 25kg Portland', descripcion: 'Alta resistencia, uso general', precio: 7490, stock: 60, categoria: 'Construcción', activo: true },
+  { id: 8, nombre: 'Pintura Látex Blanca 4L', descripcion: 'Interior/exterior, lavable', precio: 18990, stock: 18, categoria: 'Pintura', activo: true },
+  { id: 9, nombre: 'Rodillo 22cm Lana', descripcion: 'Para superficies lisas y semilisas', precio: 4990, stock: 35, categoria: 'Pintura', activo: true },
+  { id: 10, nombre: 'Extensión 10m 3 Enchufes', descripcion: 'Cable 2.5mm², uso industrial', precio: 14990, stock: 22, categoria: 'Electricidad', activo: true },
+  { id: 11, nombre: 'Casco de Seguridad HDPE', descripcion: 'Certificado ANSI Z89.1', precio: 9990, stock: 0, categoria: 'Seguridad', activo: true },
+  { id: 12, nombre: 'Guantes de Cuero Trabajo', descripcion: 'Talla M/L/XL disponible', precio: 5990, stock: 50, categoria: 'Seguridad', activo: true },
 ]
 
 async function cargarProductos() {
@@ -116,21 +123,21 @@ async function cargarProductos() {
   errorMsg.value = ''
   try {
     if (isMockup) {
-      await new Promise(r => setTimeout(r, 400))
+      await new Promise((r) => setTimeout(r, 400))
       productos.value = PRODUCTOS_MOCKUP
     } else {
       productos.value = await ServiciosSupabase.obtenerProductos()
     }
   } catch (err) {
     errorMsg.value = `No se pudieron cargar los productos: ${err.message}`
-    productos.value = PRODUCTOS_MOCKUP  // fallback
+    productos.value = PRODUCTOS_MOCKUP
   } finally {
     cargando.value = false
   }
 }
 
 const categorias = computed(() => {
-  const cats = [...new Set(productos.value.map(p => p.categoria).filter(Boolean))]
+  const cats = [...new Set(productos.value.map((p) => p.categoria).filter(Boolean))]
   return ['Todos', ...cats.sort()]
 })
 
@@ -139,7 +146,7 @@ const badgeDolarTexto = computed(() => {
   if (v == null || !Number.isFinite(v) || v <= 0) return ''
   const fmt = Number(v).toLocaleString('es-CL', {
     minimumFractionDigits: 0,
-    maximumFractionDigits: 2
+    maximumFractionDigits: 2,
   })
   return `1 USD = $${fmt} CLP`
 })
@@ -155,21 +162,22 @@ async function cargarValorDolar() {
       valorDolarClp.value = data.valorDolar
     }
   } catch {
-    // fail silencioso: sin badge ni USD en tarjetas
+    /* silencioso */
   }
 }
 
 const productosFiltrados = computed(() => {
   let lista = productos.value
   if (categoriaActiva.value !== 'Todos') {
-    lista = lista.filter(p => p.categoria === categoriaActiva.value)
+    lista = lista.filter((p) => p.categoria === categoriaActiva.value)
   }
   if (busqueda.value.trim()) {
     const q = busqueda.value.toLowerCase()
-    lista = lista.filter(p =>
-      p.nombre.toLowerCase().includes(q) ||
-      p.categoria?.toLowerCase().includes(q) ||
-      p.descripcion?.toLowerCase().includes(q)
+    lista = lista.filter(
+      (p) =>
+        p.nombre.toLowerCase().includes(q) ||
+        p.categoria?.toLowerCase().includes(q) ||
+        p.descripcion?.toLowerCase().includes(q),
     )
   }
   return lista
@@ -180,118 +188,3 @@ onMounted(() => {
   cargarValorDolar()
 })
 </script>
-
-<style scoped>
-.catalogo-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-6);
-  margin-bottom: var(--space-6);
-  flex-wrap: wrap;
-}
-.catalogo-header h1 { font-size: var(--font-size-3xl); font-weight: 800; }
-
-.search-box {
-  position: relative;
-  flex: 1;
-  min-width: 260px;
-  max-width: 400px;
-}
-.search-icon {
-  position: absolute;
-  left: var(--space-4);
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 1.1rem;
-  pointer-events: none;
-}
-.search-box .form-input { padding-left: 3rem; }
-
-.dolar-badge {
-  display: inline-flex;
-  align-items: center;
-  width: fit-content;
-  max-width: 100%;
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  color: var(--color-text-muted);
-  background: var(--color-surface-2);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-full);
-  padding: var(--space-2) var(--space-4);
-  margin: 0 0 var(--space-5);
-  letter-spacing: 0.02em;
-}
-
-.categoria-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  margin-bottom: var(--space-8);
-}
-.cat-btn {
-  padding: 0.4rem var(--space-4);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-sm);
-  font-weight: 500;
-  background: var(--color-surface-2);
-  border: 1px solid var(--color-border);
-  color: var(--color-text-muted);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-.cat-btn:hover { background: var(--color-surface-3); color: var(--color-text); }
-.cat-btn.active {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: #071A14;
-  font-weight: 700;
-}
-
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: var(--space-6);
-  margin-bottom: var(--space-10);
-}
-
-/* Skeleton */
-.skeleton-card {
-  background: var(--color-surface-card);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
-  height: 320px;
-  animation: shimmer 1.5s infinite;
-}
-@keyframes shimmer {
-  0%, 100% { opacity: 0.4; }
-  50%       { opacity: 0.8; }
-}
-
-.empty-state {
-  text-align: center;
-  padding: var(--space-16);
-  color: var(--color-text-muted);
-  font-size: var(--font-size-lg);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-4);
-}
-.empty-state span { font-size: 4rem; }
-
-.descuento-banner {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  background: linear-gradient(135deg, rgba(45,212,191,0.08), rgba(56,189,248,0.06));
-  border: 1px solid rgba(45,212,191,0.2);
-  border-radius: var(--radius-xl);
-  padding: var(--space-5) var(--space-6);
-  margin-bottom: var(--space-8);
-}
-.banner-icon { font-size: 2rem; }
-.descuento-banner strong { color: var(--color-primary); }
-.descuento-banner p { color: var(--color-text-muted); font-size: var(--font-size-sm); margin-top: 2px; }
-</style>

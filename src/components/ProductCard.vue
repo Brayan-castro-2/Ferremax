@@ -1,55 +1,75 @@
 <template>
-  <div class="product-card" :class="{ 'out-of-stock': producto.stock <= 0 }" :id="`product-${producto.id}`">
-    <div class="product-image-wrap">
-      <span class="product-emoji">{{ producto.emoji || '🔧' }}</span>
-      <div v-if="producto.stock <= 0" class="out-of-stock-overlay">Sin Stock</div>
-      <span v-if="producto.descuento" class="product-discount-badge">-{{ producto.descuento }}%</span>
-    </div>
+  <article
+    class="group relative flex flex-col overflow-hidden rounded-2xl border border-outline-variant/50 bg-surface-container-lowest shadow-ambient transition duration-300 hover:-translate-y-1 hover:border-primary/15 hover:shadow-lg"
+    :class="{ 'opacity-[0.55]': producto.stock <= 0 }"
+    :id="`product-${producto.id}`"
+  >
+    <RouterLink :to="`/producto/${producto.id}`" class="relative block aspect-[4/3] overflow-hidden bg-surface-container-low">
+      <div class="flex h-full w-full items-center justify-center transition duration-500 group-hover:scale-[1.03]">
+        <span class="select-none font-sora text-5xl font-semibold text-outline-variant/40 transition group-hover:text-tertiary/50" aria-hidden="true">
+          {{ producto.emoji || '◈' }}
+        </span>
+      </div>
+      <div v-if="producto.stock <= 0" class="absolute inset-0 flex items-center justify-center bg-primary/55 backdrop-blur-[2px]">
+        <span class="rounded-full bg-surface-container-lowest px-4 py-1.5 font-geist text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Agotado</span>
+      </div>
+      <span
+        v-if="producto.descuento"
+        class="absolute right-3 top-3 rounded-full bg-tertiary px-2.5 py-0.5 font-geist text-[10px] font-bold uppercase tracking-wider text-on-tertiary"
+      >
+        −{{ producto.descuento }}%
+      </span>
+    </RouterLink>
 
-    <div class="product-body">
-      <span class="product-category">{{ producto.categoria }}</span>
-      <h3 class="product-name">{{ producto.nombre }}</h3>
-      <p class="product-sku text-muted">SKU: {{ producto.sku }}</p>
+    <div class="flex flex-1 flex-col gap-3 p-5">
+      <div>
+        <p class="font-geist text-[10px] font-semibold uppercase tracking-[0.18em] text-tertiary">{{ producto.categoria }}</p>
+        <RouterLink :to="`/producto/${producto.id}`" class="mt-1 block font-sora text-lg font-semibold leading-snug tracking-tight text-primary transition hover:text-tertiary">
+          {{ producto.nombre }}
+        </RouterLink>
+        <p v-if="producto.sku" class="mt-1 font-geist text-[10px] uppercase tracking-wider text-on-surface-variant">SKU {{ producto.sku }}</p>
+      </div>
 
-      <div class="product-footer">
-        <div class="product-price">
-          <div class="price-clp-block">
-            <span class="price-current">${{ formatPrice(producto.precio) }}</span>
-            <span v-if="producto.precioOriginal" class="price-original">${{ formatPrice(producto.precioOriginal) }}</span>
+      <p v-if="producto.descripcion" class="line-clamp-2 text-sm leading-relaxed text-on-surface-variant">
+        {{ producto.descripcion }}
+      </p>
+
+      <div class="mt-auto flex flex-wrap items-end justify-between gap-3 border-t border-outline-variant/40 pt-4">
+        <div>
+          <div class="flex flex-wrap items-baseline gap-2">
+            <span class="font-sora text-xl font-semibold text-primary">${{ formatPrice(producto.precio) }}</span>
+            <span v-if="producto.precioOriginal" class="text-sm text-on-surface-variant line-through">${{ formatPrice(producto.precioOriginal) }}</span>
           </div>
-          <span v-if="precioEnUsd != null" class="price-usd text-muted">≈ USD {{ precioEnUsd }}</span>
+          <p v-if="precioEnUsd != null" class="mt-0.5 font-geist text-[10px] uppercase tracking-wider text-on-surface-variant">≈ USD {{ precioEnUsd }}</p>
         </div>
         <button
-          class="btn btn-primary btn-sm"
+          type="button"
+          class="rounded-full bg-primary px-5 py-2.5 font-geist text-[10px] font-semibold uppercase tracking-[0.16em] text-on-primary shadow-sm transition hover:shadow-md disabled:cursor-not-allowed disabled:opacity-40"
           :id="`btn-agregar-${producto.id}`"
           :disabled="producto.stock <= 0"
-          @click="agregarAlCarrito"
+          @click.prevent="agregarAlCarrito"
         >
-          <span v-if="!agregado">+ Añadir</span>
-          <span v-else>✓ Añadido</span>
+          <span v-if="!agregado">Añadir</span>
+          <span v-else>Listo</span>
         </button>
       </div>
 
-      <div class="product-stock-bar">
-        <div class="stock-label">
-          <span class="text-muted" style="font-size: 0.7rem;">Stock: {{ producto.stock }} uds.</span>
-        </div>
-        <div class="stock-bar">
-          <div class="stock-bar-fill" :style="{ width: stockPercent + '%' }" :class="stockClass"></div>
-        </div>
+      <div class="h-1 w-full overflow-hidden rounded-full bg-surface-container-high">
+        <div class="h-full rounded-full bg-tertiary/80 transition-all duration-500" :style="{ width: stockPercent + '%' }" />
       </div>
+      <p class="font-geist text-[10px] uppercase tracking-wider text-on-surface-variant">Stock {{ producto.stock }}</p>
     </div>
-  </div>
+  </article>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
+import { RouterLink } from 'vue-router'
 import { useCarritoStore } from '@/stores/carrito.js'
 
 const props = defineProps({
   producto: { type: Object, required: true },
-  /** CLP por 1 USD; si no hay tipo de cambio, no se muestra USD */
-  valorDolarClp: { type: Number, default: null }
+  valorDolarClp: { type: Number, default: null },
 })
 
 const carrito = useCarritoStore()
@@ -65,12 +85,6 @@ const precioEnUsd = computed(() => {
   return usd.toFixed(2)
 })
 
-const stockClass = computed(() => {
-  if (stockPercent.value > 60) return 'stock-high'
-  if (stockPercent.value > 25) return 'stock-mid'
-  return 'stock-low'
-})
-
 function formatPrice(val) {
   return Number(val).toLocaleString('es-CL')
 }
@@ -78,130 +92,8 @@ function formatPrice(val) {
 function agregarAlCarrito() {
   carrito.agregar(props.producto)
   agregado.value = true
-  setTimeout(() => { agregado.value = false }, 1500)
+  setTimeout(() => {
+    agregado.value = false
+  }, 1400)
 }
 </script>
-
-<style scoped>
-.product-card {
-  background: var(--color-surface-card);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transition: transform var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
-}
-.product-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(45,212,191,0.25);
-  box-shadow: 0 12px 24px rgba(0,0,0,0.4), var(--shadow-glow);
-}
-.product-card.out-of-stock {
-  opacity: 0.6;
-}
-
-.product-image-wrap {
-  position: relative;
-  background: var(--color-surface-2);
-  height: 140px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.product-emoji { font-size: 4rem; }
-.out-of-stock-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 700;
-  color: var(--color-danger);
-  letter-spacing: 1px;
-}
-.product-discount-badge {
-  position: absolute;
-  top: 8px; right: 8px;
-  background: var(--color-danger);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: var(--radius-full);
-}
-
-.product-body {
-  padding: var(--space-4);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  flex: 1;
-}
-.product-category {
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  color: var(--color-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-.product-name {
-  font-size: var(--font-size-md);
-  font-weight: 600;
-  line-height: 1.3;
-}
-.product-sku {
-  font-size: var(--font-size-xs);
-}
-
-.product-footer {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  margin-top: var(--space-2);
-}
-.product-price {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
-  min-width: 0;
-}
-.price-clp-block {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: var(--space-1);
-}
-.price-usd {
-  font-size: var(--font-size-xs);
-  font-weight: 500;
-}
-.price-current {
-  font-size: var(--font-size-lg);
-  font-weight: 700;
-  color: var(--color-primary);
-}
-.price-original {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-subtle);
-  text-decoration: line-through;
-  margin-left: var(--space-2);
-}
-
-.product-stock-bar { margin-top: var(--space-2); }
-.stock-label { margin-bottom: 4px; }
-.stock-bar {
-  height: 4px;
-  background: var(--color-surface-3);
-  border-radius: var(--radius-full);
-  overflow: hidden;
-}
-.stock-bar-fill {
-  height: 100%;
-  border-radius: var(--radius-full);
-  transition: width 0.6s ease;
-}
-.stock-high  { background: var(--color-success); }
-.stock-mid   { background: var(--color-warning); }
-.stock-low   { background: var(--color-danger); }
-</style>

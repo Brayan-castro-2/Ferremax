@@ -1,6 +1,6 @@
 <template>
-  <main class="page-wrapper">
-    <div class="container">
+  <DashboardShell title="Finanzas" :links="shellLinks">
+    <div class="container mx-auto max-w-6xl">
       <div class="dashboard-header">
         <div>
           <h1>Panel <span class="text-primary">Contador</span></h1>
@@ -52,10 +52,17 @@
         </div>
       </div>
     </div>
-  </main>
+  </DashboardShell>
 </template>
 
 <script setup>
+import DashboardShell from '@/components/layout/DashboardShell.vue'
+
+const shellLinks = [
+  { label: 'Finanzas', to: '/contador' },
+  { label: 'Resumen', to: '/dashboard' },
+  { label: 'Catálogo', to: '/catalogo' },
+]
 const kpis = [
   { id: 'ingresos', icon: '💵', label: 'Ingresos Mes',          value: '$4.280.000' },
   { id: 'descuentos', icon: '🎁', label: 'Descuentos Aplicados', value: '$182.000'   },
