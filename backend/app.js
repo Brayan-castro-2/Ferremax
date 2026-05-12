@@ -9,6 +9,7 @@ require('dotenv').config()
 // ── Rutas ─────────────────────────────────────────────────────────────
 const authRoutes     = require('./src/routes/auth.routes')
 const productRoutes  = require('./src/routes/products.routes')
+const currencyRoutes = require('./src/routes/currency.routes')
 const orderRoutes    = require('./src/routes/orders.routes')
 const inventoryRoutes = require('./src/routes/inventory.routes')
 
@@ -57,6 +58,7 @@ app.get('/health', (req, res) => {
 // ── Rutas API ──────────────────────────────────────────────────────────
 app.use('/api/auth',     authRoutes)
 app.use('/api/products', productRoutes)
+app.use('/api/currency', currencyRoutes)
 app.use('/api/orders',   orderRoutes)
 app.use('/api/inventory', inventoryRoutes)
 

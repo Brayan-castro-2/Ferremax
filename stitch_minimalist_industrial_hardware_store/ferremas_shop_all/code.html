@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&amp;family=Sora:wght@600;700&amp;family=Geist:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary": "#5d5f5f",
+                    "on-secondary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-primary-fixed-variant": "#474746",
+                    "error": "#ba1a1a",
+                    "on-primary-fixed": "#1c1b1b",
+                    "on-secondary-fixed": "#1a1c1c",
+                    "inverse-on-surface": "#f1f1f1",
+                    "inverse-surface": "#2f3131",
+                    "surface-container-low": "#f4f3f3",
+                    "on-tertiary-fixed-variant": "#6e3900",
+                    "outline-variant": "#c4c7c7",
+                    "outline": "#747878",
+                    "on-error": "#ffffff",
+                    "background": "#f9f9f9",
+                    "on-tertiary-fixed": "#2f1500",
+                    "surface-dim": "#dadada",
+                    "secondary-container": "#dcdddd",
+                    "surface-tint": "#5f5e5e",
+                    "primary-fixed": "#e5e2e1",
+                    "on-primary-container": "#858383",
+                    "on-secondary-fixed-variant": "#454747",
+                    "tertiary-fixed-dim": "#ffb77d",
+                    "surface-container-highest": "#e2e2e2",
+                    "secondary-fixed": "#e2e2e2",
+                    "on-surface-variant": "#444748",
+                    "surface-bright": "#f9f9f9",
+                    "on-background": "#1a1c1c",
+                    "on-surface": "#1a1c1c",
+                    "tertiary-container": "#2f1500",
+                    "secondary-fixed-dim": "#c6c6c7",
+                    "on-primary": "#ffffff",
+                    "tertiary": "#000000",
+                    "primary": "#000000",
+                    "inverse-primary": "#c8c6c5",
+                    "surface-container-lowest": "#ffffff",
+                    "surface": "#f9f9f9",
+                    "primary-fixed-dim": "#c8c6c5",
+                    "primary-container": "#1c1b1b",
+                    "on-tertiary-container": "#c76c00",
+                    "surface-variant": "#e2e2e2",
+                    "surface-container-high": "#e8e8e8",
+                    "surface-container": "#eeeeee",
+                    "tertiary-fixed": "#ffdcc3",
+                    "on-secondary-container": "#5f6161",
+                    "error-container": "#ffdad6",
+                    "on-tertiary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "unit": "8px",
+                    "margin-mobile": "20px",
+                    "container-max": "1280px",
+                    "gutter": "24px",
+                    "margin-desktop": "64px",
+                    "section-gap": "120px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "headline-xl-mobile": ["Sora"],
+                    "label-sm": ["Geist"],
+                    "body-md": ["Inter"],
+                    "headline-xl": ["Sora"],
+                    "display-lg-mobile": ["Sora"],
+                    "display-lg": ["Sora"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                    "headline-xl-mobile": ["24px", {"lineHeight": "1.3", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                    "headline-xl": ["32px", {"lineHeight": "1.2", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "display-lg-mobile": ["40px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "700"}],
+                    "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .shadow-ambient {
+            box-shadow: 0px 4px 20px rgba(0,0,0,0.04);
+        }
+        .hover-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0px 8px 30px rgba(0,0,0,0.08);
+        }
+        .glass-nav {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-surface/80 dark:bg-surface-container-lowest/80 backdrop-blur-xl border-b border-outline-variant/30 shadow-sm transition-all duration-300 ease-in-out">
+<div class="flex justify-between items-center px-margin-desktop py-unit-margin-mobile max-w-container-max mx-auto h-20">
+<div class="font-display-lg text-headline-xl font-bold tracking-tighter text-primary dark:text-on-primary-fixed">
+                FERREMAS
+            </div>
+<div class="hidden md:flex items-center gap-gutter">
+<a class="font-display-lg text-label-sm uppercase tracking-widest text-primary dark:text-on-primary-fixed border-b border-primary font-semibold hover:opacity-70 transition-opacity duration-300" href="#">SHOP</a>
+<a class="font-display-lg text-label-sm uppercase tracking-widest text-secondary dark:text-secondary-fixed-dim hover:text-primary transition-opacity duration-300" href="#">COLLECTIONS</a>
+<a class="font-display-lg text-label-sm uppercase tracking-widest text-secondary dark:text-secondary-fixed-dim hover:text-primary transition-opacity duration-300" href="#">SERVICES</a>
+<a class="font-display-lg text-label-sm uppercase tracking-widest text-secondary dark:text-secondary-fixed-dim hover:text-primary transition-opacity duration-300" href="#">PHILOSOPHY</a>
+</div>
+<div class="flex items-center gap-6">
+<button class="material-symbols-outlined text-primary hover:opacity-70 transition-opacity">search</button>
+<button class="material-symbols-outlined text-primary hover:opacity-70 transition-opacity">person</button>
+<button class="material-symbols-outlined text-primary hover:opacity-70 transition-opacity relative">
+                    shopping_bag
+                    <span class="absolute -top-1 -right-1 bg-on-tertiary-container w-2 h-2 rounded-full"></span>
+</button>
+</div>
+</div>
+</nav>
+<main class="pt-32 pb-section-gap max-w-container-max mx-auto px-margin-desktop">
+<!-- Editorial Header Section -->
+<header class="mb-section-gap grid grid-cols-12 gap-gutter items-end">
+<div class="col-span-12 md:col-span-7">
+<p class="font-label-sm text-label-sm text-on-tertiary-container tracking-[0.2em] uppercase mb-4">Precision Engineering</p>
+<h1 class="font-display-lg text-display-lg-mobile md:text-display-lg leading-none">THE HARDWARE<br/>CATALOGUE</h1>
+</div>
+<div class="col-span-12 md:col-span-5 md:text-right pb-4">
+<p class="font-body-lg text-body-lg text-secondary max-w-md ml-auto">
+                    A curated selection of high-tolerance industrial tools designed for professional longevity and architectural precision.
+                </p>
+</div>
+</header>
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Filter Sidebar -->
+<aside class="col-span-12 md:col-span-3 space-y-12">
+<div>
+<h3 class="font-label-sm text-label-sm tracking-widest uppercase mb-6 text-primary">Category</h3>
+<ul class="space-y-4">
+<li><button class="font-label-sm text-label-sm text-primary flex items-center gap-2"><span>POWER TOOLS</span> <span class="text-outline text-[10px]">(12)</span></button></li>
+<li><button class="font-label-sm text-label-sm text-secondary hover:text-primary transition-colors">HAND TOOLS</button></li>
+<li><button class="font-label-sm text-label-sm text-secondary hover:text-primary transition-colors">MEASURING SYSTEMS</button></li>
+<li><button class="font-label-sm text-label-sm text-secondary hover:text-primary transition-colors">FASTENERS</button></li>
+</ul>
+</div>
+<div>
+<h3 class="font-label-sm text-label-sm tracking-widest uppercase mb-6 text-primary">Materials</h3>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 border border-outline-variant text-[10px] font-label-sm tracking-tighter">STAINLESS STEEL</span>
+<span class="px-3 py-1 border border-outline-variant text-[10px] font-label-sm tracking-tighter">TITANIUM</span>
+<span class="px-3 py-1 border border-outline-variant text-[10px] font-label-sm tracking-tighter">ANODIZED AL</span>
+<span class="px-3 py-1 border border-outline-variant text-[10px] font-label-sm tracking-tighter">CARBON FIBER</span>
+</div>
+</div>
+<div>
+<h3 class="font-label-sm text-label-sm tracking-widest uppercase mb-6 text-primary">Price Range</h3>
+<div class="relative w-full h-1 bg-surface-container-high rounded-full overflow-hidden">
+<div class="absolute left-0 top-0 h-full w-2/3 bg-primary"></div>
+</div>
+<div class="flex justify-between mt-4">
+<span class="font-label-sm text-label-sm text-secondary">$50</span>
+<span class="font-label-sm text-label-sm text-primary font-bold">$1,200+</span>
+</div>
+</div>
+<div class="pt-8">
+<label class="flex items-center gap-3 cursor-pointer group">
+<div class="w-5 h-5 border-2 border-outline-variant group-hover:border-primary transition-colors flex items-center justify-center">
+<div class="w-2 h-2 bg-primary"></div>
+</div>
+<span class="font-label-sm text-label-sm text-primary uppercase">IN STOCK ONLY</span>
+</label>
+</div>
+</aside>
+<!-- Product Grid -->
+<div class="col-span-12 md:col-span-9">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-gutter gap-y-16">
+<!-- Product Card 1 -->
+<div class="group">
+<div class="relative aspect-[4/5] bg-surface-container-low mb-6 overflow-hidden shadow-ambient transition-all duration-500 hover-lift">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="A professional-grade matte black torque wrench resting on a clean white laboratory-style surface with soft diffused shadows. The lighting is high-key and minimalist, emphasizing the sharp metallic edges and industrial textures of the tool. The composition is clean and centered, reflecting a Japanese minimalist aesthetic with a focus on structural precision and high-end hardware manufacturing." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCn3LJGK2bgNAme93A3Mi7aCya7Lw8onGqwKpAny1jVW8lu208-aVHmAGTsSJfR2c8uw46DAb8pmSeRAhSOzZIhlVkkFGW98jDdL5Slp9Th027x8d_JZ_Mi89GlS63jOKAlKSaRZJmgO3HQ_taSRit1evHPZ195GeEeSzPsBeH_-KNtNVxM5hLedssuxmDfiJvxbCEgHYc5s34hEPNtffNpxxDIK0k5nFQCwz4N6vBgD9BpesM4sPmBxvNxPkTyCdbHB5_m0AQe_-7"/>
+<div class="absolute inset-0 bg-on-tertiary-container/0 group-hover:bg-on-tertiary-container/5 transition-colors duration-500"></div>
+<button class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-primary text-on-primary px-8 py-3 font-label-sm text-label-sm opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                                QUICK VIEW
+                            </button>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-start">
+<h4 class="font-headline-xl text-body-lg font-semibold tracking-tight">T-Series Torque Driver</h4>
+<span class="font-body-md text-secondary">$340</span>
+</div>
+<p class="font-label-sm text-label-sm text-secondary tracking-wide">PRECISION MEASURING / ANODIZED STEEL</p>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="group">
+<div class="relative aspect-[4/5] bg-surface-container-low mb-6 overflow-hidden shadow-ambient transition-all duration-500 hover-lift">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Close up of a high-tech cordless drill with a minimalist matte gray finish and ergonomic handle, photographed in a studio setting with dramatic side lighting. The background is a neutral warm gray creating a soft ambient feel. The product looks like a piece of industrial art with precision engineered components visible, reflecting a premium and confident brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBwk59G30fgzWQfmldfzcTBDRS7RvYaGMGT6Tj3BjL5AsOWLPzah_JFayAt5J6IEvEH7VeLZNVat6CK8Ligh1k2qnzGIH9rSqvduh0gueABcmbTtB-lhLynxgUODvB__vBc_kIYhYa8Oix79W6e728m-dEbqybGarhkgbBg3RmeqYMf6QSeQNrQmP8UMNY2b-g-bpy7JDNNgO--ZozxQ9S1pbTA_l0XnpCaYKbeYBScG7ZbDepG7VBdXSJ8qvBykjdfxK09ji4XPxt"/>
+<div class="absolute inset-0 bg-on-tertiary-container/0 group-hover:bg-on-tertiary-container/5 transition-colors duration-500"></div>
+<button class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-primary text-on-primary px-8 py-3 font-label-sm text-label-sm opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                                QUICK VIEW
+                            </button>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-start">
+<h4 class="font-headline-xl text-body-lg font-semibold tracking-tight">V-12 Brushless Drill</h4>
+<span class="font-body-md text-secondary">$580</span>
+</div>
+<p class="font-label-sm text-label-sm text-secondary tracking-wide">POWER TOOLS / CORDLESS SERIES</p>
+</div>
+</div>
+<!-- Product Card 3 -->
+<div class="group">
+<div class="relative aspect-[4/5] bg-surface-container-low mb-6 overflow-hidden shadow-ambient transition-all duration-500 hover-lift">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="A set of premium architectural measuring calipers in stainless steel, laid out on a dark slate background with precise technical drawings visible underneath. The lighting is low and moody, highlighting the laser-etched markings on the tool. The overall mood is sophisticated and expert, showcasing the tool as a luxury object for engineering professionals." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5j5CYdMzcSHDFwaBR3wIqO_NFg0J6Nw8pepR3MP_MFPwaaIPRyV0JqyDTxx3ZWPgmiQZ4ZVBLfR4rNyNxRgwyX00g2ZDgeDSKuJGsZMDxiYcIsQy9eR7th2suLocW9UzMB4UXlwJ2RlbKJuR2UE4CLy4tjnXFOTQXZpyfxEb99dt55Kb1gNIzS8HqSLrFaGSLJU4ynMt5ptAbYWafgwbBJ1s2Zdp42YlKZvqo8X9H72fNr4Q8Kgumcenr1IZBlt34pfoJZDzHTAoy"/>
+<div class="absolute inset-0 bg-on-tertiary-container/0 group-hover:bg-on-tertiary-container/5 transition-colors duration-500"></div>
+<button class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-primary text-on-primary px-8 py-3 font-label-sm text-label-sm opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                                QUICK VIEW
+                            </button>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-start">
+<h4 class="font-headline-xl text-body-lg font-semibold tracking-tight">Precision Caliper S8</h4>
+<span class="font-body-md text-secondary">$195</span>
+</div>
+<p class="font-label-sm text-label-sm text-secondary tracking-wide">ARCHITECTURAL / STAINLESS STEEL</p>
+</div>
+</div>
+<!-- Product Card 4 -->
+<div class="group">
+<div class="relative aspect-[4/5] bg-surface-container-low mb-6 overflow-hidden shadow-ambient transition-all duration-500 hover-lift">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="A minimalist industrial workbench light and magnifying system with a sleek matte black arm and circular glass lens. The product is shown in a bright contemporary workshop with high ceilings and white walls. The lighting is clean and clinical, suggesting an environment of extreme detail and quality control. The image has a calm, methodical atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhecDOouom-MEUKSizcsUKGSCjcgePVVB33-umzLmOJcBQ5ueStcqaMUx45fl9TyYqVcplaMoK1-oP-O4Tn1FEnn3voCIZIm9BTkLV9pKp52WTghl57FMuUva3pNej4ygGWDR9wTQ8U8U-vOFJUyJcyHqJkzLFMmqmqIM7_h2EycfY26NBL5V_TFA7Z5QyOxk8PU-maYbtdE2fn9r9yCH4z_fW-SsKe9j3xYtCgUpsDC0Y5NqfAmKW90fjX21bg9Uyr6brPGemDU4T"/>
+<div class="absolute inset-0 bg-on-tertiary-container/0 group-hover:bg-on-tertiary-container/5 transition-colors duration-500"></div>
+<button class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-primary text-on-primary px-8 py-3 font-label-sm text-label-sm opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                                QUICK VIEW
+                            </button>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-start">
+<h4 class="font-headline-xl text-body-lg font-semibold tracking-tight">Focus Optical System</h4>
+<span class="font-body-md text-secondary">$820</span>
+</div>
+<p class="font-label-sm text-label-sm text-secondary tracking-wide">WORKSHOP / OPTICS</p>
+</div>
+</div>
+<!-- Product Card 5 -->
+<div class="group">
+<div class="relative aspect-[4/5] bg-surface-container-low mb-6 overflow-hidden shadow-ambient transition-all duration-500 hover-lift">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="A collection of matte black architectural fasteners and bolts arranged in an organized grid on a light warm gray surface. The photo uses a top-down perspective, emphasizing the symmetry and variety of sizes. The soft shadows create a sense of depth, while the overall aesthetic is one of clean, editorial hardware photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwDp1oSPuAkUJyshd1pxTa2To8ewNwQ0AhShiFck0mnkUK88ZWaxm3r0jR6kkYN8MR5BAzFMY1pu7YdjlTrbqcyMzae-3R7XGF11XZ9eY6kDIrYcMlPE6JPRy7GmoED9vw6d2ViPeuswjcNknGiHEJ-U-XX2keKe66E5yBWE17bLD4N76Eq847Qi9M3Pz9huKywTFxT4rhYiFS8s9Uymg-bEUXx-MoyfigrnK1eOcGnRg2tPbV7D3zer8aZQerky3tUUUaRadGpUR5"/>
+<div class="absolute inset-0 bg-on-tertiary-container/0 group-hover:bg-on-tertiary-container/5 transition-colors duration-500"></div>
+<button class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-primary text-on-primary px-8 py-3 font-label-sm text-label-sm opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                                QUICK VIEW
+                            </button>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-start">
+<h4 class="font-headline-xl text-body-lg font-semibold tracking-tight">K-Set Fasteners</h4>
+<span class="font-body-md text-secondary">$45</span>
+</div>
+<p class="font-label-sm text-label-sm text-secondary tracking-wide">COMPONENTS / BLACK OXIDE</p>
+</div>
+</div>
+<!-- Product Card 6 -->
+<div class="group">
+<div class="relative aspect-[4/5] bg-surface-container-low mb-6 overflow-hidden shadow-ambient transition-all duration-500 hover-lift">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="A heavy-duty industrial titanium pry bar with a unique faceted design, resting on a block of raw oak wood. The contrast between the cold precision metal and the warm natural wood grain creates a striking visual. The lighting is focused and professional, showcasing the subtle reflections on the titanium surface. It embodies rugged industrial utility mixed with refined minimalism." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGQCS2TQXT_Tn-JqhCff-UFqJC9hXiAPSIVRoixwg9e8IL-YrD0-rnJ8LCRDfSucgyLF06MF7otnEMj74Z-4oyEpgkh_CTlZ_kDA3oIz2ClQvm3lyzNcAP7KE5ZiYNa7MzQB4irovh5T1FlyiNfermqc1kEB2BHkYhCgJ-35FmU1hzHBkUfWaqSDYdyN6SlOIku5-PN_-ZEpfcEsxHFB-0SGf0ptd7SQ2QfPWvvniJCCEsujbgBX7zCJkZCIdHYa16iwAiFk1gv7qJ"/>
+<div class="absolute inset-0 bg-on-tertiary-container/0 group-hover:bg-on-tertiary-container/5 transition-colors duration-500"></div>
+<button class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-primary text-on-primary px-8 py-3 font-label-sm text-label-sm opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                                QUICK VIEW
+                            </button>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-start">
+<h4 class="font-headline-xl text-body-lg font-semibold tracking-tight">T-6 Utility Wedge</h4>
+<span class="font-body-md text-secondary">$115</span>
+</div>
+<p class="font-label-sm text-label-sm text-secondary tracking-wide">HAND TOOLS / TITANIUM</p>
+</div>
+</div>
+</div>
+<!-- Pagination -->
+<div class="mt-section-gap flex justify-center items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center border border-outline-variant hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<span class="font-label-sm text-label-sm px-4">PAGE 1 OF 12</span>
+<button class="w-10 h-10 flex items-center justify-center border border-primary bg-primary text-on-primary">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full py-section-gap bg-surface dark:bg-on-background border-t border-outline-variant/20 transition-all">
+<div class="flex flex-col md:flex-row justify-between items-center px-margin-desktop gap-gutter max-w-container-max mx-auto">
+<div class="space-y-4 text-center md:text-left">
+<div class="font-display-lg text-body-md font-black text-primary dark:text-on-primary-fixed uppercase tracking-tighter">FERREMAS</div>
+<p class="font-label-sm text-label-sm tracking-tight text-secondary dark:text-secondary-fixed">© 2024 FERREMAS INDUSTRIAL. PRECISION ENGINEERED.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-8">
+<a class="font-label-sm text-label-sm tracking-tight text-secondary hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm tracking-tight text-secondary hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm tracking-tight text-secondary hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Compliance</a>
+<a class="font-label-sm text-label-sm tracking-tight text-secondary hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Warranty</a>
+</div>
+<div class="flex gap-4">
+<div class="w-8 h-8 rounded-full border border-outline-variant/30 flex items-center justify-center text-secondary hover:text-primary hover:border-primary transition-all cursor-pointer">
+<span class="material-symbols-outlined text-sm">share</span>
+</div>
+<div class="w-8 h-8 rounded-full border border-outline-variant/30 flex items-center justify-center text-secondary hover:text-primary hover:border-primary transition-all cursor-pointer">
+<span class="material-symbols-outlined text-sm">alternate_email</span>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

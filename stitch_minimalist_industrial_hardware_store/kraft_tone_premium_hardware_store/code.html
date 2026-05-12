@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&amp;family=Inter:wght@400;500&amp;family=Geist:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-fixed": "#ffdcc3",
+                      "on-primary-fixed-variant": "#474746",
+                      "on-secondary": "#ffffff",
+                      "on-surface": "#1a1c1c",
+                      "surface-variant": "#e2e2e2",
+                      "error": "#ba1a1a",
+                      "surface-container": "#eeeeee",
+                      "on-error-container": "#93000a",
+                      "secondary-fixed": "#e2e2e2",
+                      "on-primary-container": "#858383",
+                      "on-tertiary-fixed-variant": "#6e3900",
+                      "secondary": "#5d5f5f",
+                      "secondary-container": "#dcdddd",
+                      "outline-variant": "#c4c7c7",
+                      "inverse-on-surface": "#f1f1f1",
+                      "surface-container-lowest": "#ffffff",
+                      "tertiary": "#000000",
+                      "outline": "#747878",
+                      "on-tertiary": "#ffffff",
+                      "on-tertiary-fixed": "#2f1500",
+                      "primary-container": "#1c1b1b",
+                      "background": "#f9f9f9",
+                      "inverse-primary": "#c8c6c5",
+                      "tertiary-container": "#2f1500",
+                      "secondary-fixed-dim": "#c6c6c7",
+                      "on-secondary-fixed": "#1a1c1c",
+                      "on-primary": "#ffffff",
+                      "tertiary-fixed-dim": "#ffb77d",
+                      "surface": "#f9f9f9",
+                      "on-surface-variant": "#444748",
+                      "primary-fixed-dim": "#c8c6c5",
+                      "surface-dim": "#dadada",
+                      "on-background": "#1a1c1c",
+                      "on-secondary-container": "#5f6161",
+                      "surface-bright": "#f9f9f9",
+                      "surface-container-low": "#f4f3f3",
+                      "surface-container-high": "#e8e8e8",
+                      "surface-container-highest": "#e2e2e2",
+                      "inverse-surface": "#2f3131",
+                      "on-secondary-fixed-variant": "#454747",
+                      "surface-tint": "#5f5e5e",
+                      "on-primary-fixed": "#1c1b1b",
+                      "primary-fixed": "#e5e2e1",
+                      "primary": "#000000",
+                      "on-tertiary-container": "#c76c00",
+                      "error-container": "#ffdad6",
+                      "on-error": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "24px",
+                      "section-gap": "120px",
+                      "margin-desktop": "64px",
+                      "unit": "8px",
+                      "margin-mobile": "20px",
+                      "container-max": "1280px"
+              },
+              "fontFamily": {
+                      "display-lg-mobile": ["Sora"],
+                      "label-sm": ["Geist"],
+                      "body-md": ["Inter"],
+                      "headline-xl-mobile": ["Sora"],
+                      "headline-xl": ["Sora"],
+                      "display-lg": ["Sora"],
+                      "body-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "display-lg-mobile": ["40px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "700"}],
+                      "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "500"}],
+                      "body-md": ["16px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                      "headline-xl-mobile": ["24px", {"lineHeight": "1.3", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                      "headline-xl": ["32px", {"lineHeight": "1.2", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                      "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "0.02em", "fontWeight": "700"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #f9f9f9;
+            color: #1a1c1c;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md selection:bg-tertiary-fixed selection:text-on-tertiary-fixed">
+<!-- TopNavBar (Shared Component) -->
+<nav class="sticky top-0 w-full z-50 bg-surface/80 backdrop-blur-xl shadow-sm">
+<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-8 max-w-container-max mx-auto">
+<div class="font-display-lg text-[24px] md:text-headline-xl font-bold tracking-tighter text-primary">
+                KRAFT &amp; TONE
+            </div>
+<div class="hidden md:flex items-center gap-10">
+<a class="font-label-sm text-label-sm uppercase tracking-[0.2em] text-primary font-bold border-b border-primary" href="#">SHOP</a>
+<a class="font-label-sm text-label-sm uppercase tracking-[0.2em] text-on-surface-variant hover:text-primary transition-colors hover:opacity-70" href="#">COLLECTIONS</a>
+<a class="font-label-sm text-label-sm uppercase tracking-[0.2em] text-on-surface-variant hover:text-primary transition-colors hover:opacity-70" href="#">SERVICES</a>
+<a class="font-label-sm text-label-sm uppercase tracking-[0.2em] text-on-surface-variant hover:text-primary transition-colors hover:opacity-70" href="#">PHILOSOPHY</a>
+</div>
+<div class="flex items-center gap-6">
+<button class="hover:opacity-70 transition-opacity duration-300">
+<span class="material-symbols-outlined text-primary" data-icon="shopping_bag">shopping_bag</span>
+</button>
+<button class="hover:opacity-70 transition-opacity duration-300">
+<span class="material-symbols-outlined text-primary" data-icon="person">person</span>
+</button>
+</div>
+</div>
+</nav>
+<!-- Cinematic Hero Section -->
+<header class="relative w-full h-[921px] flex items-center overflow-hidden">
+<div class="absolute inset-0 z-0">
+<img alt="Premium industrial tools workspace" class="w-full h-full object-cover" data-alt="A cinematic, high-key wide shot of a professional architect's workspace. Matte black precision tools, including a steel ruler and a heavy-duty level, are arranged with methodical precision on a pristine light gray concrete surface. Soft, diffused natural light from a large window creates subtle shadows and a serene, Industrial Zen atmosphere. The aesthetic is clean, minimalist, and emphasizes high-quality engineering." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqTW4TFKZCKxgaiiP1yVxc6Ij1RgrhwbiYfjqb2gvvdh8m20ezWPAQcZxIhdY7PKtqH4cpQmQSe21VjwHSVT8YG5AbGk7QFBndgrKm-C1k7ahk9vZRT5LIp7fSo_POC_vTrP0j-CJuP5qHJcYpRxxd5h8_flLNlNWjb0sw-b77lDTErW7eq4gw2UyyCjyVy4YKjj30AOB888vU3A0KstmCEpk6dgGn6bzI-wEa-pOTGSAfo8BKZVKMhxTkyQW2SF7QPntfIXhmuMmG"/>
+<div class="absolute inset-0 bg-black/10"></div>
+</div>
+<div class="relative z-10 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full">
+<div class="max-w-4xl">
+<h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-primary mb-8 leading-tight">
+                    TOOLS FOR THE ARCHITECT OF LIFE
+                </h1>
+<a class="inline-flex items-center gap-4 bg-primary text-on-primary px-10 py-5 rounded-lg hover:bg-secondary-fixed-dim transition-all duration-300 group" href="#">
+<span class="font-label-sm text-label-sm tracking-widest uppercase">EXPLORE THE COLLECTION</span>
+<span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+</div>
+</header>
+<!-- Brand Philosophy -->
+<section class="bg-surface-container-low py-section-gap">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop text-center">
+<p class="font-label-sm text-label-sm text-on-tertiary-container uppercase tracking-[0.3em] mb-6">OUR MANIFESTO</p>
+<h2 class="font-display-lg text-display-lg-mobile md:text-headline-xl text-primary max-w-3xl mx-auto leading-relaxed italic">
+                "WE BELIEVE IN THE BEAUTY OF UTILITY."
+            </h2>
+</div>
+</section>
+<!-- Asymmetrical Category Grid -->
+<section class="py-section-gap px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter h-auto md:h-[800px]">
+<!-- THE CORE -->
+<div class="md:col-span-7 relative overflow-hidden group rounded-lg">
+<img alt="The Core Hand Tools" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A close-up studio photograph of matte black hand tools arranged on a neutral light gray background. The lighting is soft and industrial, highlighting the ergonomic curves and robust texture of a heavy-duty wrench and a sleek hammer. The composition is balanced and editorial, following the brand's Industrial Zen aesthetic with plenty of negative space and high-contrast blacks against warm grays." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKFjylRznXF4JzNPeDrS9xg1DlZijTTRfVrxkIY-WZ3TUk27T6ECjKhWUEbFzgZL1ruGCn8O3nxsyNHqPyHQU94PMmx5ivX6X9wmNbgbnHddaMxLts4FgMkZrhQLmyqswhMbuoGnXG-bWL63oGoPFizd0z5Xheh47cmoD-5PVOcFeMXHfthu_shSEKGL0a0lKIKsF90LdfebRxJeF2O-6Zx675W2smO9EOt95zUTA7KWcRLieC7SSYVHlYN0C0z_E6deJgHKXECqwu"/>
+<div class="absolute bottom-10 left-10 text-white z-10">
+<p class="font-label-sm text-label-sm tracking-[0.2em] mb-2 opacity-80">CATEGORY 01</p>
+<h3 class="font-headline-xl text-white">THE CORE</h3>
+<a class="mt-4 inline-block font-label-sm text-label-sm border-b border-white py-1" href="#">SHOP HAND TOOLS</a>
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+</div>
+<!-- THE EDGE -->
+<div class="md:col-span-5 flex flex-col gap-gutter">
+<div class="h-1/2 relative overflow-hidden group rounded-lg">
+<img alt="The Edge Cutting Instruments" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A minimalist presentation of professional cutting instruments. A set of precision-engineered shears and a heavy-duty utility knife are displayed on a white marble surface with soft studio lighting. The scene is clean and gallery-like, reflecting Japanese simplicity and precision. The visual style is bright and airy, emphasizing the sharp, high-tolerance edges of the tools." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1gzbWZBRX3yjjzpDYcAIirBaGqmz63xfRfbovRUa3cakN2BsRL7T4GJoCwMiuXnuAxlT-LG-5sHT90j-vT2Ai8DCFFemZAW6jqIY6glC4iwOM0xpWDerBBf9n5Y2PZZv301c7NmIzpjO4Y63-U7RvR5l1UvYXltm-QiOskG2BgCo92MyPoF5bCtsf-ZNo25GVCy948EavR39sJ910WKu25fezlM2qHWrnaPyzTQGxAAPsdbtrHPBTZbfWLN7qXsnaOZqmGSZlmtUW"/>
+<div class="absolute bottom-10 left-10 text-white z-10">
+<p class="font-label-sm text-label-sm tracking-[0.2em] mb-2 opacity-80">CATEGORY 02</p>
+<h3 class="font-headline-xl text-white">THE EDGE</h3>
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+</div>
+<!-- THE STRUCTURE -->
+<div class="h-1/2 relative overflow-hidden group rounded-lg">
+<img alt="The Structure Hardware" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A macro shot of premium hardware components such as architectural bolts and heavy-duty hinges. The elements are constructed from brushed stainless steel and are laid out on a dark gray matte surface. The lighting is moody and technical, emphasizing the industrial strength and clean lines of the pieces. The overall mood is one of quiet strength and methodical clarity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAy0wA3j8HO8TFEeJmUGQe6-wu1MP9PBGBkjEGCYDHr-8QZId7bHMlp-fZEBoyUT6LA5Z605KJKaQwABNl_JBZ_J9Zid-J1B9cPFe-54NBAjb6GMZ4jJl0APs8H7Xc_C3n-jWeerCAoWm2FQXNbPaY84i9sQ4TdSx8GTN78gnLPqxx_Sq7r5gxdWbRGYbAslh3M5Jd7YU6bCUeoJBCNCjdFgPl5CmLwm1fsv8mA0xrIOHyQ1kL--UQXTsg_ujr0hXJt7orY6yYg9j0k"/>
+<div class="absolute bottom-10 left-10 text-white z-10">
+<p class="font-label-sm text-label-sm tracking-[0.2em] mb-2 opacity-80">CATEGORY 03</p>
+<h3 class="font-headline-xl text-white">THE STRUCTURE</h3>
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Product Showcase -->
+<section class="py-section-gap bg-white">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+<div class="flex justify-between items-end mb-16">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest mb-4">ENGINEERED ESSENTIALS</p>
+<h2 class="font-headline-xl text-primary">FEATURED ARTIFACTS</h2>
+</div>
+<a class="font-label-sm text-label-sm border-b border-primary py-2 hover:opacity-70 transition-opacity" href="#">VIEW ALL PRODUCTS</a>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- Product 1 -->
+<div class="group">
+<div class="aspect-[4/5] bg-surface-container-low rounded-lg mb-6 overflow-hidden relative">
+<img alt="Matte Black Steel Level" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A minimalist studio portrait of a matte black steel level tool. The object is centered on a warm gray background with very soft, ambient shadows. The lighting is studio-style, emphasizing the sleek, industrial design and high-quality finish of the tool. The image is clean, methodical, and follows an editorial hardware aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcUEHkOEniePCtLagXBCDAMz7017_aCnaLMH2DIJxKYyePJb5Pf0P44rMNw7nI6P8v56D0JbtjTTmUVVjxm2_SJApxj0huA6SKKFUyASNK3H502wGN_4uDM8Je185oLD0myBZFeBhGdjAKiUtpllQFx5M_3cU0SIV7BhrMGpN92AcrJikr_Euz2g3uViG2YaRNEmZx5NmKflM9VIcbDCeXiucKjNlb-CFApuINCREhdBUMzLZvFaB35DZcq-CXlixJ_lg5rcPKHetY"/>
+<div class="absolute bottom-4 right-4 flex flex-col gap-2 translate-y-12 group-hover:translate-y-0 transition-transform duration-300">
+<button class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg"><span class="material-symbols-outlined text-[18px]" data-icon="add">add</span></button>
+<button class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg"><span class="material-symbols-outlined text-[18px]" data-icon="favorite">favorite</span></button>
+</div>
+</div>
+<p class="font-label-sm text-[10px] text-on-surface-variant uppercase tracking-[0.2em] mb-1">STAINLESS STEEL</p>
+<h4 class="font-body-lg font-medium text-primary mb-2">PRECISION LEVEL 1200</h4>
+<p class="font-body-md text-on-surface-variant">$245.00</p>
+</div>
+<!-- Product 2 -->
+<div class="group">
+<div class="aspect-[4/5] bg-surface-container-low rounded-lg mb-6 overflow-hidden relative">
+<img alt="Titanium Measuring Tape" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A high-end, close-up photograph of a titanium measuring tape with a matte finish. It is placed on a light-colored wooden workbench in a bright, modern workshop. The lighting is natural and bright, highlighting the technical details and precision of the tool. The composition is clean, airy, and focused on the tactile quality of the hardware." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvBJFwxWwctPfT3IJXySfjq-ba6mQtI40FD2k9D0V-s1vdTPtf-96nbQQ6RHGzQoJslmjzdtYfHegQv6gRqIwv_PaMI5SkTO1YJXop1QSX_S1h3usjc5EA1YYANA6OMnnXMR6AP0c4U_7_Q0U0y1jAL31DaE9iKwePyVnhX_ncRWAVLk4PQcOBkXWzdJynxunN6UtRJmxkvJKeH0x9NbTVw_GOivOtd4fhT91oc1xf5Cd0GmSRF7p_6ceiB18OR9wxfIvLgnU-_wnO"/>
+<div class="absolute bottom-4 right-4 flex flex-col gap-2 translate-y-12 group-hover:translate-y-0 transition-transform duration-300">
+<button class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg"><span class="material-symbols-outlined text-[18px]" data-icon="add">add</span></button>
+</div>
+</div>
+<p class="font-label-sm text-[10px] text-on-surface-variant uppercase tracking-[0.2em] mb-1">TITANIUM ALLOY</p>
+<h4 class="font-body-lg font-medium text-primary mb-2">MEASURE TAPE V.2</h4>
+<p class="font-body-md text-on-surface-variant">$88.00</p>
+</div>
+<!-- Product 3 -->
+<div class="group">
+<div class="aspect-[4/5] bg-surface-container-low rounded-lg mb-6 overflow-hidden relative">
+<img alt="Charcoal Screwdriver Set" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A set of professional-grade screwdrivers with charcoal gray handles and chrome-vanadium tips. They are displayed in a precise row on a warm gray surface. The lighting is diffused and even, showcasing the structural beauty and methodical arrangement of the tools. The aesthetic is purely functional yet visually striking in its minimalism." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbZhWcFwvsd2cc5k8eFrcHoWEX4ZVxOuo1PWUfeQw5Xn0HbwTlEqF7b5kcv0wqkn60sZq4fH6dKiKS9cnsi3CSPZ4LbLv08HbC0hdHOXNwShuAnrZJKArQ5sPPJg3mj4JtNybSs_LmvWs7B_3tAMaCP7BfBzAV73d3OdPkH-4NiYpZM6Crg9zeWPxIfI-SCzaPS0ItFlJdZFi_3-Ff36-fmIRmp6INmyrwBw6Sa13iFcVN44UAE085-PGE4TZKiwy_2DatqhxHROGE"/>
+<div class="absolute bottom-4 right-4 flex flex-col gap-2 translate-y-12 group-hover:translate-y-0 transition-transform duration-300">
+<button class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg"><span class="material-symbols-outlined text-[18px]" data-icon="add">add</span></button>
+</div>
+</div>
+<p class="font-label-sm text-[10px] text-on-surface-variant uppercase tracking-[0.2em] mb-1">CHROME-VANADIUM</p>
+<h4 class="font-body-lg font-medium text-primary mb-2">DRIVER SET 06</h4>
+<p class="font-body-md text-on-surface-variant">$160.00</p>
+</div>
+<!-- Product 4 -->
+<div class="group">
+<div class="aspect-[4/5] bg-surface-container-low rounded-lg mb-6 overflow-hidden relative">
+<img alt="Industrial Steel Clamp" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A single, heavy-duty industrial clamp made from cast iron with a matte black finish. The tool is shot against a pristine white background with very soft, ambient lighting. The focus is on the architectural lines and the raw, unyielding strength of the metal. The image embodies the intersection of industrial utility and refined restraint." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7eXTSgliwC7R3qi3WuR2ZDoBwh9sOXiTnoRJNhZTKlxKnFg_cOAtxo2c2ED40ynHuXofVbrJpw7yKDHM8J03sZKBRhnBj3wkyDG8FA1lsoWsjJ0wK6VFATKalQdok5-SZa9ZekfBwNGHDNX0NjPQsteSEXAGJZxj7en1IaFmKoqfyOBST9Plxk9T0DWp7QhWyAVbeI2nv20Q6IV-DgYUZ2USW_ifi5Pye2iCT_XDShbuPJ_EoBJQl-fY4R-Cj4sI5pX-PSzlDn39a"/>
+<div class="absolute bottom-4 right-4 flex flex-col gap-2 translate-y-12 group-hover:translate-y-0 transition-transform duration-300">
+<button class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg"><span class="material-symbols-outlined text-[18px]" data-icon="add">add</span></button>
+</div>
+</div>
+<p class="font-label-sm text-[10px] text-on-surface-variant uppercase tracking-[0.2em] mb-1">CAST IRON</p>
+<h4 class="font-body-lg font-medium text-primary mb-2">STRUCTURAL CLAMP</h4>
+<p class="font-body-md text-on-surface-variant">$115.00</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Promotional Split Section -->
+<section class="w-full flex flex-col md:flex-row min-h-[600px]">
+<div class="w-full md:w-1/2 relative overflow-hidden">
+<img alt="Craftsmanship close-up" class="w-full h-full object-cover" data-alt="A high-contrast, black and white photograph showing the hands of a master craftsman working with a vintage hand plane on a piece of dark wood. The scene is filled with wood shavings and soft lighting that emphasizes the tactile quality of the wood and the precision of the tool. The mood is nostalgic yet technically advanced, reflecting a commitment to longevity and craftsmanship." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMe6bNHp8ILigIQHHOjyoD6e7hZPMMnxJOqhbd1sMBiHTU8O_xn6X85GqTgGGYL8VqU61wBJdAt3s7rwIDJEhQAErNMV4llfFGZs4txwW-fgn5PqBe1W0I8vWih1zcWd30cx5NvN2cI1nTIhXYhGicLBeImR4Oi8SO_xXRBrCT7mAqhze2BnIdFG1Ady0ReSLPO5aGFhAtrSg0RzqMccaNI0R2CbVyZFLUGbU3PJuyGnmKUwvsSN_W14L7p57DOqhLWtvPJQxhL_Ll"/>
+</div>
+<div class="w-full md:w-1/2 bg-surface-container-high flex items-center justify-center p-margin-mobile md:p-margin-desktop">
+<div class="max-w-md">
+<p class="font-label-sm text-label-sm text-on-tertiary-container uppercase tracking-widest mb-6">THE PHILOSOPHY OF KRAFT</p>
+<h2 class="font-display-lg text-headline-xl-mobile md:text-headline-xl text-primary mb-8 leading-tight">
+                    Japanese Simplicity meets Industrial Strength.
+                </h2>
+<p class="font-body-lg text-on-surface-variant mb-10 leading-relaxed">
+                    We curate tools that are as much a pleasure to hold as they are capable of building the world around you. Designed for the relentless pursuit of perfection.
+                </p>
+<button class="bg-primary text-on-primary px-8 py-4 rounded-lg font-label-sm text-label-sm tracking-widest uppercase hover:bg-secondary transition-all">LEARN OUR HISTORY</button>
+</div>
+</div>
+</section>
+<!-- Best Sellers Carousel -->
+<section class="py-section-gap overflow-hidden">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop mb-12">
+<h2 class="font-headline-xl text-primary">BEST SELLERS</h2>
+</div>
+<div class="flex gap-gutter overflow-x-auto hide-scrollbar px-margin-mobile md:px-margin-desktop pb-10">
+<!-- Repeatable Item 1 -->
+<div class="min-w-[300px] md:min-w-[400px]">
+<div class="aspect-square bg-surface-container-low rounded-lg mb-4 overflow-hidden">
+<img alt="Product" class="w-full h-full object-cover" data-alt="A minimalist overhead shot of a heavy-duty machinist's vise made of sandblasted aluminum. The tool is placed on a light gray architectural drawing. The lighting is cool and technical, highlighting the high-tolerance manufacturing and precise adjustment knobs of the vise. The overall aesthetic is editorial and professional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTTgdU3jbi8_rb41YR4CXvxYBxKcNTvOszpM3kWlC5IyM2KjqSGqOkOspN07YrZUObBGz-aYK9x44hsPoptP5IRmIs5PtYWHhVlr68kTIlMqesC0XgwTBiVI8Zcjvd-8gCxk3mMHijleo3PohxbEDotNJHmMu4wAs9SPH55M0SeMB1sAnr2BRIwsdBhzVX9A59xr6FHIP4JHPQLYglOsDZBNjQwEhXjgpfJpMpwb9G08Bb1s4fMUxrOANBYuEA4O8tiqH_Es0nGPV5"/>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h5 class="font-body-lg font-medium text-primary">ALUMINUM MACHINING VISE</h5>
+<p class="font-body-md text-on-surface-variant">$420.00</p>
+</div>
+<button class="text-tertiary-container hover:text-on-tertiary-container transition-colors"><span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span></button>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="min-w-[300px] md:min-w-[400px]">
+<div class="aspect-square bg-surface-container-low rounded-lg mb-4 overflow-hidden">
+<img alt="Product" class="w-full h-full object-cover" data-alt="A cinematic shot of a set of architect's drafting tools, including a matte black metal compass and a set of precision scales. The objects are arranged on a dark, textured slate surface with soft, directional light coming from the side. The scene is quiet, focused, and highlights the technical beauty of architectural hardware." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdPh_vB1DIjxplt9UPlPYr2XyoVQxlZuMUcFz2cpDoFFVRdu217jAKXit13x_L-KN4Wbt1FR_RrKQxOX74SbMhfl_munuA8-e1Kp7swm1vIsg-j7LW1VC9sVoicWXk_HE_dPY4W4JyG5kyIrZoNAppwXheBBlZzX0JbSL2VHVUfrHKSIvK63OIfanEZ7hmnTfQR0xEbDcIiY5v54LBCH7FOaJb4BkCpf1Ax6-L4gwTzUHZCayepxZQAJqSOX-lkTYAl4FF30XLNQce"/>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h5 class="font-body-lg font-medium text-primary">DRAFTING TOOL SET</h5>
+<p class="font-body-md text-on-surface-variant">$315.00</p>
+</div>
+<button class="text-tertiary-container hover:text-on-tertiary-container transition-colors"><span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span></button>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="min-w-[300px] md:min-w-[400px]">
+<div class="aspect-square bg-surface-container-low rounded-lg mb-4 overflow-hidden">
+<img alt="Product" class="w-full h-full object-cover" data-alt="A minimalist studio image of a solid brass plumb bob suspended by a thin black cord. The object is centered against a warm, matte gray background. The lighting is soft and ambient, emphasizing the perfect geometry and the warm glow of the brass material. It is a striking example of the brand's 'beauty of utility' philosophy." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMY2bt45wswQP2FjNMLaxEMWBgl7qszgsw9MntceReM72vjY2UTUXZz7lI8vsVLIohAAWCTwGeSCnAgy09arqHcI8HqN1uAJXHZvsgRMD51-8bC-yC-Td75IWxdxw-JjtP2OU9w8QcDHV3g_njd5AxwXyj1dwdXwTMXP-0gep2Ma8zXKMtVBCa17j1yU9J8TbUsBYjXVCdo094emDDvwqV93nQ5LVUjTJNsDEHLgKj73-zr5JBJHBy5y9tflGgAL1lrHvKAiXuPRWu"/>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h5 class="font-body-lg font-medium text-primary">SOLID BRASS PLUMB BOB</h5>
+<p class="font-body-md text-on-surface-variant">$125.00</p>
+</div>
+<button class="text-tertiary-container hover:text-on-tertiary-container transition-colors"><span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span></button>
+</div>
+</div>
+</div>
+</section>
+<!-- Professional Services -->
+<section class="py-section-gap bg-surface-container">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+<p class="font-label-sm text-label-sm text-center text-on-tertiary-container uppercase tracking-widest mb-12">BEYOND THE HARDWARE</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="bg-white p-12 rounded-lg flex flex-col items-center text-center group hover:shadow-lg transition-shadow duration-300">
+<span class="material-symbols-outlined text-4xl mb-8 text-primary" data-icon="architecture">architecture</span>
+<h3 class="font-headline-xl text-primary mb-6">ARCHITECTURAL CONSULTING</h3>
+<p class="font-body-md text-on-surface-variant mb-8 max-w-sm">We provide technical specifications and material guidance for large-scale industrial and architectural projects.</p>
+<a class="font-label-sm text-label-sm text-primary uppercase tracking-widest font-bold group-hover:text-on-tertiary-container transition-colors" href="#">INQUIRE SERVICES</a>
+</div>
+<div class="bg-white p-12 rounded-lg flex flex-col items-center text-center group hover:shadow-lg transition-shadow duration-300">
+<span class="material-symbols-outlined text-4xl mb-8 text-primary" data-icon="handyman">handyman</span>
+<h3 class="font-headline-xl text-primary mb-6">PRECISION INSTALLATION</h3>
+<p class="font-body-md text-on-surface-variant mb-8 max-w-sm">Our master technicians ensure every component of our structure hardware is installed to the highest tolerance standards.</p>
+<a class="font-label-sm text-label-sm text-primary uppercase tracking-widest font-bold group-hover:text-on-tertiary-container transition-colors" href="#">SCHEDULE CALL</a>
+</div>
+</div>
+</div>
+</section>
+<!-- Testimonials -->
+<section class="py-section-gap">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-16">
+<div class="text-center">
+<p class="font-body-lg italic text-primary mb-8 leading-relaxed">"The tactile quality of the steel tools from Kraft &amp; Tone is unmatched. Every piece feels like a legacy object."</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">ARTHUR CHEN — TOKYO</p>
+</div>
+<div class="text-center">
+<p class="font-body-lg italic text-primary mb-8 leading-relaxed">"Minimalism that doesn't compromise on heavy-duty performance. Their level is the only one I trust on-site."</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">SARA JENSEN — COPENHAGEN</p>
+</div>
+<div class="text-center">
+<p class="font-body-lg italic text-primary mb-8 leading-relaxed">"Kraft &amp; Tone understands that tools are an extension of the architect's hand. Utterly precise and beautiful."</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">MARCUS VANE — LONDON</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer (Shared Component) -->
+<footer class="bg-surface-container-low dark:bg-surface-dim w-full border-t border-outline-variant">
+<div class="w-full py-section-gap px-margin-mobile md:px-margin-desktop flex flex-col md:flex-row justify-between items-start gap-gutter max-w-container-max mx-auto">
+<div class="mb-8 md:mb-0">
+<div class="font-display-lg text-headline-xl font-bold text-primary mb-4">KRAFT &amp; TONE</div>
+<p class="font-label-sm text-label-sm tracking-widest text-on-surface-variant opacity-60">
+                    © 2024 KRAFT &amp; TONE. ENGINEERED FOR LONGEVITY.
+                </p>
+</div>
+<div class="flex flex-col md:flex-row gap-8 md:gap-16">
+<div class="flex flex-col gap-4">
+<p class="font-label-sm text-label-sm font-bold tracking-widest text-primary mb-2">PAGES</p>
+<a class="font-label-sm text-label-sm tracking-widest text-on-surface-variant opacity-60 hover:opacity-100 hover:text-primary transition-all" href="#">SHOP</a>
+<a class="font-label-sm text-label-sm tracking-widest text-on-surface-variant opacity-60 hover:opacity-100 hover:text-primary transition-all" href="#">COLLECTIONS</a>
+<a class="font-label-sm text-label-sm tracking-widest text-on-surface-variant opacity-60 hover:opacity-100 hover:text-primary transition-all" href="#">PHILOSOPHY</a>
+</div>
+<div class="flex flex-col gap-4">
+<p class="font-label-sm text-label-sm font-bold tracking-widest text-primary mb-2">LEGAL</p>
+<a class="font-label-sm text-label-sm tracking-widest text-on-surface-variant opacity-60 hover:opacity-100 hover:text-primary transition-all" href="#">PRIVACY POLICY</a>
+<a class="font-label-sm text-label-sm tracking-widest text-on-surface-variant opacity-60 hover:opacity-100 hover:text-primary transition-all" href="#">TERMS OF SERVICE</a>
+<a class="font-label-sm text-label-sm tracking-widest text-on-surface-variant opacity-60 hover:opacity-100 hover:text-primary transition-all" href="#">SHIPPING &amp; RETURNS</a>
+</div>
+<div class="flex flex-col gap-4">
+<p class="font-label-sm text-label-sm font-bold tracking-widest text-primary mb-2">SUPPORT</p>
+<a class="font-label-sm text-label-sm tracking-widest text-on-surface-variant opacity-60 hover:opacity-100 hover:text-primary transition-all" href="#">CONTACT</a>
+<a class="font-label-sm text-label-sm tracking-widest text-on-surface-variant opacity-60 hover:opacity-100 hover:text-primary transition-all" href="#">FAQ</a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

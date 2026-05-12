@@ -1,6 +1,6 @@
 <template>
-  <main class="page-wrapper">
-    <div class="container">
+  <DashboardShell title="Bodega" :links="shellLinks">
+    <div class="container mx-auto max-w-6xl">
       <div class="dashboard-header">
         <div>
           <h1>Panel <span class="text-primary">Bodeguero</span></h1>
@@ -54,13 +54,20 @@
         </div>
       </template>
     </div>
-  </main>
+  </DashboardShell>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import DashboardShell from '@/components/layout/DashboardShell.vue'
 import { ServiciosSupabase } from '@/servicios/ServiciosSupabase.js'
 import { isMockup } from '@/lib/supabase.js'
+
+const shellLinks = [
+  { label: 'Bodega', to: '/bodeguero' },
+  { label: 'Resumen', to: '/dashboard' },
+  { label: 'Catálogo', to: '/catalogo' },
+]
 
 const productos = ref([])
 const cargando  = ref(true)

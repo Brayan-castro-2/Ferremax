@@ -1,0 +1,549 @@
+{
+  "info": {
+    "name": "FERREMAS API — Integración",
+    "description": "Colección de pruebas de integración contra la API REST FERREMAS (Express + Supabase).\n\n**Variables de colección:** `baseUrl`, `token` (admin, set en login #2), `tokenCliente`, `tokenVendedor`.\n\n**Credenciales por defecto** (ajusta en variables si tu seed difiere): admin@ferremas.cl / password, cliente@ferremas.cl / password, vendedor@ferremas.cl / password.\n\nLos requests #9, #14 y #17 ejecutan login auxiliar en *Pre-request Script* para rellenar tokens de rol.\n\n**#18:** se envía `{}` (JSON vacío) para forzar error de validación 400 de forma estable; un POST sin `Content-Type` puede dar 500 según Express.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "token", "value": "" },
+    { "key": "tokenCliente", "value": "" },
+    { "key": "tokenVendedor", "value": "" },
+    { "key": "emailAdmin", "value": "admin@ferremas.cl" },
+    { "key": "passwordAdmin", "value": "password" },
+    { "key": "emailCliente", "value": "cliente@ferremas.cl" },
+    { "key": "passwordCliente", "value": "password" },
+    { "key": "emailVendedor", "value": "vendedor@ferremas.cl" },
+    { "key": "passwordVendedor", "value": "password" },
+    { "key": "orderId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "1. Health check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/health"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', () => { pm.response.to.have.status(200); });",
+              "const json = pm.response.json();",
+              "pm.test('body.status es OK', () => { pm.expect(json).to.have.property('status', 'OK'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Login exitoso (admin) → guarda token",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{emailAdmin}}\",\n  \"password\": \"{{passwordAdmin}}\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/login"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', () => { pm.response.to.have.status(200); });",
+              "const json = pm.response.json();",
+              "pm.test('Respuesta incluye token y usuario', () => {",
+              "  pm.expect(json).to.have.property('token');",
+              "  pm.expect(json).to.have.property('usuario');",
+              "});",
+              "if (json.token) {",
+              "  pm.collectionVariables.set('token', json.token);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. GET /api/auth/me (token válido)",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{baseUrl}}/api/auth/me"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', () => { pm.response.to.have.status(200); });",
+              "const json = pm.response.json();",
+              "pm.test('usuario con rol', () => {",
+              "  pm.expect(json).to.have.property('usuario');",
+              "  pm.expect(json.usuario).to.have.property('rolNombre');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. GET /api/products",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/products"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', () => { pm.response.to.have.status(200); });",
+              "const json = pm.response.json();",
+              "pm.test('Estructura total + productos', () => {",
+              "  pm.expect(json).to.have.property('total');",
+              "  pm.expect(json.total).to.be.a('number');",
+              "  pm.expect(json).to.have.property('productos');",
+              "  pm.expect(json.productos).to.be.an('array');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. GET /api/products (filtro categoría)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/products?categoria=Herramientas Eléctricas"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', () => { pm.response.to.have.status(200); });",
+              "const json = pm.response.json();",
+              "pm.test('Estructura total + productos', () => {",
+              "  pm.expect(json).to.have.property('productos');",
+              "  pm.expect(json.productos).to.be.an('array');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. GET /api/products/:id (id=1)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/products/1"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', () => { pm.response.to.have.status(200); });",
+              "const json = pm.response.json();",
+              "pm.test('Incluye stock_disponible', () => {",
+              "  pm.expect(json).to.have.property('stock_disponible');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. GET /api/inventory",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/inventory"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', () => { pm.response.to.have.status(200); });",
+              "const json = pm.response.json();",
+              "pm.test('Estructura totalRegistros + inventario', () => {",
+              "  pm.expect(json).to.have.property('totalRegistros');",
+              "  pm.expect(json.totalRegistros).to.be.a('number');",
+              "  pm.expect(json).to.have.property('inventario');",
+              "  pm.expect(json.inventario).to.be.an('array');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. POST /api/orders (5+ ítems → descuento 10%)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tipo_entrega\": \"retiro\",\n  \"items\": [\n    { \"producto_id\": 1, \"cantidad\": 1, \"precio_unitario\": 1000 },\n    { \"producto_id\": 2, \"cantidad\": 1, \"precio_unitario\": 1000 },\n    { \"producto_id\": 3, \"cantidad\": 1, \"precio_unitario\": 1000 },\n    { \"producto_id\": 4, \"cantidad\": 1, \"precio_unitario\": 1000 },\n    { \"producto_id\": 5, \"cantidad\": 1, \"precio_unitario\": 1000 }\n  ]\n}"
+        },
+        "url": "{{baseUrl}}/api/orders"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 201', () => { pm.response.to.have.status(201); });",
+              "const json = pm.response.json();",
+              "pm.test('aplicaDescuento true y descuento ~10%', () => {",
+              "  pm.expect(json).to.have.property('aplicaDescuento', true);",
+              "  pm.expect(json).to.have.property('descuentoMonto');",
+              "  pm.expect(json.descuentoMonto).to.be.above(0);",
+              "  pm.expect(json).to.have.property('total');",
+              "});",
+              "pm.test('mensaje o pedido presente', () => {",
+              "  pm.expect(json).to.satisfy(j => j.pedido || j.mensaje);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "9. GET /api/orders/mis-pedidos",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{tokenCliente}}" }],
+        "url": "{{baseUrl}}/api/orders/mis-pedidos"
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "async function loginCliente() {",
+              "  const base = pm.collectionVariables.get('baseUrl');",
+              "  const email = pm.collectionVariables.get('emailCliente');",
+              "  const password = pm.collectionVariables.get('passwordCliente');",
+              "  const res = await pm.sendRequest({",
+              "    url: base + '/api/auth/login',",
+              "    method: 'POST',",
+              "    header: { 'Content-Type': 'application/json' },",
+              "    body: { mode: 'raw', raw: JSON.stringify({ email, password }) }",
+              "  });",
+              "  if (res.code === 200) {",
+              "    const j = res.json();",
+              "    if (j.token) pm.collectionVariables.set('tokenCliente', j.token);",
+              "  }",
+              "}",
+              "await loginCliente();"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', () => { pm.response.to.have.status(200); });",
+              "const json = pm.response.json();",
+              "pm.test('Estructura total + pedidos (array)', () => {",
+              "  pm.expect(json).to.have.property('pedidos');",
+              "  pm.expect(json.pedidos).to.be.an('array');",
+              "  pm.expect(json).to.have.property('total');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10. GET /api/currency/dolar",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/currency/dolar"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', () => { pm.response.to.have.status(200); });",
+              "const json = pm.response.json();",
+              "pm.test('valorDolar numérico', () => {",
+              "  pm.expect(json).to.have.property('valorDolar');",
+              "  pm.expect(json.valorDolar).to.be.a('number');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "11. Login credenciales incorrectas → 401",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"noexiste@ferremas.cl\",\n  \"password\": \"clave_invalida_xyz\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/login"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 401', () => { pm.response.to.have.status(401); });",
+              "const json = pm.response.json();",
+              "pm.test('Body con error', () => { pm.expect(json).to.have.property('error'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "12. GET /api/auth/me sin token → 401",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/auth/me"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 401', () => { pm.response.to.have.status(401); });",
+              "const json = pm.response.json();",
+              "pm.test('Mensaje de no autorizado', () => { pm.expect(json).to.have.property('error'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "13. GET /api/orders sin token → 401",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/orders"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 401', () => { pm.response.to.have.status(401); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "14. GET /api/orders con token Cliente → 403",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{tokenCliente}}" }],
+        "url": "{{baseUrl}}/api/orders"
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "async function loginCliente() {",
+              "  const base = pm.collectionVariables.get('baseUrl');",
+              "  const email = pm.collectionVariables.get('emailCliente');",
+              "  const password = pm.collectionVariables.get('passwordCliente');",
+              "  const res = await pm.sendRequest({",
+              "    url: base + '/api/auth/login',",
+              "    method: 'POST',",
+              "    header: { 'Content-Type': 'application/json' },",
+              "    body: { mode: 'raw', raw: JSON.stringify({ email, password }) }",
+              "  });",
+              "  if (res.code === 200) {",
+              "    const j = res.json();",
+              "    if (j.token) pm.collectionVariables.set('tokenCliente', j.token);",
+              "  }",
+              "}",
+              "await loginCliente();"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 403', () => { pm.response.to.have.status(403); });",
+              "const json = pm.response.json();",
+              "pm.test('Código rol insuficiente', () => {",
+              "  pm.expect(json).to.satisfy(j => j.code === 'INSUFFICIENT_ROLE' || j.error);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "15. POST /api/orders stock insuficiente → 409",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tipo_entrega\": \"retiro\",\n  \"items\": [\n    { \"producto_id\": 1, \"cantidad\": 999999, \"precio_unitario\": 1 }\n  ]\n}"
+        },
+        "url": "{{baseUrl}}/api/orders"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 409', () => { pm.response.to.have.status(409); });",
+              "const json = pm.response.json();",
+              "pm.test('Mensaje de error', () => { pm.expect(json).to.have.property('error'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "16. GET /api/products/99999 → 404",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/products/99999"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 404', () => { pm.response.to.have.status(404); });",
+              "const json = pm.response.json();",
+              "pm.test('Body con error', () => { pm.expect(json).to.have.property('error'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "17. PATCH /api/orders/:id/estado inválido → 400",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{tokenVendedor}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"estado\": \"estado_inexistente_xyz\"\n}"
+        },
+        "url": "{{baseUrl}}/api/orders/{{orderId}}/estado"
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "async function loginVendedor() {",
+              "  const base = pm.collectionVariables.get('baseUrl');",
+              "  const email = pm.collectionVariables.get('emailVendedor');",
+              "  const password = pm.collectionVariables.get('passwordVendedor');",
+              "  const res = await pm.sendRequest({",
+              "    url: base + '/api/auth/login',",
+              "    method: 'POST',",
+              "    header: { 'Content-Type': 'application/json' },",
+              "    body: { mode: 'raw', raw: JSON.stringify({ email, password }) }",
+              "  });",
+              "  if (res.code === 200) {",
+              "    const j = res.json();",
+              "    if (j.token) pm.collectionVariables.set('tokenVendedor', j.token);",
+              "  }",
+              "}",
+              "await loginVendedor();"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 400', () => { pm.response.to.have.status(400); });",
+              "const json = pm.response.json();",
+              "pm.test('Mensaje de validación', () => { pm.expect(json).to.have.property('error'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "18. POST /api/orders sin body → 400",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "description": "Objeto JSON vacío: sin items ni tipo_entrega; el backend debe responder 400 (validación).",
+        "url": "{{baseUrl}}/api/orders"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 400', () => { pm.response.to.have.status(400); });",
+              "const json = pm.response.json();",
+              "pm.test('Body con error', () => { pm.expect(json).to.have.property('error'); });"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

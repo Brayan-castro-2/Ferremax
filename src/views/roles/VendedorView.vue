@@ -1,6 +1,6 @@
 <template>
-  <main class="page-wrapper">
-    <div class="container">
+  <DashboardShell title="Ventas" :links="shellLinks">
+    <div class="container mx-auto max-w-6xl">
       <div class="dashboard-header">
         <div>
           <h1>Panel <span class="text-primary">Vendedor</span></h1>
@@ -57,14 +57,21 @@
         </div>
       </div>
     </div>
-  </main>
+  </DashboardShell>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import DashboardShell from '@/components/layout/DashboardShell.vue'
 import { ServiciosSupabase } from '@/servicios/ServiciosSupabase.js'
 import { OrquestadorDePedidos } from '@/orquestadores/OrquestadorDePedidos.js'
 import { isMockup } from '@/lib/supabase.js'
+
+const shellLinks = [
+  { label: 'Ventas', to: '/vendedor' },
+  { label: 'Resumen', to: '/dashboard' },
+  { label: 'Catálogo', to: '/catalogo' },
+]
 
 const estados  = ['pendiente', 'pagado', 'preparado', 'despachado', 'cancelado']
 const pedidos  = ref([])

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Sora:wght@600;700&amp;family=Geist:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary": "#5d5f5f",
+                    "on-secondary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-primary-fixed-variant": "#474746",
+                    "error": "#ba1a1a",
+                    "on-primary-fixed": "#1c1b1b",
+                    "on-secondary-fixed": "#1a1c1c",
+                    "inverse-on-surface": "#f1f1f1",
+                    "inverse-surface": "#2f3131",
+                    "surface-container-low": "#f4f3f3",
+                    "on-tertiary-fixed-variant": "#6e3900",
+                    "outline-variant": "#c4c7c7",
+                    "outline": "#747878",
+                    "on-error": "#ffffff",
+                    "background": "#f9f9f9",
+                    "on-tertiary-fixed": "#2f1500",
+                    "surface-dim": "#dadada",
+                    "secondary-container": "#dcdddd",
+                    "surface-tint": "#5f5e5e",
+                    "primary-fixed": "#e5e2e1",
+                    "on-primary-container": "#858383",
+                    "on-secondary-fixed-variant": "#454747",
+                    "tertiary-fixed-dim": "#ffb77d",
+                    "surface-container-highest": "#e2e2e2",
+                    "secondary-fixed": "#e2e2e2",
+                    "on-surface-variant": "#444748",
+                    "surface-bright": "#f9f9f9",
+                    "on-background": "#1a1c1c",
+                    "on-surface": "#1a1c1c",
+                    "tertiary-container": "#2f1500",
+                    "secondary-fixed-dim": "#c6c6c7",
+                    "on-primary": "#ffffff",
+                    "tertiary": "#000000",
+                    "primary": "#000000",
+                    "inverse-primary": "#c8c6c5",
+                    "surface-container-lowest": "#ffffff",
+                    "surface": "#f9f9f9",
+                    "primary-fixed-dim": "#c8c6c5",
+                    "primary-container": "#1c1b1b",
+                    "on-tertiary-container": "#c76c00",
+                    "surface-variant": "#e2e2e2",
+                    "surface-container-high": "#e8e8e8",
+                    "surface-container": "#eeeeee",
+                    "tertiary-fixed": "#ffdcc3",
+                    "on-secondary-container": "#5f6161",
+                    "error-container": "#ffdad6",
+                    "on-tertiary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "unit": "8px",
+                    "margin-mobile": "20px",
+                    "container-max": "1280px",
+                    "gutter": "24px",
+                    "margin-desktop": "64px",
+                    "section-gap": "120px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "headline-xl-mobile": ["Sora"],
+                    "label-sm": ["Geist"],
+                    "body-md": ["Inter"],
+                    "headline-xl": ["Sora"],
+                    "display-lg-mobile": ["Sora"],
+                    "display-lg": ["Sora"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                    "headline-xl-mobile": ["24px", {"lineHeight": "1.3", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                    "headline-xl": ["32px", {"lineHeight": "1.2", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "display-lg-mobile": ["40px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "700"}],
+                    "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .shadow-ambient {
+            box-shadow: 0px 4px 20px rgba(0,0,0,0.04);
+        }
+        .bento-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .bento-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0px 8px 30px rgba(0,0,0,0.06);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased">
+<!-- SideNavBar Component -->
+<aside class="bg-surface-container dark:bg-surface-dim h-screen w-64 fixed left-0 top-0 border-r border-outline-variant flex flex-col h-full p-gutter gap-unit">
+<div class="mb-gutter">
+<h1 class="font-display-lg text-body-lg font-bold text-primary">FERREMAS OS</h1>
+<p class="font-body-md text-label-sm text-secondary">Industrial Management</p>
+</div>
+<nav class="flex-1 flex flex-col gap-unit">
+<!-- Active Tab: Dashboard -->
+<a class="bg-primary dark:bg-primary-fixed text-on-primary dark:text-on-primary-fixed rounded-lg px-4 py-3 flex items-center gap-3 transition-transform duration-200 scale-98 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-body-md text-label-sm">Dashboard</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high px-4 py-3 rounded-lg flex items-center gap-3 transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-body-md text-label-sm">Inventory</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high px-4 py-3 rounded-lg flex items-center gap-3 transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+<span class="font-body-md text-label-sm">Orders</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high px-4 py-3 rounded-lg flex items-center gap-3 transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-body-md text-label-sm">Accountancy</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high px-4 py-3 rounded-lg flex items-center gap-3 transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="conveyor_belt">conveyor_belt</span>
+<span class="font-body-md text-label-sm">Logistics</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high px-4 py-3 rounded-lg flex items-center gap-3 transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-body-md text-label-sm">Settings</span>
+</a>
+</nav>
+<div class="mt-auto flex flex-col gap-unit pt-gutter border-t border-outline-variant/30">
+<div class="flex items-center gap-3 px-4 py-2 mb-unit">
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 20px;">person</span>
+</div>
+<div class="overflow-hidden">
+<p class="font-label-sm text-on-surface font-bold truncate">Industrial Seller</p>
+<p class="font-label-sm text-on-tertiary-container text-[10px]">System Status: Active</p>
+</div>
+</div>
+<a class="text-on-surface-variant hover:bg-surface-container-high px-4 py-2 rounded-lg flex items-center gap-3 transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-body-md text-label-sm">Support</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high px-4 py-2 rounded-lg flex items-center gap-3 transition-transform duration-200 hover:translate-x-1 text-error" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-body-md text-label-sm">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 min-h-screen px-margin-desktop py-gutter flex flex-col gap-gutter">
+<!-- Header / Top Bar -->
+<header class="flex justify-between items-center mb-unit-margin-mobile">
+<div>
+<h2 class="font-headline-xl text-headline-xl text-primary tracking-tight">Seller Dashboard</h2>
+<p class="font-body-md text-secondary mt-1">Monitor your industrial performance and catalog.</p>
+</div>
+<button class="bg-primary text-on-primary font-label-sm text-label-sm px-gutter py-3 rounded-lg flex items-center gap-2 hover:opacity-90 transition-opacity active:scale-95">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                Add New Product
+            </button>
+</header>
+<!-- Metrics Bento Grid -->
+<section class="grid grid-cols-12 gap-gutter">
+<!-- Main Performance Card -->
+<div class="col-span-12 md:col-span-8 bg-surface-container-lowest p-gutter rounded-xl shadow-ambient bento-card relative overflow-hidden">
+<div class="absolute top-0 right-0 p-gutter opacity-10">
+<span class="material-symbols-outlined text-[120px]">trending_up</span>
+</div>
+<div class="relative z-10">
+<p class="font-label-sm text-label-sm text-secondary uppercase tracking-widest">Gross Revenue</p>
+<h3 class="font-display-lg text-[48px] font-bold text-primary mt-2">$242,500.00</h3>
+<div class="flex items-center gap-2 text-on-tertiary-container mt-4">
+<span class="material-symbols-outlined text-label-sm">arrow_upward</span>
+<span class="font-label-sm text-label-sm">+12.4% vs last month</span>
+</div>
+<!-- Simplified Visual Chart Placeholder -->
+<div class="mt-gutter h-32 w-full flex items-end gap-2">
+<div class="flex-1 bg-surface-container-high rounded-t-sm" style="height: 40%"></div>
+<div class="flex-1 bg-surface-container-high rounded-t-sm" style="height: 60%"></div>
+<div class="flex-1 bg-surface-container-high rounded-t-sm" style="height: 45%"></div>
+<div class="flex-1 bg-surface-container-high rounded-t-sm" style="height: 80%"></div>
+<div class="flex-1 bg-primary rounded-t-sm" style="height: 95%"></div>
+<div class="flex-1 bg-surface-container-high rounded-t-sm" style="height: 70%"></div>
+<div class="flex-1 bg-surface-container-high rounded-t-sm" style="height: 85%"></div>
+</div>
+</div>
+</div>
+<!-- Stats Column -->
+<div class="col-span-12 md:col-span-4 flex flex-col gap-gutter">
+<div class="flex-1 bg-surface-container-lowest p-gutter rounded-xl shadow-ambient bento-card">
+<p class="font-label-sm text-label-sm text-secondary uppercase">Active Listings</p>
+<h4 class="font-headline-xl text-headline-xl text-primary mt-2">1,248</h4>
+<p class="font-body-md text-label-sm text-on-surface-variant mt-1">Items currently live</p>
+</div>
+<div class="flex-1 bg-surface-container-lowest p-gutter rounded-xl shadow-ambient bento-card border-l-4 border-on-tertiary-container">
+<p class="font-label-sm text-label-sm text-secondary uppercase">Pending Orders</p>
+<h4 class="font-headline-xl text-headline-xl text-on-tertiary-container mt-2">14</h4>
+<p class="font-body-md text-label-sm text-on-surface-variant mt-1">Requires immediate action</p>
+</div>
+</div>
+</section>
+<!-- Products & Orders Section -->
+<section class="grid grid-cols-12 gap-gutter items-start">
+<!-- Pending Orders Table -->
+<div class="col-span-12 lg:col-span-7 bg-surface-container-lowest p-gutter rounded-xl shadow-ambient">
+<div class="flex justify-between items-center mb-gutter">
+<h4 class="font-headline-xl text-body-lg font-bold text-primary">Pending Orders</h4>
+<a class="font-label-sm text-label-sm text-secondary hover:text-primary underline" href="#">View All</a>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="border-b border-outline-variant/30">
+<th class="pb-4 font-label-sm text-label-sm text-secondary uppercase">Order ID</th>
+<th class="pb-4 font-label-sm text-label-sm text-secondary uppercase">Customer</th>
+<th class="pb-4 font-label-sm text-label-sm text-secondary uppercase">Amount</th>
+<th class="pb-4 font-label-sm text-label-sm text-secondary uppercase">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<tr>
+<td class="py-4 font-body-md text-label-sm">#ORD-9021</td>
+<td class="py-4 font-body-md text-label-sm">Precision Engineering Ltd</td>
+<td class="py-4 font-body-md text-label-sm">$1,450.00</td>
+<td class="py-4">
+<button class="bg-secondary text-on-secondary text-label-sm px-3 py-1 rounded hover:opacity-80 transition-opacity">Process</button>
+</td>
+</tr>
+<tr>
+<td class="py-4 font-body-md text-label-sm">#ORD-9025</td>
+<td class="py-4 font-body-md text-label-sm">Nordic Tools Corp</td>
+<td class="py-4 font-body-md text-label-sm">$4,200.50</td>
+<td class="py-4">
+<button class="bg-secondary text-on-secondary text-label-sm px-3 py-1 rounded hover:opacity-80 transition-opacity">Process</button>
+</td>
+</tr>
+<tr>
+<td class="py-4 font-body-md text-label-sm">#ORD-9033</td>
+<td class="py-4 font-body-md text-label-sm">BuildRight Solutions</td>
+<td class="py-4 font-body-md text-label-sm">$890.20</td>
+<td class="py-4">
+<button class="bg-secondary text-on-secondary text-label-sm px-3 py-1 rounded hover:opacity-80 transition-opacity">Process</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Top Products (My Products) -->
+<div class="col-span-12 lg:col-span-5 bg-surface-container-lowest p-gutter rounded-xl shadow-ambient">
+<div class="flex justify-between items-center mb-gutter">
+<h4 class="font-headline-xl text-body-lg font-bold text-primary">High Performers</h4>
+<button class="material-symbols-outlined text-secondary" data-icon="more_vert">more_vert</button>
+</div>
+<div class="flex flex-col gap-4">
+<!-- Product Item -->
+<div class="flex items-center gap-4 group">
+<div class="w-16 h-16 bg-surface-container rounded-lg overflow-hidden flex-shrink-0">
+<img alt="Industrial Drill" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A high-end industrial power drill showcased in professional studio lighting on a neutral gray background. The product is shot with a shallow depth of field, highlighting the precision-engineered textures of the matte black casing and metallic silver accents. The overall aesthetic is clean, minimalist, and high-performance hardware editorial style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjaoMg_ApvkvVSbFXea1mgfggO7ifLyDOkKDbe6cimoWJk9hbqQxBW2DMSb-ALcHY99AUGl9z1TB77tjtZBXhUN_w13DVspjbc0b3Td5nG4sz3lc7Ep-MZ_WMUXxeB7HYCZH-oXtGwuZrNbyVsg7me00NRTv0rgsJbe2pMPPykIIgI_BCC0z0_B5MBwK9LndxFUhpou-ZxJ6ejvD5nwqDIDun2VUVM7d-M1mSWqgH1m4Wu5oyXRlUEVVRb4uvL3az65P43RZujDpcz"/>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-body-md text-label-sm font-bold text-primary truncate">Titanium Carbide Drill Set</p>
+<p class="font-label-sm text-[10px] text-secondary">SKU: DRI-99-TC</p>
+</div>
+<div class="text-right">
+<p class="font-label-sm text-label-sm font-bold text-primary">84 Sales</p>
+<p class="font-label-sm text-[10px] text-on-tertiary-container">Top 5%</p>
+</div>
+</div>
+<!-- Product Item -->
+<div class="flex items-center gap-4 group">
+<div class="w-16 h-16 bg-surface-container rounded-lg overflow-hidden flex-shrink-0">
+<img alt="Industrial Wrench" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A set of professional-grade chrome-vanadium steel wrenches arranged neatly on a warm gray concrete surface. The lighting is soft and diffused, creating subtle ambient shadows that emphasize the sleek, architectural design of the tools. The image conveys a sense of Japanese minimalism and rugged industrial utility within a modern editorial hardware context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvV4ozhc17fzdzA9Cf-OxjHJuhxOsEtPNgZB1UMwcSStVaarXGZ_d2YyG4hO7Phji5Z6tTuC8JuDEpV_SifuNUQEkPot0wScEyQDqhBgZLmFYb9EU5agi5c8_nlBSAkeJjGy4zEmbUzeUMklZWofRYYAvIFeF36y1xXFosNHloekXBK7KHAmqb7szBd-OW98gtwHBloEHXhRhIfk1hR8x4Y92x6SGHLsTrN2ZPlHav6y_eYUMXMBPLZzEOe3G0GaW4lOO_XgTMMt4T"/>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-body-md text-label-sm font-bold text-primary">Precision Torque Wrench</p>
+<p class="font-label-sm text-[10px] text-secondary">SKU: WRN-12-PT</p>
+</div>
+<div class="text-right">
+<p class="font-label-sm text-label-sm font-bold text-primary">62 Sales</p>
+<p class="font-label-sm text-[10px] text-secondary">Steady</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Industrial Insights / Inventory Alert (Bento Variant) -->
+<section class="grid grid-cols-12 gap-gutter">
+<div class="col-span-12 md:col-span-4 bg-surface-container p-gutter rounded-xl border border-outline-variant/30 flex items-center gap-gutter">
+<div class="p-4 bg-surface-container-highest rounded-full text-on-tertiary-container">
+<span class="material-symbols-outlined" data-icon="inventory_2" style="font-size: 32px;">inventory_2</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-secondary uppercase">Inventory Health</p>
+<p class="font-body-md text-body-md font-bold text-primary mt-1">Excellent (98%)</p>
+</div>
+</div>
+<div class="col-span-12 md:col-span-4 bg-surface-container p-gutter rounded-xl border border-outline-variant/30 flex items-center gap-gutter">
+<div class="p-4 bg-surface-container-highest rounded-full text-primary">
+<span class="material-symbols-outlined" data-icon="local_shipping" style="font-size: 32px;">local_shipping</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-secondary uppercase">Average Fulfillment</p>
+<p class="font-body-md text-body-md font-bold text-primary mt-1">1.2 Days</p>
+</div>
+</div>
+<div class="col-span-12 md:col-span-4 bg-surface-container p-gutter rounded-xl border border-outline-variant/30 flex items-center gap-gutter">
+<div class="p-4 bg-surface-container-highest rounded-full text-secondary">
+<span class="material-symbols-outlined" data-icon="verified_user" style="font-size: 32px;">verified_user</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-secondary uppercase">Seller Rating</p>
+<p class="font-body-md text-body-md font-bold text-primary mt-1">4.9 / 5.0</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Component -->
+<footer class="ml-64 w-auto py-section-gap bg-surface dark:bg-on-background border-t border-outline-variant/20 flex flex-col md:flex-row justify-between items-center px-margin-desktop gap-gutter">
+<div>
+<span class="font-display-lg text-body-md font-black text-primary uppercase">FERREMAS</span>
+<p class="font-label-sm text-label-sm tracking-tight text-secondary mt-2">© 2024 FERREMAS INDUSTRIAL. PRECISION ENGINEERED.</p>
+</div>
+<div class="flex gap-gutter">
+<a class="font-label-sm text-label-sm text-secondary hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-secondary hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-secondary hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Compliance</a>
+<a class="font-label-sm text-label-sm text-secondary hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Warranty</a>
+</div>
+</footer>
+</body></html>

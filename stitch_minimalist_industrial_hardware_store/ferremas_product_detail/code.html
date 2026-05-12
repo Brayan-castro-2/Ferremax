@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&amp;family=Inter:wght@400;500&amp;family=Geist:wght@400;500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-high": "#e8e8e8",
+                      "primary-fixed": "#e5e2e1",
+                      "on-secondary": "#ffffff",
+                      "surface-variant": "#e2e2e2",
+                      "secondary-fixed-dim": "#c6c6c7",
+                      "error-container": "#ffdad6",
+                      "background": "#f9f9f9",
+                      "outline-variant": "#c4c7c7",
+                      "on-surface": "#1a1c1c",
+                      "on-error": "#ffffff",
+                      "secondary": "#5d5f5f",
+                      "surface-tint": "#5f5e5e",
+                      "surface-container": "#eeeeee",
+                      "outline": "#747878",
+                      "on-tertiary-fixed-variant": "#6e3900",
+                      "on-error-container": "#93000a",
+                      "on-primary-fixed": "#1c1b1b",
+                      "surface": "#f9f9f9",
+                      "on-secondary-fixed-variant": "#454747",
+                      "primary": "#000000",
+                      "on-secondary-container": "#5f6161",
+                      "on-secondary-fixed": "#1a1c1c",
+                      "on-tertiary": "#ffffff",
+                      "tertiary": "#000000",
+                      "tertiary-fixed": "#ffdcc3",
+                      "secondary-container": "#dcdddd",
+                      "inverse-primary": "#c8c6c5",
+                      "surface-container-highest": "#e2e2e2",
+                      "inverse-surface": "#2f3131",
+                      "surface-bright": "#f9f9f9",
+                      "primary-container": "#1c1b1b",
+                      "on-tertiary-container": "#c76c00",
+                      "surface-dim": "#dadada",
+                      "on-primary-container": "#858383",
+                      "on-tertiary-fixed": "#2f1500",
+                      "on-primary": "#ffffff",
+                      "surface-container-low": "#f4f3f3",
+                      "on-background": "#1a1c1c",
+                      "tertiary-container": "#2f1500",
+                      "primary-fixed-dim": "#c8c6c5",
+                      "on-primary-fixed-variant": "#474746",
+                      "on-surface-variant": "#444748",
+                      "inverse-on-surface": "#f1f1f1",
+                      "secondary-fixed": "#e2e2e2",
+                      "error": "#ba1a1a",
+                      "surface-container-lowest": "#ffffff",
+                      "tertiary-fixed-dim": "#ffb77d"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "unit": "8px",
+                      "section-gap": "120px",
+                      "gutter": "24px",
+                      "container-max": "1280px",
+                      "margin-mobile": "20px",
+                      "margin-desktop": "64px"
+              },
+              "fontFamily": {
+                      "display-lg-mobile": ["Sora"],
+                      "body-md": ["Inter"],
+                      "headline-xl": ["Sora"],
+                      "label-sm": ["Geist"],
+                      "body-lg": ["Inter"],
+                      "headline-xl-mobile": ["Sora"],
+                      "display-lg": ["Sora"]
+              },
+              "fontSize": {
+                      "display-lg-mobile": ["40px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                      "headline-xl": ["32px", {"lineHeight": "1.2", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                      "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "500"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                      "headline-xl-mobile": ["24px", {"lineHeight": "1.3", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                      "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "0.02em", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopNavBar -->
+<header class="sticky top-0 w-full bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-xl shadow-sm z-50">
+<nav class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-8 max-w-container-max mx-auto">
+<a class="font-display-lg text-[24px] md:text-headline-xl font-bold tracking-tighter text-primary dark:text-on-surface" href="#">KRAFT &amp; TONE</a>
+<div class="hidden md:flex items-center gap-10">
+<a class="font-label-sm text-label-sm uppercase tracking-[0.2em] text-primary dark:text-on-surface font-bold border-b border-primary" href="#">SHOP</a>
+<a class="font-label-sm text-label-sm uppercase tracking-[0.2em] text-on-surface-variant dark:text-outline hover:text-primary transition-colors" href="#">COLLECTIONS</a>
+<a class="font-label-sm text-label-sm uppercase tracking-[0.2em] text-on-surface-variant dark:text-outline hover:text-primary transition-colors" href="#">SERVICES</a>
+<a class="font-label-sm text-label-sm uppercase tracking-[0.2em] text-on-surface-variant dark:text-outline hover:text-primary transition-colors" href="#">PHILOSOPHY</a>
+</div>
+<div class="flex items-center gap-6">
+<button class="material-symbols-outlined text-on-surface hover:opacity-70 transition-opacity" data-icon="shopping_bag">shopping_bag</button>
+<button class="material-symbols-outlined text-on-surface hover:opacity-70 transition-opacity" data-icon="person">person</button>
+<button class="md:hidden material-symbols-outlined" data-icon="menu">menu</button>
+</div>
+</nav>
+</header>
+<main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-12">
+<!-- Breadcrumbs -->
+<nav class="mb-12 flex items-center gap-3 font-label-sm text-label-sm tracking-widest text-outline uppercase">
+<a class="hover:text-primary transition-colors" href="#">SHOP</a>
+<span class="material-symbols-outlined text-[12px]" data-icon="chevron_right">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">TOOLS</a>
+<span class="material-symbols-outlined text-[12px]" data-icon="chevron_right">chevron_right</span>
+<span class="text-primary font-bold">PRECISION LEVEL</span>
+</nav>
+<!-- Product Hero Section -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter lg:gap-20 items-start">
+<!-- Gallery Sidebar (Desktop) -->
+<div class="hidden md:flex md:col-span-1 flex-col gap-4">
+<div class="aspect-square bg-surface-container overflow-hidden group cursor-pointer border-b-2 border-primary">
+<img class="w-full h-full object-cover" data-alt="A macro studio photograph of a professional aluminum spirit level tool. The image features soft, diffuse gallery lighting highlighting the metallic texture and the bright green liquid inside the level vial. The background is a clean, neutral warm gray that emphasizes the industrial precision of the equipment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDi2wCGsDuqUFOlz4HDB5dw0TVdx0A9-OFU0FMAYz0OQt0k_ULiFo71J9khhBelhP8PlOkFRhaVs5AafWRRyITkoVK7naXQD4ReWhELmDnt-WDA_rJa6rUJnVUezryMfsq914icwt9LV3MV9e0JDYnRigQAHcyQw5p_2GJLjIldGK7PnBpYhkDWIOs3Qhq3yLF4LxwMu1F63C_jZgMvUSyaD_jWIcAjMQALg3Ge5yqXKsRr8hsRmi3naraY_4nZ_8PIcb0F8ATfsi19"/>
+</div>
+<div class="aspect-square bg-surface-container overflow-hidden opacity-40 hover:opacity-100 transition-opacity cursor-pointer">
+<img class="w-full h-full object-cover" data-alt="A detailed close-up shot of the laser-etched measurements on a high-grade steel tool surface. The lighting is focused and directional, casting subtle shadows that reveal the depth of the engravings. The overall aesthetic is minimalist and technical, using a monochrome palette with sharp clarity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCPJxm2Xhb9YVOTZVt-5zTNB20uUuD9A7qO6dccD0YJOZ0qv0o9HlBfebbp865LiOaGC4VWqGIdUENGHTYy-e0-6_bKysnz3SIzau7mPOLU7sujg-Xy4p9EmX2y3plP52LoV1EyKfpX4OM6NwcrAtlrsh7xAo0ij-kcImLA7FzZUB13zLuJVm8-RQZO55HCopjCOShEc4vGqFG6BaXpw0EZRE1WJoh4CcyqAsPhjb5-5S6sg17lrcJ3h7WsvneD2xSEPPfOUdJLZCj"/>
+</div>
+<div class="aspect-square bg-surface-container overflow-hidden opacity-40 hover:opacity-100 transition-opacity cursor-pointer">
+<img class="w-full h-full object-cover" data-alt="A wide-angle perspective of professional hardware tools organized neatly on a white workshop table. The scene is shot with high-key lighting to create a bright, airy environment that feels modern and methodical. The composition follows the principles of Japanese Ma, utilizing vast negative space for a sense of calm focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0MLGK9bVgsxVrOOQWmFh2Vs_G8ZlTJAZ487a3ZS1QWMzObjitSOAxuUKNLYmZYayaMqjvUkSxiJnzFZkCYYZeaZ8uNHNachuvd03iW7LAvZm7FLRl5vKzGBcNN-n98yrYDAB2vBvbtb0VumLB1z22meQ-2HkiWx1w5UFdayNihP31n4ESGgTZm9oyk1CI9apnxzV50II-2fy9DCvtqXrkuqt6yq2HYeIJezaexNUiPFznmxCbZ7xzlYlgYOZ0-K5d4Raye8p-h6q5"/>
+</div>
+</div>
+<!-- Main Product Image -->
+<div class="col-span-1 md:col-span-7 bg-surface-container-lowest overflow-hidden shadow-sm">
+<img class="w-full h-[600px] object-contain p-12" data-alt="A high-fidelity hero image of a precision-engineered 24-inch master level tool made from brushed aerospace-grade aluminum. The tool is placed diagonally on a soft warm gray background, illuminated by subtle studio lighting that creates soft gradients and crisp edges. The vibrant green leveling vial stands out as a focal point of technical precision." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZcCutDkhof66F-2LGumBCaXoWZbRJmtySQ64E_ykAAdtTIUQZh48m0A_ShBY_reGFJeMcU47ZWWk2i6oFsOrunDJ3V1kGDgWdbEXEq6eqkPJ1RVU7qiP_1GQIJbpXqP_r6TrPBcWntqLhFNnt1Fmf5BPt8W0ZvdRKlLq8URXyys80KZkBkzPu3txy_VgsdmQbxnHneYqhQhgCv7Obt4uOEvi5t9X8yfiyMyHkH30637MZyWjwHOB7kGak4DxCWOGdl0cAOiOuzTiz"/>
+</div>
+<!-- Product Info Sidebar -->
+<div class="col-span-1 md:col-span-4 flex flex-col gap-8">
+<div class="flex flex-col gap-2">
+<span class="font-label-sm text-label-sm tracking-widest text-on-tertiary-container uppercase px-3 py-1 bg-tertiary-fixed-dim/20 self-start">NEW ARRIVAL</span>
+<h1 class="font-display-lg text-headline-xl text-primary tracking-tight">V-90 PRECISION LEVEL</h1>
+<div class="flex items-center gap-4 mt-2">
+<span class="font-headline-xl text-headline-xl">$189.00</span>
+<div class="flex items-center gap-1 text-[#2e7d32]">
+<span class="material-symbols-outlined text-sm" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-label-sm text-label-sm uppercase tracking-widest">IN STOCK</span>
+</div>
+</div>
+</div>
+<div class="h-px bg-outline-variant w-full"></div>
+<p class="font-body-lg text-on-surface-variant leading-relaxed">
+                    Engineered for zero-tolerance environments. The V-90 features a CNC-milled aluminum chassis with a precision of 0.05mm/m. Designed with Japanese restraint and industrial durability for craftsmen who demand absolute accuracy.
+                </p>
+<div class="flex flex-col gap-6">
+<div class="flex flex-col gap-3">
+<label class="font-label-sm text-label-sm uppercase tracking-widest text-outline">SELECT SIZE</label>
+<div class="flex gap-2">
+<button class="px-6 py-3 border border-primary text-primary font-label-sm text-label-sm tracking-widest uppercase">24 INCH</button>
+<button class="px-6 py-3 border border-outline-variant text-outline hover:border-primary hover:text-primary transition-all font-label-sm text-label-sm tracking-widest uppercase">48 INCH</button>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<label class="font-label-sm text-label-sm uppercase tracking-widest text-outline">QUANTITY</label>
+<div class="flex items-center w-32 border border-outline-variant">
+<button class="w-10 h-10 flex items-center justify-center hover:bg-surface-container transition-colors">-</button>
+<span class="flex-1 text-center font-bold">1</span>
+<button class="w-10 h-10 flex items-center justify-center hover:bg-surface-container transition-colors">+</button>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-4 mt-4">
+<button class="w-full py-6 bg-primary text-on-primary font-label-sm text-label-sm tracking-[0.2em] uppercase rounded-none hover:opacity-90 transition-all shadow-md">
+                        ADD TO CART
+                    </button>
+<button class="w-full py-6 bg-surface-container-low text-primary font-label-sm text-label-sm tracking-[0.2em] uppercase rounded-none hover:bg-surface-container transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="favorite">favorite</span>
+                        SAVE TO WISHLIST
+                    </button>
+</div>
+<div class="flex flex-col gap-4 p-6 bg-surface-container-low">
+<div class="flex gap-4 items-start">
+<span class="material-symbols-outlined text-primary" data-icon="local_shipping">local_shipping</span>
+<div>
+<p class="font-label-sm text-label-sm font-bold uppercase tracking-widest">COMPLIMENTARY SHIPPING</p>
+<p class="text-sm text-on-surface-variant">On all orders over $500. Securely crated.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Technical Specifications Section -->
+<section class="mt-section-gap">
+<div class="flex flex-col md:flex-row gap-gutter">
+<div class="md:w-1/3">
+<h2 class="font-display-lg text-headline-xl text-primary sticky top-32">TECHNICAL SPECIFICATIONS</h2>
+</div>
+<div class="md:w-2/3 border-t border-outline-variant">
+<div class="divide-y divide-outline-variant">
+<div class="grid grid-cols-2 py-8">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-outline">MATERIAL</span>
+<span class="font-body-md text-on-surface">6061-T6 Aerospace Grade Aluminum</span>
+</div>
+<div class="grid grid-cols-2 py-8">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-outline">ACCURACY</span>
+<span class="font-body-md text-on-surface">0.05 mm/m (0.0005 in/ft) in all positions</span>
+</div>
+<div class="grid grid-cols-2 py-8">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-outline">FINISH</span>
+<span class="font-body-md text-on-surface">Matte Black Hard-Anodized Surface</span>
+</div>
+<div class="grid grid-cols-2 py-8">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-outline">VIALS</span>
+<span class="font-body-md text-on-surface">UV-Resistant High-Contrast Acrylic Glass</span>
+</div>
+<div class="grid grid-cols-2 py-8">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-outline">WEIGHT</span>
+<span class="font-body-md text-on-surface">1.45 kg / 3.2 lbs</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Related Artifacts Section -->
+<section class="mt-section-gap mb-section-gap">
+<div class="flex justify-between items-end mb-12">
+<h2 class="font-display-lg text-headline-xl text-primary">RELATED ARTIFACTS</h2>
+<a class="font-label-sm text-label-sm uppercase tracking-widest text-outline border-b border-outline hover:text-primary hover:border-primary transition-all" href="#">VIEW COLLECTION</a>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- Product Card 1 -->
+<div class="flex flex-col gap-4 group">
+<div class="aspect-[3/4] bg-surface-container overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A professional heavy-duty steel hammer with a sleek matte black finish. The image is a sharp, editorial-style product shot with cinematic lighting that emphasizes the metallic grain and the ergonomic handle design. The background is a minimalist light gray, creating a sense of premium industrial quality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8I-UuzqQ8o9wvVvJX8Gya9J88ig89RXlC1zbCAHydCnZ3p4n_BVghpEVvO1yNUMeN2GHP-60lB3aB8c3ijyeZwjmNEXIB0oWjGuiIGNe1BOBwnJ_J8suOdZOTVy68y38Qve3rPwA-nbMC_NUVq1Fp4k0X6s9Nq8SB0TGLA1sg9L7NM3aLSItFT5Z31CDTMnrq793oIE-z_8V2qZN5f2DmuJV_C0icU_DC1cWIq8JOT3w-5oeHPqMc2dvayr8MPwTBYVQsUqn7rJx3"/>
+<div class="absolute top-4 left-4 bg-primary text-on-primary px-3 py-1 text-[10px] font-bold tracking-widest uppercase">PRECISION</div>
+</div>
+<div class="flex flex-col">
+<h3 class="font-label-sm text-label-sm uppercase tracking-widest text-primary">FORGED STEEL HAMMER</h3>
+<p class="text-on-surface-variant">$112.00</p>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="flex flex-col gap-4 group">
+<div class="aspect-[3/4] bg-surface-container overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A minimalist set of high-carbon steel wood chisels with dark walnut handles. The tools are arranged in an asymmetrical, artistically pleasing layout on a neutral gray surface. The lighting is soft and natural, highlighting the hand-polished metal edges and the organic texture of the wood." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDf2XSEVDJqbazcDYwv6P9fNQs7ATXwYpPbmvaLu77Dcs3osi4n6geY1TkwPKzIQFI1IBu3nijWt3CLpS6IbJYau7aMq_mDmCUJfsGCOW-8T5rUdJA0f8QSiVeD6ZCR1SXodEweKwdzeYFFGb4I1N3goXmd7qDq09-tQpO1kbVOw63XQVjf-M4Y0zb_Wd6jPhoyCeh55yIG6zHWNvuvzuLuvke-bhOkRXPWbaOSXE98UKBbB5TzL61iMez3mU7Mq5hl1II1NwfKrIbZ"/>
+</div>
+<div class="flex flex-col">
+<h3 class="font-label-sm text-label-sm uppercase tracking-widest text-primary">MASTER CHISEL SET</h3>
+<p class="text-on-surface-variant">$245.00</p>
+</div>
+</div>
+<!-- Product Card 3 -->
+<div class="flex flex-col gap-4 group">
+<div class="aspect-[3/4] bg-surface-container overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A macro studio shot of a digital caliper tool showing a precise measurement on its LCD screen. The tool is crafted from brushed stainless steel, reflecting soft ambient light. The aesthetic is extremely clean and technical, following a light-mode color palette with subtle shadows that suggest depth and precision." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDiy4ehXGXRd_h36mVY8V712q0muDjMcu1zx4HF0GxJ-_9bZ006fh6FbNNnzIBNj-LTQcdZfZmVOz6vkPs-_xht-qYWebB_VCrLVhWIufDmeoOQAGqsUbq0z1RL4gmuVJQbids2z5LgTTMo2__twmYWg58Z14IhW-EPcfjPiku7gZO0Npc8PQnwmItdaXXJm7AcCBv_A_lPAa6WqVNQbLtOiFhINB1d8Y1xKZBYSDhGvKkglJy9imCcld23tBzYMohiQaBnBhvXrXTp"/>
+</div>
+<div class="flex flex-col">
+<h3 class="font-label-sm text-label-sm uppercase tracking-widest text-primary">DIGITAL CALIPER X2</h3>
+<p class="text-on-surface-variant">$78.00</p>
+</div>
+</div>
+<!-- Product Card 4 -->
+<div class="flex flex-col gap-4 group">
+<div class="aspect-[3/4] bg-surface-container overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A professional-grade hardware storage case made of rugged black polymer with stainless steel latches. The image is shot from a slightly low angle to give the object a sense of presence and strength. The lighting is crisp and modern, emphasizing the industrial textures and robust construction of the case." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCN6ZljFH4Ow-zfa5E8zPvgJ7TXQ5n5riDwK-CvDLOEPKUXfUX-Fann3soCBrUv3AWAPAg-MynHOWL5kiEl95cgac7jMooHZHjdzN1pKkh26Xn0lbwy6zE6OdcuFOUcLE3NG-mH0_JkF4soqwV6zeUrOSe3TFt3bvJBVOERILf86371hZ8AFZx3KxBi5Fk90Rv7m440l8Awyylcr1po5vq7myqPUHehkWOlAF3zsckcUusPSUIcbHSdM7b1qv-N4IMVMaHXcw7VwzVn"/>
+</div>
+<div class="flex flex-col">
+<h3 class="font-label-sm text-label-sm uppercase tracking-widest text-primary">MODULAR SYSTEM CASE</h3>
+<p class="text-on-surface-variant">$310.00</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-section-gap px-margin-mobile md:px-margin-desktop bg-surface-container-low dark:bg-surface-dim border-t border-outline-variant">
+<div class="max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-start gap-gutter">
+<div class="flex flex-col gap-8 max-w-sm">
+<span class="font-display-lg text-headline-xl font-bold text-primary dark:text-on-surface">KRAFT &amp; TONE</span>
+<p class="font-body-md text-on-surface-variant opacity-60">
+                    Engineers of precision artifacts. We design tools for those who build the future, combining Japanese minimal restraint with industrial longevity.
+                </p>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-12 md:gap-24">
+<div class="flex flex-col gap-4">
+<h4 class="font-label-sm text-label-sm font-bold tracking-widest text-primary">SUPPORT</h4>
+<a class="font-label-sm text-label-sm tracking-widest text-on-surface-variant opacity-60 hover:opacity-100 hover:text-primary transition-all" href="#">SHIPPING &amp; RETURNS</a>
+<a class="font-label-sm text-label-sm tracking-widest text-on-surface-variant opacity-60 hover:opacity-100 hover:text-primary transition-all" href="#">WARRANTY</a>
+<a class="font-label-sm text-label-sm tracking-widest text-on-surface-variant opacity-60 hover:opacity-100 hover:text-primary transition-all" href="#">CONTACT</a>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-label-sm text-label-sm font-bold tracking-widest text-primary">LEGAL</h4>
+<a class="font-label-sm text-label-sm tracking-widest text-on-surface-variant opacity-60 hover:opacity-100 hover:text-primary transition-all" href="#">PRIVACY POLICY</a>
+<a class="font-label-sm text-label-sm tracking-widest text-on-surface-variant opacity-60 hover:opacity-100 hover:text-primary transition-all" href="#">TERMS OF SERVICE</a>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-label-sm text-label-sm font-bold tracking-widest text-primary">SOCIAL</h4>
+<a class="font-label-sm text-label-sm tracking-widest text-on-surface-variant opacity-60 hover:opacity-100 hover:text-primary transition-all" href="#">INSTAGRAM</a>
+<a class="font-label-sm text-label-sm tracking-widest text-on-surface-variant opacity-60 hover:opacity-100 hover:text-primary transition-all" href="#">JOURNAL</a>
+</div>
+</div>
+</div>
+<div class="max-w-container-max mx-auto mt-24 pt-8 border-t border-outline-variant/30 flex flex-col md:flex-row justify-between items-center gap-4">
+<span class="font-label-sm text-label-sm tracking-widest text-on-surface-variant opacity-60">© 2024 KRAFT &amp; TONE. ENGINEERED FOR LONGEVITY.</span>
+<div class="flex gap-6">
+<span class="material-symbols-outlined text-outline" data-icon="payments">payments</span>
+<span class="material-symbols-outlined text-outline" data-icon="shield">shield</span>
+</div>
+</div>
+</footer>
+</body></html>

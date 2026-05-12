@@ -18,8 +18,14 @@
         <router-link to="/catalogo" class="btn btn-primary" id="btn-ir-catalogo-pedidos">Ver Catálogo</router-link>
       </div>
 
-      <div v-else class="pedidos-list" id="mis-pedidos-list">
-        <div v-for="p in pedidos" :key="p.id" class="pedido-card card" :id="`pedido-${p.id}`">
+      <div v-else class="flex flex-col gap-5" id="mis-pedidos-list">
+        <RouterLink
+          v-for="p in pedidos"
+          :key="p.id"
+          :to="`/pedido/${p.id}`"
+          class="pedido-card card block transition hover:border-primary/20 hover:shadow-md"
+          :id="`pedido-${p.id}`"
+        >
           <div class="pedido-header">
             <div>
               <p class="pedido-id">Pedido <strong>#{{ p.id }}</strong></p>
@@ -42,7 +48,7 @@
             </span>
             <span class="pedido-total">${{ formatPrice(p.total) }}</span>
           </div>
-        </div>
+        </RouterLink>
       </div>
     </div>
   </main>
@@ -50,6 +56,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { RouterLink } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.js'
 import { ServiciosSupabase } from '@/servicios/ServiciosSupabase.js'
 import { isMockup } from '@/lib/supabase.js'
