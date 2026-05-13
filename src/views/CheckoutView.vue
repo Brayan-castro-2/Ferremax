@@ -2,7 +2,7 @@
   <main class="bg-surface text-on-surface font-body-md">
     <section class="mx-auto grid max-w-container-max grid-cols-1 gap-gutter px-margin-mobile py-section-gap lg:grid-cols-12 lg:px-margin-desktop">
       <div class="lg:col-span-7">
-        <h1 class="mb-8 font-headline-xl text-headline-xl">Checkout</h1>
+        <h1 class="mb-8 font-headline-xl text-headline-xl">Pago</h1>
         <p v-if="error" class="mb-6 rounded-md border border-error/30 bg-error-container px-4 py-3 text-on-error-container" role="alert">
           {{ error }}
         </p>
@@ -10,49 +10,49 @@
         <form class="space-y-8" @submit.prevent="submitOrder" novalidate>
           <div class="grid grid-cols-1 gap-gutter md:grid-cols-2">
             <div class="flex flex-col gap-2">
-              <label for="firstName" class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">First name</label>
+              <label for="firstName" class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Nombre</label>
               <input id="firstName" v-model.trim="form.firstName" required class="input-minimal" />
             </div>
             <div class="flex flex-col gap-2">
-              <label for="lastName" class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Last name</label>
+              <label for="lastName" class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Apellido</label>
               <input id="lastName" v-model.trim="form.lastName" required class="input-minimal" />
             </div>
           </div>
 
           <div class="flex flex-col gap-2">
-            <label for="address" class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Street address</label>
+            <label for="address" class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Dirección</label>
             <input id="address" v-model.trim="form.address" required class="input-minimal" />
           </div>
 
           <div class="grid grid-cols-1 gap-gutter md:grid-cols-3">
             <div class="flex flex-col gap-2">
-              <label for="city" class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">City</label>
+              <label for="city" class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Ciudad</label>
               <input id="city" v-model.trim="form.city" required class="input-minimal" />
             </div>
             <div class="flex flex-col gap-2">
-              <label for="region" class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Region</label>
+              <label for="region" class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Región</label>
               <input id="region" v-model.trim="form.region" required class="input-minimal" />
             </div>
             <div class="flex flex-col gap-2">
-              <label for="zip" class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Postal code</label>
+              <label for="zip" class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Código postal</label>
               <input id="zip" v-model.trim="form.zip" required class="input-minimal" />
             </div>
           </div>
 
           <div class="flex flex-col gap-2">
-            <label for="email" class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Email</label>
+            <label for="email" class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Correo electrónico</label>
             <input id="email" v-model.trim="form.email" required type="email" class="input-minimal" />
           </div>
 
           <button :disabled="submitting || !isValid || carrito.items.length === 0" class="inline-flex items-center gap-3 rounded-lg bg-primary px-12 py-4 font-label-sm text-label-sm uppercase tracking-widest text-on-primary transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50">
-            <span>{{ submitting ? 'Processing...' : 'Complete Purchase' }}</span>
+            <span>{{ submitting ? 'Procesando...' : 'Confirmar pedido' }}</span>
           </button>
         </form>
       </div>
 
       <aside class="space-y-gutter lg:sticky lg:top-24 lg:col-span-5">
         <div class="rounded-xl bg-surface-container-low p-8 shadow-ambient">
-          <h2 class="mb-8 font-label-sm text-label-sm uppercase tracking-[0.2em] text-on-surface-variant">Order summary</h2>
+          <h2 class="mb-8 font-label-sm text-label-sm uppercase tracking-[0.2em] text-on-surface-variant">Resumen del pedido</h2>
           <ul class="mb-8 space-y-4 border-b border-outline-variant pb-8">
             <li v-for="item in carrito.items" :key="item.id" class="flex items-center justify-between gap-4">
               <span>{{ item.nombre }} x{{ item.cantidad }}</span>
@@ -66,7 +66,7 @@
               <span>${{ formatPrice(carrito.subtotal) }}</span>
             </div>
             <div class="flex justify-between font-label-sm text-label-sm tracking-widest text-on-surface-variant">
-              <span>Discount</span>
+              <span>Descuento</span>
               <span>${{ formatPrice(carrito.descuento) }}</span>
             </div>
             <div class="flex justify-between border-t border-outline-variant pt-4 font-body-lg text-body-lg font-semibold">
