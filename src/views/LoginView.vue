@@ -1,5 +1,6 @@
 <template>
-  <main class="relative min-h-screen overflow-hidden bg-surface font-inter text-on-surface">
+  <div class="flex min-h-screen flex-col">
+    <main class="relative flex-1 overflow-hidden bg-surface font-inter text-on-surface">
     <div class="pointer-events-none absolute inset-0">
       <div class="absolute -left-1/4 top-0 h-[70vh] w-[70vw] rounded-full bg-gradient-to-br from-tertiary-fixed-dim/25 via-transparent to-transparent blur-3xl" />
       <div class="absolute -right-1/4 bottom-0 h-[60vh] w-[60vw] rounded-full bg-gradient-to-tl from-primary/5 via-transparent to-transparent blur-3xl" />
@@ -24,6 +25,9 @@
       </section>
 
       <section class="flex flex-col justify-center px-margin-mobile py-16 sm:px-10 lg:px-margin-desktop lg:py-24">
+        <RouterLink to="/catalogo" class="mx-auto mb-6 flex w-full max-w-md items-center gap-1.5 font-geist text-[10px] uppercase tracking-widest text-on-surface-variant transition-colors hover:text-primary">
+          ← Volver al catálogo
+        </RouterLink>
         <div class="mx-auto w-full max-w-md rounded-2xl border border-outline-variant/50 bg-surface-container-lowest/95 p-8 shadow-ambient backdrop-blur-md sm:p-10">
           <header class="mb-8">
             <p class="font-geist text-[10px] font-semibold uppercase tracking-[0.22em] text-tertiary">Acceso seguro</p>
@@ -89,6 +93,8 @@
       </section>
     </div>
   </main>
+  <AppFooter />
+  </div>
 </template>
 
 <script setup>
@@ -98,6 +104,7 @@ import { useAuthStore } from '@/stores/auth.js'
 import { isMockup } from '@/lib/supabase.js'
 import FmInput from '@/components/ui/FmInput.vue'
 import FmButton from '@/components/ui/FmButton.vue'
+import AppFooter from '@/components/layout/AppFooter.vue'
 
 const auth = useAuthStore()
 const router = useRouter()

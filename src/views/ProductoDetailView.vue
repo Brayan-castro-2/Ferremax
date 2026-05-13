@@ -117,8 +117,8 @@ async function loadProduct() {
       throw new Error(body.error || `No se pudo cargar el producto ${id}`)
     }
     product.value = await response.json()
-    if (product.value?.imagen) {
-      activeImage.value = product.value.imagen
+    if (product.value?.imagen_url) {
+      activeImage.value = product.value.imagen_url
     }
   } catch (err) {
     if (!isMockup) {
@@ -127,6 +127,9 @@ async function loadProduct() {
         const found = list.find((p) => Number(p.id) === id)
         if (found) {
           product.value = found
+          if (found.imagen_url) {
+            activeImage.value = found.imagen_url
+          }
           error.value = ''
           return
         }

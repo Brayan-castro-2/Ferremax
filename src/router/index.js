@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.js'
 
+const HomeView = () => import('@/views/HomeView.vue')
 const LoginView = () => import('@/views/LoginView.vue')
 const RegisterView = () => import('@/views/auth/RegisterView.vue')
 const ForgotPasswordView = () => import('@/views/auth/ForgotPasswordView.vue')
@@ -21,7 +22,7 @@ const ContadorView = () => import('@/views/roles/ContadorView.vue')
 const NotFoundView = () => import('@/views/NotFoundView.vue')
 
 const routes = [
-  { path: '/', redirect: '/catalogo' },
+  { path: '/', name: 'Home', component: HomeView, meta: { public: true, title: 'Inicio' } },
   { path: '/login', name: 'Login', component: LoginView, meta: { public: true, guestOnly: true, title: 'Iniciar sesión' } },
   { path: '/registro', name: 'Register', component: RegisterView, meta: { public: true, guestOnly: true, title: 'Crear cuenta' } },
   { path: '/recuperar', name: 'ForgotPassword', component: ForgotPasswordView, meta: { public: true, guestOnly: true, title: 'Recuperar acceso' } },

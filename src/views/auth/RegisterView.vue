@@ -1,6 +1,11 @@
 <template>
-  <main class="flex min-h-screen items-center justify-center bg-surface px-margin-mobile py-16 font-inter">
-    <div class="w-full max-w-md rounded-2xl border border-outline-variant/50 bg-surface-container-lowest p-8 shadow-ambient sm:p-10">
+  <div class="flex min-h-screen flex-col">
+    <main class="flex flex-1 items-center justify-center bg-surface px-margin-mobile py-16 font-inter">
+      <div class="w-full max-w-md">
+        <RouterLink to="/catalogo" class="mb-6 flex items-center gap-1.5 font-geist text-[10px] uppercase tracking-widest text-on-surface-variant transition-colors hover:text-primary">
+          ← Volver al catálogo
+        </RouterLink>
+        <div class="w-full rounded-2xl border border-outline-variant/50 bg-surface-container-lowest p-8 shadow-ambient sm:p-10">
 
       <!-- Header -->
       <header class="mb-8">
@@ -113,8 +118,11 @@
         <RouterLink to="/login" class="font-semibold text-primary hover:underline">Iniciar sesión</RouterLink>
       </p>
 
-    </div>
-  </main>
+        </div>
+      </div>
+    </main>
+    <AppFooter />
+  </div>
 </template>
 
 <script setup>
@@ -123,6 +131,7 @@ import { useRouter } from 'vue-router'
 import { supabase, isMockup } from '@/lib/supabase.js'
 import FmInput from '@/components/ui/FmInput.vue'
 import FmButton from '@/components/ui/FmButton.vue'
+import AppFooter from '@/components/layout/AppFooter.vue'
 
 const router = useRouter()
 

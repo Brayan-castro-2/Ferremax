@@ -5,7 +5,7 @@
   >
     <div class="mx-auto flex h-16 max-w-container-max items-center justify-between gap-4 px-margin-mobile md:h-[4.25rem] md:px-margin-desktop">
       <RouterLink
-        to="/catalogo"
+        to="/"
         class="group flex shrink-0 items-baseline gap-1 font-sora text-lg font-bold tracking-tight text-primary md:text-xl"
         id="nav-logo"
       >

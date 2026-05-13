@@ -4,6 +4,7 @@ import App from './App.vue'
 import router from './router/index.js'
 import './assets/main.css'
 import { useAuthStore } from '@/stores/auth.js'
+import { verificarConexion } from '@/lib/supabase.js'
 
 const app = createApp(App)
 const pinia = createPinia()
@@ -15,4 +16,5 @@ app.use(router)
 const auth = useAuthStore()
 auth.initialize().then(() => {
   app.mount('#app')
+  verificarConexion()
 })

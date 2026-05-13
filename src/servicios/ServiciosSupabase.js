@@ -70,13 +70,36 @@ export const ServiciosSupabase = {
    * Obtiene todos los productos activos del catálogo.
    */
   async obtenerProductos() {
-    const { data, error } = await supabase
+    if (!supabase) {
+      throw new Error('Supabase no está inicializado. Verifica el archivo .env.local')
+    }
+
+    let { data, error } = await supabase
       .from('productos')
-      .select('id, nombre, descripcion, precio, stock, categoria, activo')
+      .select('id, nombre, descripcion, precio, stock, categoria, imagen_url, activo')
       .eq('activo', true)
       .order('id')
 
-    if (error) throw new Error(`Error al obtener productos: ${error.message}`)
+    if (error && error.message.includes('relation') && error.message.includes('does not exist')) {
+      console.warn('🔴 Tabla "productos" no existe, intentando con "producto" (singular)...')
+      const result = await supabase
+        .from('producto')
+        .select('id, nombre, descripcion, precio, stock, categoria, imagen_url, activo')
+        .eq('activo', true)
+        .order('id')
+      
+      data = result.data
+      error = result.error
+    }
+
+    if (error) {
+      console.error('🔴 Error completo Supabase:', error)
+      if (error.message.includes('row-level security') || error.code === '42501') {
+        throw new Error('Configura las políticas RLS en Supabase para permitir acceso.')
+      }
+      throw new Error(error.message)
+    }
+
     return data
   },
 
