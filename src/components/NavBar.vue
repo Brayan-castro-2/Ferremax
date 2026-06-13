@@ -27,7 +27,7 @@
 
       <div class="flex items-center gap-2 md:gap-3">
         <RouterLink
-          v-if="auth.isAuthenticated && auth.userRole === 'Cliente'"
+          v-if="!auth.isAuthenticated || auth.userRole === 'Cliente'"
           to="/carrito"
           class="relative flex h-10 w-10 items-center justify-center rounded-full border border-outline-variant/60 text-on-surface transition hover:border-primary/30 hover:bg-surface-container-low"
           id="btn-carrito"
@@ -178,6 +178,7 @@ const desktopLinks = computed(() => {
   if (!auth.isAuthenticated) {
     return [
       { label: 'Catálogo', to: '/catalogo' },
+      { label: 'Carrito', to: '/carrito' },
       { label: 'Registro', to: '/registro' },
       { label: 'Acceso', to: '/login' },
     ]

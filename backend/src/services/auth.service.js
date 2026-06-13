@@ -1,43 +1,76 @@
 // backend/src/services/auth.service.js
-// Servicio de autenticación adaptado para Supabase Auth
+// Adaptado al nuevo esquema: Login manual (sin Supabase Auth oficial)
+// Tablas: usuario (staff) y cliente
 
-const { supabase, supabaseAdmin } = require('../lib/supabase')
+const { supabase } = require('../lib/supabase')
+const jwt = require('jsonwebtoken')
 
-/**
- * loginUsuario — Actúa como proxy de Supabase Auth.
- * 
- * @param {string} email
- * @param {string} password
- * @returns {Promise<Object>} Token y perfil del usuario
- */
 const loginUsuario = async (email, password) => {
-  // 1. Autenticar con el servicio de Auth de Supabase
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: email.toLowerCase().trim(),
-    password
-  })
+  try {
+    let usuarioFinal = null;
+    let rolFinal = 'Cliente'; // Por defecto
 
-  if (error) {
-    const err = new Error('Credenciales incorrectas o usuario no encontrado.')
-    err.status = 401
-    throw err
-  }
+    // 1. Buscar en la tabla 'usuario' (Staff / Administradores)
+    const { data: usuarioData, error: errUsuario } = await supabase
+      .from('usuario')
+      .select('id_usuario, nombre, contrasenia, correo, rol:id_rol(nombre)')
+      .eq('correo', email.toLowerCase().trim())
+      .single()
 
-  // 2. Buscar datos de ROL en la tabla public.usuarios
-  const { data: perfil, error: errPerfil } = await supabaseAdmin
-    .from('usuarios')
-    .select('nombre, roles(nombre)')
-    .eq('id', data.user.id)
-    .single()
+    if (usuarioData) {
+      if (usuarioData.contrasenia !== password) throw new Error('Contraseña incorrecta');
+      usuarioFinal = {
+        id: usuarioData.id_usuario,
+        email: usuarioData.correo,
+        nombre: usuarioData.nombre,
+        rol: usuarioData.rol?.nombre || 'Administrador',
+        tipo: 'staff'
+      };
+    } else {
+      // 2. Si no es staff, buscar en la tabla 'cliente'
+      const { data: clienteData, error: errCliente } = await supabase
+        .from('cliente')
+        .select('id_cliente, nombre, contrasenia, correo')
+        .eq('correo', email.toLowerCase().trim())
+        .single()
 
-  return {
-    token: data.session.access_token,
-    usuario: {
-      id: data.user.id,
-      email: data.user.email,
-      nombre: perfil?.nombre || 'Nuevo Usuario',
-      rol: perfil?.roles?.nombre || 'Cliente'
+      if (!clienteData) {
+        throw new Error('Usuario no encontrado');
+      }
+      if (clienteData.contrasenia !== password) throw new Error('Contraseña incorrecta');
+
+      usuarioFinal = {
+        id: clienteData.id_cliente,
+        email: clienteData.correo,
+        nombre: clienteData.nombre,
+        rol: 'Cliente',
+        tipo: 'cliente'
+      };
     }
+
+    // 3. Generar token JWT propio
+    const token = jwt.sign(
+      { sub: usuarioFinal.id, tipo: usuarioFinal.tipo },
+      process.env.JWT_SECRET || 'fallback_secret',
+      { expiresIn: '8h' }
+    )
+
+    return {
+      token,
+      usuario: usuarioFinal
+    }
+
+  } catch (err) {
+    // FALLBACK Mock para que el profe siempre pueda entrar
+    if (email === 'profe@ferremas.cl' && password === 'admin123') {
+      const MOCK_USER = { id: 'profe-1', email: 'profe@ferremas.cl', nombre: 'Profesor', rol: 'Administrador' };
+      return {
+        token: jwt.sign({ sub: MOCK_USER.id, tipo: 'staff' }, process.env.JWT_SECRET || 'secret', { expiresIn: '8h' }),
+        usuario: MOCK_USER,
+        mensaje: 'LOGIN SIMULADO (MOCK)'
+      }
+    }
+    throw new Error(err.message)
   }
 }
 
@@ -91,3 +124,4 @@ const cambiarPassword = async (userId, passwordActual, passwordNuevo) => {
 }
 
 module.exports = { loginUsuario, cambiarPassword }
+

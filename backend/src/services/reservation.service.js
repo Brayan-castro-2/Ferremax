@@ -44,10 +44,10 @@ const TTL_MINUTOS = 15
 const crearReserva = async (productoId, cantidad, usuarioId) => {
   // 1. Stock físico actual
   const { data: producto, error: errProd } = await supabaseAdmin
-    .from('productos')
-    .select('id, nombre, stock')
-    .eq('id', productoId)
-    .eq('activo', true)
+    .from('producto')
+    .select('id_producto, nombre, stock')
+    .eq('id_producto', productoId)
+    .eq('activa', true)
     .single()
 
   if (errProd || !producto) {
@@ -61,7 +61,7 @@ const crearReserva = async (productoId, cantidad, usuarioId) => {
   const { data: reservasActivas } = await supabaseAdmin
     .from('reservas')
     .select('cantidad')
-    .eq('producto_id', productoId)
+    .eq('id_producto', productoId)
     .eq('estado', 'activa')
     .gt('expira_en', ahora)
 
@@ -85,8 +85,8 @@ const crearReserva = async (productoId, cantidad, usuarioId) => {
   const { data: reserva, error: errReserva } = await supabaseAdmin
     .from('reservas')
     .insert([{
-      producto_id: productoId,
-      usuario_id:  usuarioId,
+      id_producto: productoId,
+      id_usuario:  usuarioId,
       cantidad,
       estado:      'activa',
       expira_en:   expiraEn
@@ -118,7 +118,7 @@ const crearReserva = async (productoId, cantidad, usuarioId) => {
 const confirmarReserva = async (reservaId, pedidoId) => {
   const { data, error } = await supabaseAdmin
     .from('reservas')
-    .update({ estado: 'confirmada', pedido_id: pedidoId })
+    .update({ estado: 'confirmada', id_pedido: pedidoId })
     .eq('id', reservaId)
     .eq('estado', 'activa')
     .select()

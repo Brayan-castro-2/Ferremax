@@ -9,7 +9,7 @@ const inventoryService = require('../services/inventory.service')
  */
 const getInventory = async (req, res, next) => {
   try {
-    const data = await inventoryService.getAllInventory()
+    const data = await inventoryService.getInventory()
     return res.status(200).json({
       totalRegistros: data.length,
       inventario: data
@@ -37,7 +37,7 @@ const updateStock = async (req, res, next) => {
       return res.status(400).json({ error: 'Debes proveer una "cantidad" numérica válida' })
     }
 
-    const actualizado = await inventoryService.updateInventoryStock(id, cantidad)
+    const actualizado = await inventoryService.updateStock(id, cantidad)
     
     return res.status(200).json({
       mensaje: 'Stock actualizado con éxito',

@@ -12,6 +12,7 @@ const productRoutes  = require('./src/routes/products.routes')
 const currencyRoutes = require('./src/routes/currency.routes')
 const orderRoutes    = require('./src/routes/orders.routes')
 const inventoryRoutes = require('./src/routes/inventory.routes')
+const paymentRoutes  = require('./src/routes/payment.routes')
 
 const app = express()
 
@@ -61,6 +62,7 @@ app.use('/api/products', productRoutes)
 app.use('/api/currency', currencyRoutes)
 app.use('/api/orders',   orderRoutes)
 app.use('/api/inventory', inventoryRoutes)
+app.use('/api/payment',  paymentRoutes)
 
 // ── 404 handler ────────────────────────────────────────────────────────
 app.use((req, res) => {

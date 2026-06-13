@@ -152,15 +152,11 @@ function emojiCategoria(cat) { return EMOJIS_CATEGORIA[cat] || '🔧' }
 function formatPrice(val)    { return Number(val).toLocaleString('es-CL') }
 
 async function confirmarPedido() {
-  if (!auth.isAuthenticated) {
-    errorPedido.value = 'Debes iniciar sesión para confirmar tu pedido.'
-    return
-  }
-
   procesando.value  = true
   errorPedido.value = ''
 
   try {
+    /* 
     if (isMockup) {
       // Simulación sin Supabase
       await new Promise(r => setTimeout(r, 1000))
@@ -173,21 +169,51 @@ async function confirmarPedido() {
       carrito.vaciar()
       return
     }
+    */
 
-    // Llamada real al orquestador → Supabase
-    const resultado = await OrquestadorDePedidos.iniciarProcesoDeCompra(
-      auth.user.id,
-      carrito.items,
-      { tipo_entrega: tipoEntrega.value, direccion: direccion.value }
-    )
-
-    carritoData.value  = {
-      aplicaDescuento: resultado.aplicaDescuento,
-      descuento:       resultado.descuentoMonto,
-      total:           resultado.total
+    // 1. Simular la creación de pedido localmente para no depender de Supabase (por petición del usuario)
+    const resultado = {
+      pedido: { id: Math.floor(Math.random() * 1000000) },
+      total: carrito.total
     }
-    pedidoConfirmado.value = resultado.pedido
-    carrito.vaciar()
+
+    // 2. Iniciar pago con Transbank a través del backend local
+    // Usamos el ID del pedido recién creado como buyOrder
+    const backendUrl = 'http://localhost:3000' // Ajusta el puerto de tu backend si es necesario
+    
+    const headers = { 'Content-Type': 'application/json' }
+    if (auth.token) headers['Authorization'] = `Bearer ${auth.token}`
+
+    const response = await fetch(`${backendUrl}/api/payment/create`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        buyOrder: `ORDEN-${resultado.pedido.id}`,
+        sessionId: `SESION-${auth.user?.id || 'INVITADO'}`,
+        amount: Math.round(resultado.total),
+        returnUrl: `${backendUrl}/api/payment/commit`
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error('Error al conectar con Transbank')
+    }
+
+    const { token, url } = await response.json()
+
+    // 3. Crear formulario y redirigir a Transbank
+    const form = document.createElement('form')
+    form.method = 'POST'
+    form.action = url
+
+    const input = document.createElement('input')
+    input.type = 'hidden'
+    input.name = 'token_ws'
+    input.value = token
+
+    form.appendChild(input)
+    document.body.appendChild(form)
+    form.submit()
 
   } catch (err) {
     errorPedido.value = err.message

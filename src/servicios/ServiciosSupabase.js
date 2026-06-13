@@ -33,7 +33,7 @@ export const ServiciosSupabase = {
    */
   async obtenerUsuarioPorEmail(email) {
     const { data, error } = await supabase
-      .from('usuarios')
+      .from('usuario')
       .select('id, nombre, email, rol_id, activo, roles(nombre)')
       .eq('email', email)
       .eq('activo', true)
@@ -54,7 +54,7 @@ export const ServiciosSupabase = {
    */
   async obtenerUsuarios() {
     const { data, error } = await supabase
-      .from('usuarios')
+      .from('usuario')
       .select('id, nombre, email, rol_id, activo, creado_en, roles(nombre)')
       .order('creado_en', { ascending: false })
 
@@ -109,7 +109,7 @@ export const ServiciosSupabase = {
    */
   async obtenerStockProducto(productoId) {
     const { data, error } = await supabase
-      .from('productos')
+      .from('producto')
       .select('id, nombre, stock')
       .eq('id', productoId)
       .single()
@@ -125,7 +125,7 @@ export const ServiciosSupabase = {
    */
   async actualizarStock(productoId, nuevoStock) {
     const { data, error } = await supabase
-      .from('productos')
+      .from('producto')
       .update({ stock: nuevoStock })
       .eq('id', productoId)
       .select()
@@ -145,7 +145,7 @@ export const ServiciosSupabase = {
   async obtenerInventario() {
     const { data, error } = await supabase
       .from('inventario')
-      .select('id, cantidad, ubicacion, productos(id, nombre, categoria, precio, stock)')
+      .select('id, cantidad, ubicacion, producto(id, nombre, categoria, precio, stock)')
       .order('id')
 
     if (error) throw new Error(`Error al obtener inventario: ${error.message}`)
@@ -159,13 +159,13 @@ export const ServiciosSupabase = {
   /**
    * Crea un pedido completo con sus detalles en una sola operación.
    * @param {Object} pedido - { usuario_id, estado, tipo_entrega, direccion, total }
-   * @param {Array}  detalles - [{ producto_id, cantidad, precio_unitario }]
+   * @param {Array}  detalles - [{ id_producto, cantidad, precio_unitario }]
    * @returns {Promise<Object>} Pedido creado
    */
   async crearPedidoConDetalles(pedido, detalles) {
     // 1. Crear cabecera del pedido
     const { data: pedidoCreado, error: errorPedido } = await supabase
-      .from('pedidos')
+      .from('pedido')
       .insert([pedido])
       .select()
       .single()
@@ -173,20 +173,20 @@ export const ServiciosSupabase = {
     if (errorPedido) throw new Error(`Error al crear pedido: ${errorPedido.message}`)
 
     // 2. Insertar detalles con el id del pedido recién creado
-    const detallesConId = detalles.map(d => ({ ...d, pedido_id: pedidoCreado.id }))
+    const detallesConId = detalles.map(d => ({ ...d, id_pedido: pedidoCreado.id }))
     const { error: errorDetalles } = await supabase
       .from('detalle_pedido')
       .insert(detallesConId)
 
     if (errorDetalles) {
       // Rollback manual
-      await supabase.from('pedidos').delete().eq('id', pedidoCreado.id)
+      await supabase.from('pedido').delete().eq('id', pedidoCreado.id)
       throw new Error(`Error al crear detalle_pedido: ${errorDetalles.message}`)
     }
 
     // 3. Registrar en historial
     await supabase.from('historial_pedidos').insert([{
-      pedido_id: pedidoCreado.id,
+      id_pedido: pedidoCreado.id,
       estado: pedido.estado
     }])
 
@@ -199,10 +199,10 @@ export const ServiciosSupabase = {
    */
   async obtenerPedidosUsuario(usuarioId) {
     const { data, error } = await supabase
-      .from('pedidos')
+      .from('pedido')
       .select(`
         id, estado, tipo_entrega, direccion, total, creado_en,
-        detalle_pedido(id, cantidad, precio_unitario, productos(nombre, categoria))
+        detalle_pedido(id, cantidad, precio_unitario, producto(nombre, categoria))
       `)
       .eq('usuario_id', usuarioId)
       .order('creado_en', { ascending: false })
@@ -216,7 +216,7 @@ export const ServiciosSupabase = {
    */
   async obtenerTodosPedidos() {
     const { data, error } = await supabase
-      .from('pedidos')
+      .from('pedido')
       .select(`
         id, estado, tipo_entrega, total, creado_en,
         usuarios(nombre, email)
@@ -240,7 +240,7 @@ export const ServiciosSupabase = {
    */
   async actualizarEstadoPedido(pedidoId, nuevoEstado) {
     const { data, error } = await supabase
-      .from('pedidos')
+      .from('pedido')
       .update({ estado: nuevoEstado })
       .eq('id', pedidoId)
       .select()
@@ -250,7 +250,7 @@ export const ServiciosSupabase = {
 
     // Registrar en historial
     await supabase.from('historial_pedidos').insert([{
-      pedido_id: pedidoId,
+      id_pedido: pedidoId,
       estado: nuevoEstado
     }])
 
@@ -263,7 +263,7 @@ export const ServiciosSupabase = {
 
   /**
    * Registra un pago para un pedido.
-   * @param {Object} pago - { pedido_id, metodo, estado }
+   * @param {Object} pago - { id_pedido, metodo, estado }
    */
   async registrarPago(pago) {
     const { data, error } = await supabase

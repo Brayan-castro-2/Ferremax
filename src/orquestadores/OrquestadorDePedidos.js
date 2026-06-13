@@ -70,7 +70,7 @@ export const OrquestadorDePedidos = {
       }
 
       const detalles = carrito.map(item => ({
-        producto_id:     item.id,
+        id_producto:     item.id,
         cantidad:        item.cantidad,
         precio_unitario: item.precio
       }))
