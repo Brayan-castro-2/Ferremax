@@ -30,7 +30,7 @@
           <div class="h-px w-full bg-outline-variant" />
 
           <div class="flex flex-col gap-3">
-            <label for="qty" class="font-label-sm text-label-sm uppercase tracking-widest text-outline">Quantity</label>
+            <label for="qty" class="font-label-sm text-label-sm uppercase tracking-widest text-outline">Cantidad</label>
             <div class="flex w-32 items-center border border-outline-variant">
               <button class="h-10 w-10 hover:bg-surface-container" @click="cantidad = Math.max(1, cantidad - 1)" aria-label="Disminuir cantidad">-</button>
               <input id="qty" v-model.number="cantidad" min="1" :max="maxQty" type="number" class="w-full border-0 bg-transparent text-center focus:outline-none" />
@@ -40,10 +40,10 @@
 
           <div class="mt-4 flex flex-col gap-4">
             <button class="w-full rounded-lg bg-primary py-5 font-label-sm text-label-sm uppercase tracking-[0.2em] text-on-primary transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50" :disabled="product.stock <= 0" @click="addToCart">
-              Add to cart
+              Agregar al carrito
             </button>
             <RouterLink to="/carrito" class="w-full rounded-lg bg-surface-container-low py-5 text-center font-label-sm text-label-sm uppercase tracking-[0.2em] text-primary transition hover:bg-surface-container">
-              View cart
+              Ver carrito
             </RouterLink>
           </div>
         </aside>
@@ -117,8 +117,8 @@ async function loadProduct() {
       throw new Error(body.error || `No se pudo cargar el producto ${id}`)
     }
     product.value = await response.json()
-    if (product.value?.imagen) {
-      activeImage.value = product.value.imagen
+    if (product.value?.imagen_url) {
+      activeImage.value = product.value.imagen_url
     }
   } catch (err) {
     if (!isMockup) {
@@ -127,6 +127,9 @@ async function loadProduct() {
         const found = list.find((p) => Number(p.id) === id)
         if (found) {
           product.value = found
+          if (found.imagen_url) {
+            activeImage.value = found.imagen_url
+          }
           error.value = ''
           return
         }

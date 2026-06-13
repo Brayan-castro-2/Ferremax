@@ -1,66 +1,132 @@
 <template>
   <DashboardShell title="Administración" :links="shellLinks">
-    <div class="container mx-auto max-w-6xl">
-      <div class="dashboard-header">
+    <div class="mx-auto max-w-6xl px-margin-mobile md:px-0">
+
+      <!-- ── HEADER ── -->
+      <div class="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1>Panel <span class="text-primary">Administrador</span></h1>
-          <p class="text-muted">Gestión global del sistema FERREMAS</p>
+          <h1 class="font-sora text-headline-xl-mobile text-on-surface md:text-headline-xl">
+            Panel <span class="text-primary">Administrador</span>
+          </h1>
+          <p class="mt-1 font-inter text-body-md text-on-surface-variant">
+            Gestión global del sistema FERREMAS
+          </p>
         </div>
-        <span class="badge badge-primary" style="font-size: 0.85rem; padding: 0.5rem 1rem;">👑 Administrador</span>
+        <span class="inline-flex w-fit items-center gap-2 rounded-full bg-primary px-4 py-2 font-geist text-label-sm uppercase tracking-widest text-on-primary">
+          👑 Administrador
+        </span>
       </div>
 
-      <div v-if="cargando" class="loading-center"><div class="spinner"></div></div>
-      <div v-else-if="errorMsg" class="alert alert-danger">{{ errorMsg }}</div>
+      <!-- ── LOADING skeleton ── -->
+      <template v-if="cargando">
+        <div class="mb-8 grid grid-cols-2 gap-6 lg:grid-cols-4">
+          <div v-for="n in 4" :key="n" class="h-28 animate-pulse rounded-xl bg-surface-container-high" />
+        </div>
+        <div class="h-64 animate-pulse rounded-xl bg-surface-container-high" />
+      </template>
 
+      <!-- ── ERROR ── -->
+      <div
+        v-else-if="errorMsg"
+        class="rounded-xl border border-error/25 bg-error-container/60 px-5 py-4 font-inter text-body-md text-on-error-container"
+        role="alert"
+      >
+        {{ errorMsg }}
+      </div>
+
+      <!-- ── CONTENIDO PRINCIPAL ── -->
       <template v-else>
+
         <!-- KPIs -->
-        <div class="kpi-grid">
-          <div class="kpi-card" v-for="k in kpis" :key="k.label" :id="`kpi-${k.id}`">
-            <span class="kpi-icon">{{ k.icon }}</span>
-            <div>
-              <p class="kpi-value">{{ k.value }}</p>
-              <p class="kpi-label">{{ k.label }}</p>
+        <div class="mb-8 grid grid-cols-2 gap-6 lg:grid-cols-4">
+          <div
+            v-for="k in kpis"
+            :key="k.label"
+            :id="`kpi-${k.id}`"
+            class="group flex flex-col gap-4 rounded-xl bg-surface-container-lowest p-6 shadow-ambient transition hover:ring-1 hover:ring-primary/20"
+          >
+            <div class="flex items-start justify-between">
+              <span class="text-4xl leading-none">{{ k.icon }}</span>
+              <span
+                :class="[
+                  'font-geist text-[11px] font-semibold',
+                  k.trend > 0 ? 'text-emerald-600' : 'text-error'
+                ]"
+              >
+                {{ k.trend > 0 ? '▲' : '▼' }} {{ Math.abs(k.trend) }}%
+              </span>
             </div>
-            <span :class="['kpi-trend', k.trend > 0 ? 'trend-up' : 'trend-down']">
-              {{ k.trend > 0 ? '▲' : '▼' }} {{ Math.abs(k.trend) }}%
-            </span>
+            <div>
+              <p class="font-sora text-3xl font-semibold text-primary">{{ k.value }}</p>
+              <p class="mt-1 font-geist text-[10px] uppercase tracking-[0.18em] text-on-surface-variant">
+                {{ k.label }}
+              </p>
+            </div>
           </div>
         </div>
 
-        <!-- Usuarios del sistema -->
-        <div class="card" id="table-usuarios">
-          <h3>Usuarios del Sistema</h3>
-          <div class="table-wrapper" style="margin-top: var(--space-4)">
-            <table>
+        <!-- Tabla usuarios -->
+        <div id="table-usuarios" class="overflow-hidden rounded-xl bg-surface-container-lowest shadow-ambient">
+          <div class="border-b border-outline-variant/40 px-6 py-5">
+            <h2 class="font-sora text-headline-xl-mobile font-semibold text-on-surface">
+              Usuarios del Sistema
+            </h2>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full">
               <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>Email</th>
-                  <th>Rol</th>
-                  <th>Estado</th>
-                  <th>Acción</th>
+                <tr class="border-b border-outline-variant/40 bg-surface-container-low">
+                  <th class="px-6 py-3 text-left font-geist text-[10px] uppercase tracking-widest text-on-surface-variant">Nombre</th>
+                  <th class="px-6 py-3 text-left font-geist text-[10px] uppercase tracking-widest text-on-surface-variant">Email</th>
+                  <th class="px-6 py-3 text-left font-geist text-[10px] uppercase tracking-widest text-on-surface-variant">Rol</th>
+                  <th class="px-6 py-3 text-left font-geist text-[10px] uppercase tracking-widest text-on-surface-variant">Estado</th>
+                  <th class="px-6 py-3 text-left font-geist text-[10px] uppercase tracking-widest text-on-surface-variant">Acción</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="u in usuarios" :key="u.id">
-                  <td>{{ u.nombre }}</td>
-                  <td class="text-muted">{{ u.email }}</td>
-                  <td>
-                    <span :class="['badge', `badge-${rolBadgeClass(u.rol_nombre)}`]">
+                <tr
+                  v-for="u in usuarios"
+                  :key="u.id"
+                  class="border-b border-outline-variant/40 transition last:border-0 hover:bg-surface-container"
+                >
+                  <td class="px-6 py-4 font-inter text-body-md font-medium text-on-surface">
+                    {{ u.nombre }}
+                  </td>
+                  <td class="px-6 py-4 font-inter text-body-md text-on-surface-variant">
+                    {{ u.email }}
+                  </td>
+                  <td class="px-6 py-4">
+                    <span class="rounded-full bg-primary/10 px-3 py-1 font-geist text-xs font-medium text-primary">
                       {{ u.rol_nombre || '—' }}
                     </span>
                   </td>
-                  <td>
-                    <span :class="['badge', u.activo ? 'badge-success' : 'badge-danger']">
+                  <td class="px-6 py-4">
+                    <span
+                      :class="[
+                        'rounded-full px-3 py-1 font-geist text-xs font-medium',
+                        u.activo
+                          ? 'bg-tertiary/10 text-tertiary'
+                          : 'bg-error/10 text-error'
+                      ]"
+                    >
                       {{ u.activo ? 'Activo' : 'Inactivo' }}
                     </span>
                   </td>
-                  <td><button type="button" class="btn btn-ghost btn-sm">Editar</button></td>
+                  <td class="px-6 py-4">
+                    <button
+                      type="button"
+                      class="rounded-lg border border-outline-variant px-3 py-1 font-geist text-xs uppercase tracking-wider text-on-surface-variant transition hover:border-primary hover:text-primary"
+                    >
+                      Editar
+                    </button>
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
+
       </template>
     </div>
   </DashboardShell>
@@ -214,36 +280,4 @@ async function cargarDatos() {
 onMounted(cargarDatos)
 </script>
 
-<style scoped>
-.dashboard-header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: var(--space-8);
-}
-.dashboard-header h1 { font-size: var(--font-size-3xl); font-weight: 800; }
 
-.loading-center { display: flex; justify-content: center; padding: var(--space-12); }
-
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--space-4);
-  margin-bottom: var(--space-8);
-}
-.kpi-card {
-  background: var(--color-surface-card);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
-  padding: var(--space-5);
-  display: flex; align-items: center; gap: var(--space-4);
-  transition: border-color var(--transition-fast);
-}
-.kpi-card:hover { border-color: var(--color-primary); }
-.kpi-icon { font-size: 2.5rem; }
-.kpi-value { font-size: var(--font-size-2xl); font-weight: 800; }
-.kpi-label { font-size: var(--font-size-xs); color: var(--color-text-muted); }
-.kpi-trend { margin-left: auto; font-size: var(--font-size-xs); font-weight: 600; }
-.trend-up   { color: var(--color-success); }
-.trend-down { color: var(--color-danger);  }
-
-.card h3 { font-size: var(--font-size-xl); font-weight: 700; }
-</style>

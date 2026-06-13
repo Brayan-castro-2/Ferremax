@@ -58,16 +58,43 @@ export const useAuthStore = defineStore('auth', () => {
 
       // 2. Buscar perfil en la tabla public.usuarios para obtener el ROL
       // NOTA: El ID del auth.user coincide con public.usuarios.id gracias al trigger.
-      const { data: profile, error: profError } = await supabase
+      let { data: profile, error: profError } = await supabase
         .from('usuarios')
         .select('id, nombre, email, rol_id, roles(nombre)')
         .eq('id', authData.user.id)
         .single()
 
       if (profError || !profile) {
-        // Si el perfil no existe, es un error de sincronización de la DB
-        console.error('Error al obtener perfil:', profError)
-        throw new Error('Tu cuenta de usuario no tiene un perfil asociado en Ferremas.')
+        // Si el perfil no existe, aplicamos fallback intentando crearlo
+        const { error: insertError } = await supabase
+          .from('usuarios')
+          .insert({
+            id: authData.user.id,
+            nombre: authData.user.user_metadata?.nombre 
+                    || authData.user.email.split('@')[0],
+            email: authData.user.email,
+            rol_id: 5,  // rol Cliente por defecto
+            activo: true
+          })
+          
+        if (insertError) {
+          console.error('Error al obtener perfil original:', profError)
+          throw new Error('Tu cuenta de usuario no tiene un perfil asociado en Ferremas.')
+        }
+
+        // Volvemos a buscar el perfil recién creado
+        const { data: newProfile, error: newProfError } = await supabase
+          .from('usuarios')
+          .select('id, nombre, email, rol_id, roles(nombre)')
+          .eq('id', authData.user.id)
+          .single()
+
+        if (newProfError || !newProfile) {
+          console.error('Error al obtener perfil original:', profError)
+          throw new Error('Tu cuenta de usuario no tiene un perfil asociado en Ferremas.')
+        }
+        
+        profile = newProfile
       }
 
       user.value = {

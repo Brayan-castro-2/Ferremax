@@ -6,7 +6,13 @@
   >
     <RouterLink :to="`/producto/${producto.id}`" class="relative block aspect-[4/3] overflow-hidden bg-surface-container-low">
       <div class="flex h-full w-full items-center justify-center transition duration-500 group-hover:scale-[1.03]">
-        <span class="select-none font-sora text-5xl font-semibold text-outline-variant/40 transition group-hover:text-tertiary/50" aria-hidden="true">
+        <img 
+          v-if="producto.imagen_url" 
+          :src="producto.imagen_url" 
+          :alt="producto.nombre"
+          class="w-full h-full object-cover"
+        />
+        <span v-else class="select-none font-sora text-5xl font-semibold text-outline-variant/40 transition group-hover:text-tertiary/50" aria-hidden="true">
           {{ producto.emoji || '◈' }}
         </span>
       </div>

@@ -1,32 +1,41 @@
 # Dependencias
 node_modules/
-.pnp
-.pnp.js
+backend/node_modules/
 
 # Build
 dist/
 dist-ssr/
-*.local
 
-# Variables de entorno (NUNCA subir claves reales)
+# Variables de entorno - NUNCA subir al repo
 .env
 .env.local
 .env.*.local
+backend/.env
+backend/.env.local
+backend/.env.*.local
 
-# Editor
-.vscode/*
-!.vscode/extensions.json
-.idea
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# OS
-.DS_Store
-Thumbs.db
+# Sí subir estos (son plantillas sin credenciales reales)
+!.env.example
+!backend/.env.example
 
 # Logs
 *.log
 npm-debug.log*
+
+# Editor
+.vscode/
+.idea/
+*.suo
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos temporales
+*.tmp
+coverage/
+
+# Carpetas duplicadas residuales
+/orquestadores/
+/servicios/
+/modelos/

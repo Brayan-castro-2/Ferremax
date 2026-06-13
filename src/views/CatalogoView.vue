@@ -31,9 +31,12 @@
     </section>
 
     <div class="mx-auto max-w-container-max px-margin-mobile py-12 md:px-margin-desktop md:py-16">
-      <div v-if="errorMsg" id="catalogo-error" class="mb-8 flex flex-wrap items-center gap-4 rounded-2xl border border-error/25 bg-error-container/60 px-5 py-4 text-sm text-on-error-container" role="alert">
-        {{ errorMsg }}
-        <button type="button" class="rounded-full border border-error/30 px-4 py-1.5 font-geist text-[10px] font-semibold uppercase tracking-wider text-on-error-container transition hover:bg-error-container" @click="cargarProductos">
+      <div v-if="errorMsg" id="catalogo-error" class="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-yellow-500/30 bg-yellow-500/10 px-5 py-4 text-sm text-yellow-700" role="alert">
+        <div>
+          <strong class="font-bold text-yellow-800">Mostrando datos de demostración. Error:</strong>
+          {{ errorMsg }}
+        </div>
+        <button type="button" class="shrink-0 rounded-full border border-yellow-500/40 px-4 py-1.5 font-geist text-[10px] font-semibold uppercase tracking-wider text-yellow-800 transition hover:bg-yellow-500/20" @click="cargarProductos">
           Reintentar
         </button>
       </div>
@@ -94,7 +97,7 @@ import { ref, computed, onMounted } from 'vue'
 import ProductCard from '@/components/ProductCard.vue'
 import FmButton from '@/components/ui/FmButton.vue'
 import { ServiciosSupabase } from '@/servicios/ServiciosSupabase.js'
-import { isMockup } from '@/lib/supabase.js'
+import { supabase, isMockup } from '@/lib/supabase.js'
 
 const busqueda = ref('')
 const categoriaActiva = ref('Todos')
@@ -119,6 +122,10 @@ const PRODUCTOS_MOCKUP = [
 ]
 
 async function cargarProductos() {
+  console.log('🔍 Iniciando carga de productos...')
+  console.log('🔍 isMockup:', isMockup)
+  console.log('🔍 supabase disponible:', !!supabase)
+
   cargando.value = true
   errorMsg.value = ''
   try {
@@ -129,7 +136,7 @@ async function cargarProductos() {
       productos.value = await ServiciosSupabase.obtenerProductos()
     }
   } catch (err) {
-    errorMsg.value = `No se pudieron cargar los productos: ${err.message}`
+    errorMsg.value = err.message
     productos.value = PRODUCTOS_MOCKUP
   } finally {
     cargando.value = false
