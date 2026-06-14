@@ -352,11 +352,68 @@ const actualizarEstadoPedido = async (pedidoId, nuevoEstado) => {
   return { pedido: actualizado, estadoAnterior: actual.estado }
 }
 
+/**
+ * Cancela un pedido y devuelve las cantidades al inventario.
+ * @param {number} pedidoId
+ */
+const cancelarYRevertirStock = async (pedidoId) => {
+  const { data: pedido, error: errPedido } = await supabaseAdmin
+    .from('pedidos')
+    .select(`
+      id, estado,
+      detalle_pedido(producto_id, cantidad)
+    `)
+    .eq('id', pedidoId)
+    .single()
+
+  if (errPedido || !pedido) {
+    throw new Error(`Pedido ${pedidoId} no encontrado para revertir stock.`)
+  }
+
+  if (pedido.estado === 'cancelado') {
+    return { mensaje: 'El pedido ya estaba cancelado.' }
+  }
+
+  const detalles = pedido.detalle_pedido || []
+
+  // Devolver el stock a cada producto correspondiente
+  for (const item of detalles) {
+    const { data: producto, error: errProd } = await supabaseAdmin
+      .from('productos')
+      .select('stock')
+      .eq('id', item.producto_id)
+      .single()
+
+    if (!errProd && producto) {
+      const nuevoStock = producto.stock + item.cantidad
+      await supabaseAdmin
+        .from('productos')
+        .update({ stock: nuevoStock })
+        .eq('id', item.producto_id)
+    }
+  }
+
+  // Marcar estado como 'cancelado'
+  const { data: actualizado, error: errUpd } = await supabaseAdmin
+    .from('pedidos')
+    .update({ estado: 'cancelado' })
+    .eq('id', pedidoId)
+    .select()
+    .single()
+
+  if (errUpd) {
+    throw new Error(`Error al actualizar el estado a cancelado: ${errUpd.message}`)
+  }
+
+  return { pedido: actualizado, mensaje: 'Pedido cancelado y stock devuelto exitosamente.' }
+}
+
 module.exports = {
   crearPedidoCompleto,
   obtenerMisPedidos,
   obtenerTodosPedidos,
   actualizarEstadoPedido,
+  cancelarYRevertirStock,
   TIPOS_ENTREGA,
   ESTADOS_PEDIDO
 }

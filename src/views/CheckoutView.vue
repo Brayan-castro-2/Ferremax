@@ -81,12 +81,13 @@
 </template>
 
 <script setup>
-import { computed, reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, reactive, ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.js'
 import { useCarritoStore } from '@/stores/carrito.js'
 
 const router = useRouter()
+const route = useRoute()
 const auth = useAuthStore()
 const carrito = useCarritoStore()
 
@@ -103,6 +104,12 @@ const form = reactive({
 })
 
 const isValid = computed(() => Object.values(form).every((value) => String(value).trim().length > 0))
+
+onMounted(() => {
+  if (route.query.status === 'failed') {
+    error.value = `El pago fue rechazado o cancelado. Estado: ${route.query.error || 'Desconocido'}`
+  }
+})
 
 function formatPrice(value) {
   return Number(value || 0).toLocaleString('es-CL')
@@ -138,9 +145,48 @@ async function submitOrder() {
       throw new Error(body.error || 'No se pudo crear el pedido')
     }
 
-    const order = await response.json()
+    const orderData = await response.json()
+    const order = orderData.pedido || orderData
+
+    // Llamar al endpoint de pago en nuestro backend
+    const backendUrl = base || 'http://localhost:3000'
+    const paymentResponse = await fetch(`${backendUrl}/api/payment/create`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({
+        buyOrder: `ORDEN-${order.id}`,
+        sessionId: `SESION-${auth.user?.id || 'INVITADO'}`,
+        amount: Math.round(order.total),
+        returnUrl: `${backendUrl}/api/payment/commit`
+      })
+    })
+
+    if (!paymentResponse.ok) {
+      const body = await paymentResponse.json().catch(() => ({}))
+      throw new Error(body.error || 'Error al iniciar el pago con Transbank')
+    }
+
+    const { token: tokenWs, url } = await paymentResponse.json()
+
+    // Vaciar el carrito antes de redirigir
     carrito.vaciar()
-    router.push({ path: '/pedido-confirmacion', query: { id: order.pedido?.id || order.id || '' } })
+
+    // Crear formulario dinámico y enviar POST a Transbank Webpay
+    const formEl = document.createElement('form')
+    formEl.method = 'POST'
+    formEl.action = url
+
+    const input = document.createElement('input')
+    input.type = 'hidden'
+    input.name = 'token_ws'
+    input.value = tokenWs
+
+    formEl.appendChild(input)
+    document.body.appendChild(formEl)
+    formEl.submit()
   } catch (err) {
     error.value = err.message
   } finally {

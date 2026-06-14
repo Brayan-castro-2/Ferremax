@@ -49,4 +49,4 @@ export const verificarConexion = async () => {
     return { ok: false, error: e.message }
   }
 }
-}
+
