@@ -1,7 +1,5 @@
 // backend/src/middlewares/auth.middleware.js
 // Verifica el JWT emitido por Supabase Auth
-
-const jwt = require('jsonwebtoken')
 const { supabaseAdmin } = require('../lib/supabase')
 
 /**
@@ -18,29 +16,24 @@ const verifyToken = async (req, res, next) => {
   const token = authHeader.split(' ')[1]
 
   try {
-    // 1. Verificar el JWT con la clave secreta de Supabase
-    // NOTA: Supabase a veces usa el secreto en base64. Si falla, se usa directo.
-    let decoded;
-    try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET)
-    } catch (e) {
-      // Intento con buffer si el secreto está en base64
-      decoded = jwt.verify(token, Buffer.from(process.env.JWT_SECRET, 'base64'))
+    // Verificar el token directamente con Supabase Admin
+    const { data: { user }, error } = await supabaseAdmin.auth.getUser(token)
+
+    if (error || !user) {
+      return res.status(401).json({ error: 'Token inválido o expirado', detalle: error?.message })
     }
 
-    // 2. Obtener datos extendidos del usuario (Rol) desde la tabla public.usuarios
-    // Usamos supabaseAdmin para saltarnos RLS si fuera necesario
-    const { data: usuario, error } = await supabaseAdmin
+    // Obtener datos del usuario desde public.usuarios
+    const { data: usuario, error: errUsuario } = await supabaseAdmin
       .from('usuarios')
       .select('id, nombre, email, roles(nombre)')
-      .eq('id', decoded.sub) // En Supabase Auth, 'sub' es el ID del usuario
+      .eq('id', user.id)
       .single()
 
-    if (error || !usuario) {
+    if (errUsuario || !usuario) {
       return res.status(403).json({ error: 'Usuario no encontrado en la base de datos de Ferremas' })
     }
 
-    // 3. Inyectar usuario en la request para los siguientes middlewares
     req.user = {
       id: usuario.id,
       email: usuario.email,
