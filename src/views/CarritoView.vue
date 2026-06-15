@@ -61,26 +61,6 @@
             💡 Agrega <strong>{{ 5 - carrito.totalItems }}</strong> artículo{{ (5 - carrito.totalItems) !== 1 ? 's' : '' }} más y obtén 10% de descuento
           </div>
 
-          <!-- Tipo de entrega -->
-          <div class="form-group" id="selector-entrega">
-            <label class="form-label">Tipo de entrega</label>
-            <select v-model="tipoEntrega" class="form-input" id="select-tipo-entrega">
-              <option value="retiro">🏪 Retiro en tienda</option>
-              <option value="despacho">🚚 Despacho a domicilio</option>
-            </select>
-          </div>
-
-          <div v-if="tipoEntrega === 'despacho'" class="form-group" id="input-direccion-wrap">
-            <label class="form-label">Dirección de despacho</label>
-            <input
-              v-model="direccion"
-              type="text"
-              class="form-input"
-              id="input-direccion"
-              placeholder="Ej: Av. Providencia 1234, Santiago"
-            />
-          </div>
-
           <!-- Error al confirmar -->
           <div v-if="errorPedido" class="alert alert-danger" id="error-pedido">{{ errorPedido }}</div>
 
@@ -88,35 +68,14 @@
           <button
             class="btn btn-primary btn-full btn-lg"
             id="btn-confirmar-pedido"
-            :disabled="procesando || (tipoEntrega === 'despacho' && !direccion.trim())"
-            @click="confirmarPedido"
+            @click="procederAlCheckout"
           >
-            <span v-if="procesando" class="spinner" style="width:1rem;height:1rem;border-width:2px"></span>
-            <span v-else>Confirmar Pedido</span>
+            <span>Ir al Checkout / Pagar</span>
           </button>
 
           <button class="btn btn-ghost btn-full btn-sm" id="btn-vaciar-carrito" @click="carrito.vaciar()">
             Vaciar carrito
           </button>
-        </div>
-      </div>
-
-      <!-- Modal de éxito -->
-      <div v-if="pedidoConfirmado" class="success-overlay" id="pedido-exitoso">
-        <div class="success-card">
-          <span class="success-icon">✅</span>
-          <h2>¡Pedido confirmado!</h2>
-          <p class="text-muted">Pedido <strong>#{{ pedidoConfirmado.id }}</strong> creado exitosamente.</p>
-          <p v-if="carritoData.aplicaDescuento" class="text-success">
-            🎉 Descuento del 10% aplicado: −${{ formatPrice(carritoData.descuento) }}
-          </p>
-          <p style="font-size: var(--font-size-xl); font-weight: 800; color: var(--color-primary); margin: var(--space-4) 0">
-            Total: ${{ formatPrice(carritoData.total) }}
-          </p>
-          <div style="display:flex; gap: var(--space-3); justify-content:center; margin-top: var(--space-4)">
-            <router-link to="/mis-pedidos" class="btn btn-primary" id="btn-ver-mis-pedidos">Ver mis pedidos</router-link>
-            <router-link to="/catalogo" class="btn btn-ghost" @click="pedidoConfirmado = null">Seguir comprando</router-link>
-          </div>
         </div>
       </div>
     </div>
@@ -125,20 +84,15 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.js'
 import { useCarritoStore } from '@/stores/carrito.js'
-import { OrquestadorDePedidos } from '@/orquestadores/OrquestadorDePedidos.js'
-import { isMockup } from '@/lib/supabase.js'
 
+const router  = useRouter()
 const auth    = useAuthStore()
 const carrito = useCarritoStore()
 
-const tipoEntrega     = ref('retiro')
-const direccion       = ref('')
-const procesando      = ref(false)
-const errorPedido     = ref('')
-const pedidoConfirmado = ref(null)
-const carritoData     = ref({})
+const errorPedido = ref('')
 
 const EMOJIS_CATEGORIA = {
   'Herramientas Eléctricas': '⚡',
@@ -151,49 +105,13 @@ const EMOJIS_CATEGORIA = {
 function emojiCategoria(cat) { return EMOJIS_CATEGORIA[cat] || '🔧' }
 function formatPrice(val)    { return Number(val).toLocaleString('es-CL') }
 
-async function confirmarPedido() {
+function procederAlCheckout() {
   if (!auth.isAuthenticated) {
-    errorPedido.value = 'Debes iniciar sesión para confirmar tu pedido.'
+    errorPedido.value = 'Debes iniciar sesión para proceder al pago.'
+    router.push({ path: '/login', query: { redirect: '/checkout' } })
     return
   }
-
-  procesando.value  = true
-  errorPedido.value = ''
-
-  try {
-    if (isMockup) {
-      // Simulación sin Supabase
-      await new Promise(r => setTimeout(r, 1000))
-      carritoData.value = {
-        aplicaDescuento: carrito.aplicaDescuento,
-        descuento:       carrito.descuento,
-        total:           carrito.total
-      }
-      pedidoConfirmado.value = { id: `MOCK-${Date.now()}` }
-      carrito.vaciar()
-      return
-    }
-
-    // Llamada real al orquestador → Supabase
-    const resultado = await OrquestadorDePedidos.iniciarProcesoDeCompra(
-      auth.user.id,
-      carrito.items,
-      { tipo_entrega: tipoEntrega.value, direccion: direccion.value }
-    )
-
-    carritoData.value  = {
-      aplicaDescuento: resultado.aplicaDescuento,
-      descuento:       resultado.descuentoMonto,
-      total:           resultado.total
-    }
-    pedidoConfirmado.value = resultado.pedido
-    carrito.vaciar()
-
-  } catch (err) {
-    errorPedido.value = err.message
-  } finally {
-    procesando.value = false
-  }
+  router.push('/checkout')
 }
 </script>
 

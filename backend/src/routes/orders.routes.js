@@ -51,4 +51,25 @@ router.patch('/:id/estado',
   ordersController.cambiarEstado
 )
 
+/**
+ * PATCH /api/orders/:id/entregar — Vista Contador ★ caso FERREMAS
+ * Registra la entrega física del pedido (fecha + responsable).
+ */
+router.patch('/:id/entregar',
+  verifyToken,
+  requirePasswordChanged,
+  requireRoles('Administrador', 'Contador'),
+  ordersController.registrarEntrega
+)
+
+/**
+ * PATCH /api/orders/:id/cancelar — Cliente auto-cancela su pedido pendiente.
+ * Body: { motivo?: string }. Auto-revierte stock.
+ */
+router.patch('/:id/cancelar',
+  verifyToken,
+  requireRoles('Cliente', 'Administrador', 'Vendedor'),
+  ordersController.cancelarMiPedido
+)
+
 module.exports = router

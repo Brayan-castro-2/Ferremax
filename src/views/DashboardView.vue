@@ -34,6 +34,7 @@ const cards = computed(() => {
   const r = auth.userRole
   const all = []
   all.push({ kicker: 'Tienda', title: 'Catálogo', desc: 'Experiencia de compra renovada.', to: '/catalogo' })
+  all.push({ kicker: 'Red', title: 'Sucursales', desc: 'Stock en las 7 tiendas en tiempo real.', to: '/sucursales' })
   if (r === 'Cliente') {
     all.push({ kicker: 'Cliente', title: 'Carrito', desc: 'Revisa líneas y totales.', to: '/carrito' })
     all.push({ kicker: 'Cliente', title: 'Mis pedidos', desc: 'Historial y estados.', to: '/mis-pedidos' })

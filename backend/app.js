@@ -7,11 +7,18 @@ const rateLimit   = require('express-rate-limit')
 require('dotenv').config()
 
 // ── Rutas ─────────────────────────────────────────────────────────────
-const authRoutes     = require('./src/routes/auth.routes')
-const productRoutes  = require('./src/routes/products.routes')
-const currencyRoutes = require('./src/routes/currency.routes')
-const orderRoutes    = require('./src/routes/orders.routes')
-const inventoryRoutes = require('./src/routes/inventory.routes')
+const authRoutes       = require('./src/routes/auth.routes')
+const productRoutes    = require('./src/routes/products.routes')
+const currencyRoutes   = require('./src/routes/currency.routes')
+const orderRoutes      = require('./src/routes/orders.routes')
+const inventoryRoutes  = require('./src/routes/inventory.routes')
+const paymentRoutes    = require('./src/routes/payment.routes')
+const sucursalesRoutes = require('./src/routes/sucursales.routes')
+const clientesRoutes   = require('./src/routes/clientes.routes')
+const pagosRoutes      = require('./src/routes/pagos.routes')
+const boletasRoutes    = require('./src/routes/boletas.routes')
+const reportesRoutes     = require('./src/routes/reportes.routes')
+const devolucionesRoutes = require('./src/routes/devoluciones.routes')
 
 const app = express()
 
@@ -56,11 +63,18 @@ app.get('/health', (req, res) => {
 })
 
 // ── Rutas API ──────────────────────────────────────────────────────────
-app.use('/api/auth',     authRoutes)
-app.use('/api/products', productRoutes)
-app.use('/api/currency', currencyRoutes)
-app.use('/api/orders',   orderRoutes)
-app.use('/api/inventory', inventoryRoutes)
+app.use('/api/auth',       authRoutes)
+app.use('/api/products',   productRoutes)
+app.use('/api/currency',   currencyRoutes)
+app.use('/api/orders',     orderRoutes)
+app.use('/api/inventory',  inventoryRoutes)
+app.use('/api/payment',    paymentRoutes)
+app.use('/api/sucursales', sucursalesRoutes)
+app.use('/api/clientes',   clientesRoutes)
+app.use('/api/pagos',      pagosRoutes)
+app.use('/api/boletas',    boletasRoutes)
+app.use('/api/reportes',     reportesRoutes)
+app.use('/api/devoluciones', devolucionesRoutes)
 
 // ── 404 handler ────────────────────────────────────────────────────────
 app.use((req, res) => {

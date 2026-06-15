@@ -1,52 +1,75 @@
 <template>
   <DashboardShell title="Ventas" :links="shellLinks">
-    <div class="container mx-auto max-w-6xl">
-      <div class="dashboard-header">
+    <div class="mx-auto max-w-6xl">
+
+      <!-- Header -->
+      <header class="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1>Panel <span class="text-primary">Vendedor</span></h1>
-          <p class="text-muted">Gestión de pedidos y ventas</p>
+          <p class="font-geist text-[11px] font-semibold uppercase tracking-[0.18em] text-tertiary">Panel</p>
+          <h1 class="mt-2 font-sora text-4xl font-semibold tracking-tight text-primary">Ventas</h1>
+          <p class="mt-2 text-on-surface-variant">Aprueba o rechaza pedidos · Gestiona facturación.</p>
         </div>
-        <span class="badge badge-info" style="font-size: 0.85rem; padding: 0.5rem 1rem;">💼 Vendedor</span>
+        <span class="inline-flex w-fit items-center gap-2 rounded-full bg-tertiary px-4 py-2 font-geist text-xs font-semibold uppercase tracking-wider text-on-tertiary">
+          Vendedor
+        </span>
+      </header>
+
+      <!-- Loading / Error -->
+      <div v-if="cargando" class="space-y-3">
+        <div v-for="n in 4" :key="n" class="h-20 animate-pulse rounded-xl bg-surface-container-low" />
       </div>
 
-      <div v-if="cargando" class="loading-center"><div class="spinner"></div></div>
-      <div v-else-if="errorMsg" class="alert alert-danger">{{ errorMsg }}</div>
+      <div v-else-if="errorMsg" class="rounded-2xl border border-red-500/30 bg-red-500/10 p-6 text-red-700">
+        <p class="font-semibold">{{ errorMsg }}</p>
+        <button class="mt-3 rounded-full border border-red-500/40 px-4 py-1.5 text-xs uppercase tracking-wider transition hover:bg-red-500/20" @click="cargarPedidos">Reintentar</button>
+      </div>
 
-      <div v-else class="card" id="tabla-pedidos-vendedor">
-        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4)">
-          <h3>Pedidos ({{ pedidos.length }} total)</h3>
+      <!-- Tabla pedidos -->
+      <section v-else class="rounded-2xl border border-outline-variant/40 bg-surface-container-lowest overflow-hidden">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-outline-variant/40 px-6 py-4">
+          <h2 class="font-sora text-xl font-semibold text-primary">Pedidos ({{ pedidos.length }})</h2>
+          <button class="rounded-full border border-outline-variant px-4 py-1.5 font-geist text-xs uppercase tracking-wider transition hover:border-primary hover:text-primary" @click="cargarPedidos">
+            Refrescar
+          </button>
         </div>
-        <div class="table-wrapper">
-          <table>
-            <thead>
+
+        <div v-if="pedidos.length === 0" class="px-6 py-10 text-center text-sm text-on-surface-variant">
+          No hay pedidos registrados.
+        </div>
+
+        <div v-else class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-surface-container-low text-left font-geist text-[10px] font-semibold uppercase tracking-[0.14em] text-on-surface-variant">
               <tr>
-                <th>#</th>
-                <th>Cliente</th>
-                <th>Total</th>
-                <th>Entrega</th>
-                <th>Estado</th>
-                <th>Fecha</th>
-                <th>Cambiar Estado</th>
+                <th class="px-6 py-3">#</th>
+                <th class="px-6 py-3">Cliente</th>
+                <th class="px-6 py-3">Total</th>
+                <th class="px-6 py-3">Entrega</th>
+                <th class="px-6 py-3">Estado</th>
+                <th class="px-6 py-3">Fecha</th>
+                <th class="px-6 py-3">Cambiar estado</th>
               </tr>
             </thead>
-            <tbody>
-              <tr v-for="p in pedidos" :key="p.id">
-                <td class="text-muted" style="font-family:monospace">{{ p.id }}</td>
-                <td>
-                  <div>{{ p.cliente_nombre || '—' }}</div>
-                  <div class="text-muted" style="font-size:0.7rem">{{ p.cliente_email }}</div>
+            <tbody class="divide-y divide-outline-variant/30">
+              <tr v-for="p in pedidos" :key="p.id" class="transition hover:bg-surface-container-low/50">
+                <td class="px-6 py-4 font-mono text-xs text-on-surface-variant">#{{ p.id }}</td>
+                <td class="px-6 py-4">
+                  <p class="font-medium text-on-surface">{{ p.cliente_nombre || p.usuarios?.nombre || '—' }}</p>
+                  <p class="text-xs text-on-surface-variant">{{ p.cliente_email || p.usuarios?.email || '' }}</p>
                 </td>
-                <td style="font-weight:600">${{ formatPrice(p.total) }}</td>
-                <td>{{ p.tipo_entrega === 'despacho' ? '🚚 Despacho' : '🏪 Retiro' }}</td>
-                <td><span :class="['badge', estadoBadge(p.estado)]">{{ p.estado }}</span></td>
-                <td class="text-muted" style="font-size:0.75rem">{{ formatFecha(p.creado_en) }}</td>
-                <td>
+                <td class="px-6 py-4 font-semibold text-primary">${{ formatPrice(p.total) }}</td>
+                <td class="px-6 py-4 text-on-surface-variant">{{ p.tipo_entrega === 'despacho' ? 'Despacho' : 'Retiro' }}</td>
+                <td class="px-6 py-4">
+                  <span :class="estadoBadge(p.estado)" class="rounded-full px-3 py-1 font-geist text-[10px] font-semibold uppercase tracking-wider">
+                    {{ p.estado }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 text-xs text-on-surface-variant">{{ formatFecha(p.creado_en) }}</td>
+                <td class="px-6 py-4">
                   <select
-                    class="form-input btn-sm"
-                    style="width:auto; padding: 0.3rem 0.5rem"
                     :value="p.estado"
                     @change="cambiarEstado(p, $event)"
-                    :id="`select-estado-${p.id}`"
+                    class="rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-1.5 text-xs focus:border-primary focus:outline-none"
                   >
                     <option v-for="e in estados" :key="e" :value="e">{{ e }}</option>
                   </select>
@@ -55,7 +78,7 @@
             </tbody>
           </table>
         </div>
-      </div>
+      </section>
     </div>
   </DashboardShell>
 </template>
@@ -63,39 +86,28 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import DashboardShell from '@/components/layout/DashboardShell.vue'
-import { ServiciosSupabase } from '@/servicios/ServiciosSupabase.js'
-import { OrquestadorDePedidos } from '@/orquestadores/OrquestadorDePedidos.js'
-import { isMockup } from '@/lib/supabase.js'
+import { api } from '@/lib/api.js'
 
 const shellLinks = [
   { label: 'Ventas', to: '/vendedor' },
   { label: 'Resumen', to: '/dashboard' },
   { label: 'Catálogo', to: '/catalogo' },
+  { label: 'Sucursales', to: '/sucursales' }
 ]
 
-const estados  = ['pendiente', 'pagado', 'preparado', 'despachado', 'cancelado']
-const pedidos  = ref([])
+const estados = ['pendiente', 'confirmado', 'en_proceso', 'enviado', 'entregado', 'cancelado']
+const pedidos = ref([])
 const cargando = ref(true)
 const errorMsg = ref('')
 
-const PEDIDOS_MOCKUP = [
-  { id: 1, cliente_nombre: 'Pedro García',   cliente_email: 'pedro@mail.cl',  total: 189970, tipo_entrega: 'despacho', estado: 'pendiente',  creado_en: new Date().toISOString() },
-  { id: 2, cliente_nombre: 'María López',    cliente_email: 'maria@mail.cl',  total: 79990,  tipo_entrega: 'retiro',   estado: 'pagado',     creado_en: new Date().toISOString() },
-  { id: 3, cliente_nombre: 'Juan Pérez',     cliente_email: 'juan@mail.cl',   total: 245000, tipo_entrega: 'despacho', estado: 'preparado',  creado_en: new Date().toISOString() },
-  { id: 4, cliente_nombre: 'Sofía Rojas',    cliente_email: 'sofia@mail.cl',  total: 34990,  tipo_entrega: 'retiro',   estado: 'despachado', creado_en: new Date().toISOString() },
-]
-
 async function cargarPedidos() {
   cargando.value = true
+  errorMsg.value = ''
   try {
-    if (isMockup) {
-      await new Promise(r => setTimeout(r, 500))
-      pedidos.value = PEDIDOS_MOCKUP
-    } else {
-      pedidos.value = await ServiciosSupabase.obtenerTodosPedidos()
-    }
+    const data = await api.pedidos.listarTodos()
+    pedidos.value = data.pedidos || []
   } catch (err) {
-    errorMsg.value = `Error: ${err.message}`
+    errorMsg.value = err.message
   } finally {
     cargando.value = false
   }
@@ -103,29 +115,31 @@ async function cargarPedidos() {
 
 async function cambiarEstado(pedido, event) {
   const nuevoEstado = event.target.value
+  const estadoAnterior = pedido.estado
   try {
-    if (!isMockup) {
-      await OrquestadorDePedidos.gestionarEstado(pedido.id, nuevoEstado)
-    }
+    await api.pedidos.cambiarEstado(pedido.id, nuevoEstado)
     pedido.estado = nuevoEstado
   } catch (err) {
     alert(`Error al cambiar estado: ${err.message}`)
-    event.target.value = pedido.estado
+    event.target.value = estadoAnterior
   }
 }
 
-function formatPrice(val)   { return Number(val).toLocaleString('es-CL') }
-function formatFecha(fecha) { return fecha ? new Date(fecha).toLocaleDateString('es-CL') : '—' }
-function estadoBadge(e)     {
-  return { pendiente: 'badge-warning', pagado: 'badge-info', preparado: 'badge-primary', despachado: 'badge-success', cancelado: 'badge-danger' }[e] || 'badge-primary'
+function formatPrice(val) { return Number(val || 0).toLocaleString('es-CL') }
+function formatFecha(fecha) {
+  return fecha ? new Date(fecha).toLocaleDateString('es-CL', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'
+}
+function estadoBadge(e) {
+  const map = {
+    pendiente:  'bg-yellow-500/15 text-yellow-700',
+    confirmado: 'bg-blue-500/15 text-blue-700',
+    en_proceso: 'bg-blue-500/15 text-blue-700',
+    enviado:    'bg-indigo-500/15 text-indigo-700',
+    entregado:  'bg-emerald-500/15 text-emerald-700',
+    cancelado:  'bg-red-500/15 text-red-700'
+  }
+  return map[e] || 'bg-surface-container-low text-on-surface-variant'
 }
 
 onMounted(cargarPedidos)
 </script>
-
-<style scoped>
-.dashboard-header { display:flex; align-items:center; justify-content:space-between; margin-bottom: var(--space-8); }
-.dashboard-header h1 { font-size: var(--font-size-3xl); font-weight: 800; }
-.loading-center { display:flex; justify-content:center; padding: var(--space-12); }
-.card h3 { font-size: var(--font-size-xl); font-weight: 700; }
-</style>

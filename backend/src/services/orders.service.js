@@ -175,11 +175,17 @@ const crearPedidoCompleto = async (usuarioId, payload) => {
       ? String(payload.direccion).trim()
       : (payload.direccion != null && String(payload.direccion).trim()) || null
 
+  const notas_cliente =
+    typeof payload.notas === 'string' && payload.notas.trim()
+      ? payload.notas.trim().slice(0, 500)
+      : null
+
   const pedidoRow = {
     usuario_id: usuarioId,
     estado: 'pendiente',
     tipo_entrega,
     direccion,
+    notas_cliente,
     total
   }
 
@@ -272,8 +278,12 @@ const obtenerMisPedidos = async (usuarioId) => {
   const { data, error } = await supabaseAdmin
     .from('pedidos')
     .select(`
-      id, estado, tipo_entrega, direccion, total, creado_en,
-      detalle_pedido(id, cantidad, precio_unitario, producto_id, productos(nombre, categoria, precio))
+      id, estado, tipo_entrega, direccion, total, creado_en, fecha_entrega,
+      detalle_pedido(
+        id, cantidad, precio_unitario, producto_id,
+        productos(id, nombre, categoria, precio, imagen_url)
+      ),
+      boletas(id, numero_boleta, total, fecha_emision)
     `)
     .eq('usuario_id', usuarioId)
     .order('creado_en', { ascending: false })
@@ -289,13 +299,16 @@ const obtenerMisPedidos = async (usuarioId) => {
 
 /**
  * Todos los pedidos (staff) con datos del usuario.
+ * NOTA: disambiguación de FK con !usuario_id porque pedidos.entregado_por también
+ * referencia usuarios(id) — Supabase no sabría cuál usar sin ser explícito.
  */
 const obtenerTodosPedidos = async () => {
   const { data, error } = await supabaseAdmin
     .from('pedidos')
     .select(`
       id, estado, tipo_entrega, direccion, total, creado_en, usuario_id,
-      usuarios(nombre, email)
+      fecha_entrega, entregado_por,
+      cliente:usuarios!usuario_id(nombre, email)
     `)
     .order('creado_en', { ascending: false })
 
@@ -307,17 +320,21 @@ const obtenerTodosPedidos = async () => {
 
   return (data || []).map((p) => ({
     ...p,
-    cliente_nombre: p.usuarios?.nombre,
-    cliente_email: p.usuarios?.email,
-    usuarios: undefined
+    cliente_nombre: p.cliente?.nombre,
+    cliente_email: p.cliente?.email,
+    cliente: undefined
   }))
 }
 
 /**
  * @param {number} pedidoId
  * @param {string} nuevoEstado
+ * @param {{ motivo?: string }} opciones
+ *
+ * Si el nuevo estado es 'cancelado', revierte el stock automáticamente
+ * vía cancelarYRevertirStock (defensa contra "stock fantasma" en cancelaciones).
  */
-const actualizarEstadoPedido = async (pedidoId, nuevoEstado) => {
+const actualizarEstadoPedido = async (pedidoId, nuevoEstado, opciones = {}) => {
   if (!ESTADOS_PEDIDO.includes(nuevoEstado)) {
     const err = new Error(`Estado inválido. Válidos: ${ESTADOS_PEDIDO.join(', ')}.`)
     err.status = 400
@@ -336,6 +353,11 @@ const actualizarEstadoPedido = async (pedidoId, nuevoEstado) => {
     throw err
   }
 
+  if (nuevoEstado === 'cancelado') {
+    const resultado = await cancelarYRevertirStock(pedidoId, opciones.motivo)
+    return { pedido: resultado.pedido, estadoAnterior: actual.estado }
+  }
+
   const { data: actualizado, error: errUpd } = await supabaseAdmin
     .from('pedidos')
     .update({ estado: nuevoEstado })
@@ -352,11 +374,158 @@ const actualizarEstadoPedido = async (pedidoId, nuevoEstado) => {
   return { pedido: actualizado, estadoAnterior: actual.estado }
 }
 
+/**
+ * Cliente cancela su propio pedido. Solo permitido si:
+ *  - El pedido es del usuario (usuario_id == clienteId)
+ *  - El estado es 'pendiente'
+ *
+ * @param {number} pedidoId
+ * @param {string} clienteId - UUID del cliente que solicita la cancelación
+ * @param {string} [motivo]
+ */
+const cancelarMiPedido = async (pedidoId, clienteId, motivo) => {
+  const { data: pedido } = await supabaseAdmin
+    .from('pedidos')
+    .select('id, estado, usuario_id')
+    .eq('id', pedidoId)
+    .maybeSingle()
+
+  if (!pedido) {
+    const err = new Error(`Pedido ${pedidoId} no encontrado.`)
+    err.status = 404
+    throw err
+  }
+  if (pedido.usuario_id !== clienteId) {
+    const err = new Error('No puedes cancelar un pedido que no es tuyo.')
+    err.status = 403
+    throw err
+  }
+  if (pedido.estado !== 'pendiente') {
+    const err = new Error(`Solo puedes cancelar pedidos en estado "pendiente". Tu pedido está "${pedido.estado}".`)
+    err.status = 409
+    throw err
+  }
+
+  const resultado = await cancelarYRevertirStock(pedidoId, motivo || 'Cancelado por el cliente')
+  return resultado
+}
+
+/**
+ * Cancela un pedido y devuelve las cantidades al inventario.
+ * @param {number} pedidoId
+ * @param {string} [motivo] - Texto libre que se guarda en motivo_cancelacion
+ */
+const cancelarYRevertirStock = async (pedidoId, motivo) => {
+  const { data: pedido, error: errPedido } = await supabaseAdmin
+    .from('pedidos')
+    .select(`
+      id, estado,
+      detalle_pedido(producto_id, cantidad)
+    `)
+    .eq('id', pedidoId)
+    .single()
+
+  if (errPedido || !pedido) {
+    throw new Error(`Pedido ${pedidoId} no encontrado para revertir stock.`)
+  }
+
+  if (pedido.estado === 'cancelado') {
+    return { mensaje: 'El pedido ya estaba cancelado.', pedido }
+  }
+
+  const detalles = pedido.detalle_pedido || []
+
+  for (const item of detalles) {
+    const { data: producto, error: errProd } = await supabaseAdmin
+      .from('productos')
+      .select('stock')
+      .eq('id', item.producto_id)
+      .single()
+
+    if (!errProd && producto) {
+      const nuevoStock = producto.stock + item.cantidad
+      await supabaseAdmin
+        .from('productos')
+        .update({ stock: nuevoStock })
+        .eq('id', item.producto_id)
+    }
+  }
+
+  const { data: actualizado, error: errUpd } = await supabaseAdmin
+    .from('pedidos')
+    .update({
+      estado: 'cancelado',
+      motivo_cancelacion: motivo || null,
+      fecha_cancelacion: new Date().toISOString()
+    })
+    .eq('id', pedidoId)
+    .select()
+    .single()
+
+  if (errUpd) {
+    throw new Error(`Error al actualizar el estado a cancelado: ${errUpd.message}`)
+  }
+
+  return { pedido: actualizado, mensaje: 'Pedido cancelado y stock devuelto exitosamente.' }
+}
+
+/**
+ * Registrar entrega del pedido — flujo Vista Contador.
+ * Marca quien entregó y cuándo. Si el estado no es 'entregado', lo actualiza.
+ *
+ * @param {number} pedidoId
+ * @param {string} contadorId - UUID del Contador/usuario que registra la entrega
+ */
+const registrarEntrega = async (pedidoId, contadorId) => {
+  const { data: pedido, error: errGet } = await supabaseAdmin
+    .from('pedidos')
+    .select('id, estado, fecha_entrega')
+    .eq('id', pedidoId)
+    .maybeSingle()
+
+  if (errGet || !pedido) {
+    const err = new Error(`Pedido ${pedidoId} no encontrado.`)
+    err.status = 404
+    throw err
+  }
+  if (pedido.estado === 'cancelado') {
+    const err = new Error('No se puede registrar entrega de un pedido cancelado.')
+    err.status = 409
+    throw err
+  }
+  if (pedido.fecha_entrega) {
+    const err = new Error('Este pedido ya tiene entrega registrada.')
+    err.status = 409
+    throw err
+  }
+
+  const { data, error } = await supabaseAdmin
+    .from('pedidos')
+    .update({
+      entregado_por: contadorId,
+      fecha_entrega: new Date().toISOString(),
+      estado: 'entregado'
+    })
+    .eq('id', pedidoId)
+    .select()
+    .single()
+
+  if (error || !data) {
+    const err = new Error(`Error al registrar entrega: ${error?.message || 'sin datos'}`)
+    err.status = 500
+    throw err
+  }
+  return data
+}
+
 module.exports = {
   crearPedidoCompleto,
   obtenerMisPedidos,
   obtenerTodosPedidos,
   actualizarEstadoPedido,
+  cancelarYRevertirStock,
+  cancelarMiPedido,
+  registrarEntrega,
   TIPOS_ENTREGA,
   ESTADOS_PEDIDO
 }

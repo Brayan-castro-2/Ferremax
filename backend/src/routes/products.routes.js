@@ -6,36 +6,37 @@ const productsController = require('../controllers/products.controller')
 const { verifyToken }    = require('../middlewares/auth.middleware')
 const { requireRoles, requirePasswordChanged } = require('../middlewares/roles.middleware')
 
-/**
- * GET /api/products
- * Público — cualquiera puede ver el catálogo
- */
+// GET /api/products — público
 router.get('/', productsController.listarProductos)
 
-/**
- * GET /api/products/categorias
- * Público — lista categorías para filtros
- */
+// GET /api/products/categorias — público
 router.get('/categorias', productsController.listarCategorias)
 
-/**
- * GET /api/products/:id
- * Público — ficha técnica de un producto con stock_disponible
- */
+// GET /api/products/:id — público (ficha técnica con stock_disponible)
 router.get('/:id', productsController.obtenerFichaTecnica)
 
-// ── Rutas protegidas (ejemplo para operaciones de staff) ──
+// POST /api/products — Admin / Bodeguero
+router.post('/',
+  verifyToken,
+  requirePasswordChanged,
+  requireRoles('Administrador', 'Bodeguero'),
+  productsController.crear
+)
 
-/**
- * PATCH /api/products/:id/stock
- * Solo Bodeguero o Administrador puede actualizar stock
- * Requiere contraseña no-default (requirePasswordChanged)
- */
-// router.patch('/:id/stock',
-//   verifyToken,
-//   requirePasswordChanged,
-//   requireRoles('Administrador', 'Bodeguero'),
-//   productsController.actualizarStock
-// )
+// PUT /api/products/:id — Admin / Bodeguero (actualización)
+router.put('/:id',
+  verifyToken,
+  requirePasswordChanged,
+  requireRoles('Administrador', 'Bodeguero'),
+  productsController.actualizar
+)
+
+// DELETE /api/products/:id — Admin (soft delete)
+router.delete('/:id',
+  verifyToken,
+  requirePasswordChanged,
+  requireRoles('Administrador'),
+  productsController.eliminar
+)
 
 module.exports = router

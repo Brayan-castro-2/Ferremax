@@ -27,7 +27,7 @@
 
       <div class="flex items-center gap-2 md:gap-3">
         <RouterLink
-          v-if="auth.isAuthenticated && auth.userRole === 'Cliente'"
+          v-if="!auth.isAuthenticated || auth.userRole === 'Cliente'"
           to="/carrito"
           class="relative flex h-10 w-10 items-center justify-center rounded-full border border-outline-variant/60 text-on-surface transition hover:border-primary/30 hover:bg-surface-container-low"
           id="btn-carrito"
@@ -178,14 +178,18 @@ const desktopLinks = computed(() => {
   if (!auth.isAuthenticated) {
     return [
       { label: 'Catálogo', to: '/catalogo' },
-      { label: 'Registro', to: '/registro' },
+      { label: 'Sucursales', to: '/sucursales' },
+      { label: 'Carrito', to: '/carrito' },
       { label: 'Acceso', to: '/login' },
     ]
   }
   const role = auth.userRole
-  const links = [{ label: 'Catálogo', to: '/catalogo' }]
+  const links = [
+    { label: 'Catálogo', to: '/catalogo' },
+    { label: 'Sucursales', to: '/sucursales' }
+  ]
   if (role === 'Cliente') {
-    links.push({ label: 'Carrito', to: '/carrito' }, { label: 'Checkout', to: '/checkout' }, { label: 'Pedidos', to: '/mis-pedidos' })
+    links.push({ label: 'Carrito', to: '/carrito' }, { label: 'Pedidos', to: '/mis-pedidos' })
   }
   links.push({ label: 'Panel', to: '/dashboard' })
   if (role === 'Administrador') links.push({ label: 'Admin', to: '/admin' })

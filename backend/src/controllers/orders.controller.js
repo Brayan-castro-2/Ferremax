@@ -76,9 +76,46 @@ const cambiarEstado = async (req, res, next) => {
   }
 }
 
+/**
+ * PATCH /api/orders/:id/cancelar — Cliente cancela su propio pedido pendiente.
+ * Body: { motivo?: string }
+ * Auto-revierte el stock.
+ */
+const cancelarMiPedido = async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id, 10)
+    if (isNaN(id) || id <= 0) {
+      return res.status(400).json({ error: ':id debe ser entero positivo.' })
+    }
+    const motivo = typeof req.body?.motivo === 'string' ? req.body.motivo.trim().slice(0, 500) : undefined
+    const resultado = await ordersService.cancelarMiPedido(id, req.user.id, motivo)
+    return res.status(200).json(resultado)
+  } catch (err) {
+    next(err)
+  }
+}
+
+/**
+ * PATCH /api/orders/:id/entregar — Contador registra entrega física del pedido.
+ */
+const registrarEntrega = async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id, 10)
+    if (isNaN(id) || id <= 0) {
+      return res.status(400).json({ error: ':id debe ser entero positivo.' })
+    }
+    const pedido = await ordersService.registrarEntrega(id, req.user.id)
+    return res.status(200).json({ mensaje: 'Entrega registrada exitosamente.', pedido })
+  } catch (err) {
+    next(err)
+  }
+}
+
 module.exports = {
   crearPedido,
   listarMisPedidos,
   listarTodos,
-  cambiarEstado
+  cambiarEstado,
+  cancelarMiPedido,
+  registrarEntrega
 }

@@ -88,4 +88,51 @@ const obtenerFichaTecnica = async (req, res, next) => {
   }
 }
 
-module.exports = { listarProductos, listarCategorias, obtenerFichaTecnica }
+/**
+ * POST /api/products
+ * Solo Administrador / Bodeguero.
+ */
+const crear = async (req, res, next) => {
+  try {
+    const producto = await productsService.crear(req.body)
+    return res.status(201).json({ mensaje: 'Producto creado.', producto })
+  } catch (err) {
+    next(err)
+  }
+}
+
+/**
+ * PUT /api/products/:id
+ * Reemplazo / actualización (admin).
+ */
+const actualizar = async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id, 10)
+    if (isNaN(id) || id <= 0) {
+      return res.status(400).json({ error: 'El parámetro :id debe ser un número entero positivo.' })
+    }
+    const producto = await productsService.actualizar(id, req.body)
+    return res.status(200).json({ mensaje: 'Producto actualizado.', producto })
+  } catch (err) {
+    next(err)
+  }
+}
+
+/**
+ * DELETE /api/products/:id
+ * Soft-delete (activo = false). Solo admin.
+ */
+const eliminar = async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id, 10)
+    if (isNaN(id) || id <= 0) {
+      return res.status(400).json({ error: 'El parámetro :id debe ser un número entero positivo.' })
+    }
+    const resultado = await productsService.eliminar(id)
+    return res.status(200).json(resultado)
+  } catch (err) {
+    next(err)
+  }
+}
+
+module.exports = { listarProductos, listarCategorias, obtenerFichaTecnica, crear, actualizar, eliminar }

@@ -1,74 +1,96 @@
 <template>
-  <main class="bg-background font-body-md text-on-surface">
-    <section class="mx-auto max-w-container-max px-margin-mobile py-section-gap md:px-margin-desktop">
-      <header class="mb-12 text-center">
-        <div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-on-primary">
-          <span class="text-2xl">✓</span>
+  <main class="bg-surface font-inter text-on-surface">
+    <section class="mx-auto max-w-4xl px-margin-mobile py-12 md:px-margin-desktop md:py-16">
+
+      <header class="mb-10 text-center">
+        <div class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full"
+          :class="estadoConfirmacion === 'ok' ? 'bg-emerald-500/15 text-emerald-700' : estadoConfirmacion === 'pending' ? 'bg-yellow-500/15 text-yellow-700' : 'bg-red-500/15 text-red-700'"
+        >
+          <svg v-if="estadoConfirmacion === 'ok'" class="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12" /></svg>
+          <svg v-else-if="estadoConfirmacion === 'pending'" class="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+          <svg v-else class="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" /></svg>
         </div>
-        <h1 class="font-display-lg text-headline-xl-mobile md:text-display-lg">Your order is secured</h1>
-        <p class="mx-auto mt-4 max-w-3xl font-body-lg text-on-surface-variant">
-          Gracias por elegir FERREMAS. Tu pedido
-          <strong class="text-primary">#{{ orderNumber }}</strong>
-          ya está en preparación.
-        </p>
+        <h1 class="font-sora text-4xl font-semibold tracking-tight text-primary md:text-5xl">
+          {{ tituloPorEstado }}
+        </h1>
+        <p class="mx-auto mt-4 max-w-2xl text-on-surface-variant">{{ descripcionPorEstado }}</p>
       </header>
 
-      <p v-if="error" class="mb-6 rounded-md border border-error/30 bg-error-container px-4 py-3 text-on-error-container" role="alert">
+      <p v-if="error" class="mb-6 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-red-700" role="alert">
         {{ error }}
       </p>
 
-      <div class="grid grid-cols-1 gap-gutter lg:grid-cols-12">
-        <section class="space-y-gutter lg:col-span-8">
-          <article class="rounded-xl bg-surface-container-lowest p-8 shadow-ambient">
-            <h2 class="mb-6 font-label-sm text-label-sm uppercase tracking-widest text-outline">Estimated delivery</h2>
-            <p class="font-headline-xl text-headline-xl-mobile text-primary md:text-headline-xl">{{ etaText }}</p>
-            <p class="mt-2 font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Despacho estándar</p>
-          </article>
+      <!-- Detalles del pedido -->
+      <div v-if="loading" class="flex flex-col items-center gap-4 py-12">
+        <div class="h-10 w-10 animate-spin rounded-full border-2 border-outline-variant border-t-primary" />
+        <p class="text-sm text-on-surface-variant">Cargando detalles…</p>
+      </div>
 
-          <article class="overflow-hidden rounded-xl bg-surface-container-lowest shadow-ambient">
-            <header class="flex items-center justify-between border-b border-surface-variant px-8 py-6">
-              <h2 class="font-label-sm text-label-sm uppercase tracking-widest text-primary">Order items ({{ items.length }})</h2>
-            </header>
-            <ul class="divide-y divide-surface-variant">
-              <li v-for="item in items" :key="item.id || item.producto_id" class="flex items-center justify-between gap-gutter p-8">
-                <div>
-                  <p class="font-headline-xl text-headline-xl-mobile text-primary">{{ item.nombre || `Producto ${item.producto_id}` }}</p>
-                  <p class="font-label-sm text-label-sm text-outline">Cantidad: {{ item.cantidad }}</p>
-                </div>
-                <strong>${{ formatPrice((item.precio_unitario || 0) * (item.cantidad || 1)) }}</strong>
-              </li>
-            </ul>
-          </article>
+      <template v-else-if="order">
+        <section class="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div class="rounded-2xl border border-outline-variant/40 bg-surface-container-lowest p-5">
+            <p class="font-geist text-[10px] font-semibold uppercase tracking-[0.18em] text-on-surface-variant">Pedido</p>
+            <p class="mt-2 font-sora text-2xl font-semibold text-primary">#{{ order.id }}</p>
+          </div>
+          <div class="rounded-2xl border border-outline-variant/40 bg-surface-container-lowest p-5">
+            <p class="font-geist text-[10px] font-semibold uppercase tracking-[0.18em] text-on-surface-variant">Estado</p>
+            <p class="mt-2 font-sora text-lg font-semibold capitalize" :class="estadoColor(order.estado)">{{ order.estado }}</p>
+          </div>
+          <div class="rounded-2xl border border-outline-variant/40 bg-surface-container-lowest p-5">
+            <p class="font-geist text-[10px] font-semibold uppercase tracking-[0.18em] text-on-surface-variant">Total</p>
+            <p class="mt-2 font-sora text-2xl font-semibold text-primary">${{ formatPrice(order.total) }}</p>
+          </div>
         </section>
 
-        <aside class="lg:col-span-4">
-          <article class="sticky top-24 rounded-xl bg-surface-container-low p-8">
-            <h2 class="mb-8 font-label-sm text-label-sm uppercase tracking-widest text-primary">Payment summary</h2>
-            <div class="space-y-4">
-              <div class="flex items-center justify-between">
-                <span class="text-on-surface-variant">Subtotal</span>
-                <span>${{ formatPrice(summary.subtotal) }}</span>
+        <!-- Productos comprados con foto -->
+        <section class="mb-6 overflow-hidden rounded-2xl border border-outline-variant/40 bg-surface-container-lowest">
+          <div class="border-b border-outline-variant/40 bg-surface-container-low px-6 py-3">
+            <p class="font-geist text-[10px] font-semibold uppercase tracking-[0.18em] text-on-surface-variant">Productos comprados</p>
+          </div>
+          <ul class="divide-y divide-outline-variant/30">
+            <li v-for="d in order.detalle_pedido || []" :key="d.id" class="flex items-center gap-4 px-6 py-4">
+              <div class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-outline-variant/40 bg-surface-container-low">
+                <img
+                  v-if="d.productos?.imagen_url"
+                  :src="d.productos.imagen_url"
+                  :alt="d.productos?.nombre"
+                  class="h-full w-full object-cover"
+                  loading="lazy"
+                />
+                <svg v-else class="h-8 w-8 text-outline opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="3" width="18" height="18" rx="2" /><path d="m3 16 5-5 5 5 3-3 5 5" /><circle cx="9" cy="9" r="1.5" /></svg>
               </div>
-              <div class="flex items-center justify-between">
-                <span class="text-on-surface-variant">Descuento</span>
-                <span>${{ formatPrice(summary.descuento) }}</span>
+              <div class="min-w-0 flex-1">
+                <p class="font-medium text-on-surface">{{ d.productos?.nombre || `Producto ${d.producto_id}` }}</p>
+                <p class="text-xs text-on-surface-variant">{{ d.cantidad }} × ${{ formatPrice(d.precio_unitario) }}</p>
               </div>
-              <div class="flex items-center justify-between border-t border-outline-variant pt-4">
-                <strong class="uppercase tracking-widest text-primary">Total</strong>
-                <strong class="font-display-lg text-3xl text-primary">${{ formatPrice(summary.total) }}</strong>
-              </div>
-            </div>
+              <p class="shrink-0 font-semibold text-primary">${{ formatPrice((d.precio_unitario || 0) * (d.cantidad || 0)) }}</p>
+            </li>
+            <li v-if="!order.detalle_pedido?.length" class="px-6 py-6 text-center text-sm text-on-surface-variant">
+              Sin detalle de productos.
+            </li>
+          </ul>
+        </section>
 
-            <div class="mt-8 flex flex-col gap-4">
-              <RouterLink to="/catalogo" class="rounded-lg bg-primary py-4 text-center font-label-sm text-label-sm uppercase tracking-[0.2em] text-on-primary transition hover:opacity-90">
-                Continue shopping
-              </RouterLink>
-              <RouterLink to="/mis-pedidos" class="rounded-lg border-2 border-primary py-4 text-center font-label-sm text-label-sm uppercase tracking-[0.2em] text-primary transition hover:bg-primary hover:text-on-primary">
-                View my orders
-              </RouterLink>
+        <!-- Boleta -->
+        <section v-if="boleta" class="mb-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-6">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <p class="font-geist text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-700">Boleta emitida</p>
+              <p class="mt-1 font-mono text-lg font-semibold text-emerald-800">{{ boleta.numero_boleta }}</p>
             </div>
-          </article>
-        </aside>
+            <p class="font-sora text-xl font-semibold text-emerald-800">${{ formatPrice(boleta.total) }}</p>
+          </div>
+        </section>
+      </template>
+
+      <!-- Acciones -->
+      <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+        <RouterLink to="/catalogo" class="flex-1 rounded-xl bg-primary py-4 text-center font-geist text-xs uppercase tracking-[0.18em] text-on-primary transition hover:opacity-90">
+          Seguir comprando
+        </RouterLink>
+        <RouterLink to="/mis-pedidos" class="flex-1 rounded-xl border-2 border-primary py-4 text-center font-geist text-xs uppercase tracking-[0.18em] text-primary transition hover:bg-primary hover:text-on-primary">
+          Ver mis pedidos
+        </RouterLink>
       </div>
     </section>
   </main>
@@ -76,57 +98,62 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
-import { useAuthStore } from '@/stores/auth.js'
+import { useRoute, RouterLink } from 'vue-router'
+import { api } from '@/lib/api.js'
 
 const route = useRoute()
-const auth = useAuthStore()
-
 const loading = ref(false)
 const error = ref('')
 const order = ref(null)
-const items = ref([])
 
-const orderNumber = computed(() => order.value?.id || route.query.id || 'PENDIENTE')
-const etaText = computed(() => {
-  const d = new Date()
-  d.setDate(d.getDate() + 3)
-  return d.toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric', month: 'short' })
+const boleta = computed(() => order.value?.boletas?.[0] || null)
+
+// La URL puede traer status=failed o status=ok desde el backend de Transbank
+const estadoConfirmacion = computed(() => {
+  const s = route.query.status
+  if (s === 'failed' || s === 'rejected') return 'error'
+  if (!order.value) return 'pending'
+  if (order.value.estado === 'cancelado') return 'error'
+  if (order.value.estado === 'pendiente') return 'pending'
+  return 'ok'
 })
 
-const summary = computed(() => {
-  const subtotal = items.value.reduce((acc, item) => acc + (item.precio_unitario || 0) * (item.cantidad || 0), 0)
-  const descuento = Number(order.value?.descuentoMonto || 0)
-  return { subtotal, descuento, total: Number(order.value?.total || subtotal - descuento) }
+const tituloPorEstado = computed(() => {
+  if (estadoConfirmacion.value === 'error') return 'No pudimos procesar el pago'
+  if (estadoConfirmacion.value === 'pending') return '¡Pedido recibido!'
+  return '¡Pedido confirmado!'
 })
 
-function formatPrice(value) {
-  return Number(value || 0).toLocaleString('es-CL')
+const descripcionPorEstado = computed(() => {
+  if (estadoConfirmacion.value === 'error') {
+    return `Tu pago fue rechazado o cancelado${route.query.error ? `: ${route.query.error}` : '.'} Puedes intentarlo de nuevo o elegir otro método.`
+  }
+  if (estadoConfirmacion.value === 'pending') {
+    return 'Tu pedido está registrado en estado pendiente. El vendedor lo confirmará y un contador validará tu pago si elegiste transferencia.'
+  }
+  return 'Gracias por elegir FERREMAS. Tu pedido ya está en preparación.'
+})
+
+function formatPrice(v) { return Number(v || 0).toLocaleString('es-CL') }
+function estadoColor(e) {
+  if (['confirmado', 'en_proceso', 'enviado', 'entregado'].includes(e)) return 'text-emerald-700'
+  if (e === 'cancelado') return 'text-red-700'
+  return 'text-yellow-700'
 }
 
-async function fetchOrderDetails() {
-  if (!route.query.id) return
+async function cargar() {
+  const id = route.query.id || route.query.orderId
+  if (!id) return
   loading.value = true
-  error.value = ''
   try {
-    const token = localStorage.getItem('ferremas_api_token') || auth.session?.access_token || ''
-    const base = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '')
-    const response = await fetch(`${base || ''}/api/orders/mis-pedidos`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    })
-    if (!response.ok) return
-    const data = await response.json()
-    const found = (data.pedidos || []).find((p) => String(p.id) === String(route.query.id))
-    if (found) {
-      order.value = found
-      items.value = found.items || found.detalle || found.detalle_pedido || []
-    }
-  } catch (err) {
-    error.value = err.message
+    const data = await api.pedidos.misPedidos()
+    order.value = (data.pedidos || []).find((p) => String(p.id) === String(id)) || null
+  } catch (e) {
+    error.value = e.message
   } finally {
     loading.value = false
   }
 }
 
-onMounted(fetchOrderDetails)
+onMounted(cargar)
 </script>

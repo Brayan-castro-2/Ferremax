@@ -19,6 +19,8 @@ const AdminView = () => import('@/views/roles/AdminView.vue')
 const VendedorView = () => import('@/views/roles/VendedorView.vue')
 const BodegueroView = () => import('@/views/roles/BodegueroView.vue')
 const ContadorView = () => import('@/views/roles/ContadorView.vue')
+const SucursalesView = () => import('@/views/SucursalesView.vue')
+const StockSucursalView = () => import('@/views/StockSucursalView.vue')
 const NotFoundView = () => import('@/views/NotFoundView.vue')
 
 const routes = [
@@ -29,8 +31,8 @@ const routes = [
   { path: '/restablecer', name: 'ResetPassword', component: ResetPasswordView, meta: { public: true, title: 'Nueva contraseña' } },
   { path: '/catalogo', name: 'Catalogo', component: CatalogoView, meta: { public: true, title: 'Catálogo' } },
   { path: '/producto/:id', name: 'ProductoDetail', component: ProductoDetailView, meta: { public: true, title: 'Producto' } },
-  { path: '/carrito', name: 'Carrito', component: CarritoView, meta: { requiresAuth: true, roles: ['Cliente'], title: 'Carrito' } },
-  { path: '/checkout', name: 'Checkout', component: CheckoutView, meta: { requiresAuth: true, roles: ['Cliente'], title: 'Checkout' } },
+  { path: '/carrito', name: 'Carrito', component: CarritoView, meta: { public: true, title: 'Carrito' } },
+  { path: '/checkout', name: 'Checkout', component: CheckoutView, meta: { public: true, title: 'Checkout' } },
   { path: '/pedido-confirmacion', name: 'PedidoConfirmacion', component: PedidoConfirmacionView, meta: { requiresAuth: true, roles: ['Cliente'], title: 'Pedido confirmado' } },
   { path: '/mis-pedidos', name: 'MisPedidos', component: MisPedidosView, meta: { requiresAuth: true, roles: ['Cliente'], title: 'Mis pedidos' } },
   { path: '/pedido/:id', name: 'PedidoDetalle', component: PedidoDetalleView, meta: { requiresAuth: true, roles: ['Cliente'], title: 'Detalle del pedido' } },
@@ -40,6 +42,8 @@ const routes = [
   { path: '/vendedor', name: 'Vendedor', component: VendedorView, meta: { requiresAuth: true, roles: ['Vendedor', 'Administrador'], title: 'Ventas' } },
   { path: '/bodeguero', name: 'Bodeguero', component: BodegueroView, meta: { requiresAuth: true, roles: ['Bodeguero', 'Administrador'], title: 'Bodega' } },
   { path: '/contador', name: 'Contador', component: ContadorView, meta: { requiresAuth: true, roles: ['Contador', 'Administrador'], title: 'Finanzas' } },
+  { path: '/sucursales', name: 'Sucursales', component: SucursalesView, meta: { public: true, title: 'Sucursales' } },
+  { path: '/sucursales/:id/stock', name: 'StockSucursal', component: StockSucursalView, meta: { public: true, title: 'Stock por sucursal' } },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFoundView, meta: { public: true, title: 'No encontrado' } },
 ]
 

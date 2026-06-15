@@ -1,123 +1,140 @@
 <template>
   <div class="flex min-h-screen flex-col">
     <main class="flex flex-1 items-center justify-center bg-surface px-margin-mobile py-16 font-inter">
-      <div class="w-full max-w-md">
+      <div class="w-full max-w-lg">
         <RouterLink to="/catalogo" class="mb-6 flex items-center gap-1.5 font-geist text-[10px] uppercase tracking-widest text-on-surface-variant transition-colors hover:text-primary">
           ← Volver al catálogo
         </RouterLink>
+
         <div class="w-full rounded-2xl border border-outline-variant/50 bg-surface-container-lowest p-8 shadow-ambient sm:p-10">
+          <header class="mb-8">
+            <p class="font-geist text-[10px] font-semibold uppercase tracking-[0.22em] text-tertiary">Nueva cuenta</p>
+            <h1 class="mt-2 font-sora text-2xl font-semibold tracking-tight text-primary">Crear cuenta de cliente</h1>
+            <p class="mt-2 text-sm text-on-surface-variant">
+              Te pediremos tu dirección para coordinar despachos a domicilio.
+            </p>
+          </header>
 
-      <!-- Header -->
-      <header class="mb-8">
-        <p class="font-geist text-[10px] font-semibold uppercase tracking-[0.22em] text-tertiary">Nueva cuenta</p>
-        <h1 class="mt-2 font-sora text-2xl font-semibold tracking-tight text-primary">Crear acceso</h1>
-        <p class="mt-2 text-sm text-on-surface-variant">Completa los datos para registrarte en FERREMAS.</p>
-      </header>
+          <div v-if="success" class="mb-6 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm text-emerald-800" role="status">
+            <p class="font-semibold">¡Cuenta creada exitosamente!</p>
+            <p class="mt-1">Ya puedes iniciar sesión con tu email y contraseña.</p>
+            <RouterLink to="/login" class="mt-3 inline-block font-geist text-[11px] font-semibold uppercase tracking-widest text-primary underline underline-offset-2">
+              Ir a iniciar sesión →
+            </RouterLink>
+          </div>
 
-      <!-- Mensaje de éxito -->
-      <div
-        v-if="message"
-        class="mb-6 rounded-xl border border-outline-variant/60 bg-surface-container-low px-4 py-4 text-sm text-on-surface"
-        role="status"
-      >
-        <p class="font-semibold text-primary">¡Registro exitoso!</p>
-        <p class="mt-1">{{ message }}</p>
-        <RouterLink to="/login" class="mt-3 inline-block font-geist text-[11px] font-semibold uppercase tracking-widest text-primary underline underline-offset-2">
-          Ir a Iniciar sesión →
-        </RouterLink>
-      </div>
+          <p v-if="globalError" class="mb-5 rounded-xl border border-error/25 bg-error-container/80 px-4 py-3 text-sm text-on-error-container" role="alert">
+            {{ globalError }}
+          </p>
 
-      <!-- Error global -->
-      <p
-        v-if="globalError"
-        class="mb-5 rounded-xl border border-error/25 bg-error-container/80 px-4 py-3 text-sm text-on-error-container"
-        role="alert"
-      >
-        {{ globalError }}
-      </p>
+          <form v-if="!success" class="space-y-5" @submit.prevent="submit" novalidate>
+            <FmInput
+              id="reg-nombre"
+              v-model="form.nombre"
+              label="Nombre completo *"
+              type="text"
+              placeholder="Ej: Juan Pérez"
+              autocomplete="name"
+              :error="errors.nombre"
+            />
 
-      <!-- Formulario (oculto tras éxito) -->
-      <form v-if="!message" class="space-y-5" @submit.prevent="submit" novalidate>
+            <FmInput
+              id="reg-email"
+              v-model="form.email"
+              label="Correo electrónico *"
+              type="email"
+              placeholder="tu@correo.cl"
+              autocomplete="email"
+              :error="errors.email"
+            />
 
-        <!-- Nombre -->
-        <FmInput
-          id="reg-nombre"
-          v-model="nombre"
-          label="Nombre completo"
-          type="text"
-          placeholder="Ej: Juan Pérez"
-          autocomplete="name"
-          :error="errors.nombre"
-          @blur="validateNombre"
-        />
+            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+              <FmInput
+                id="reg-pass"
+                v-model="form.password"
+                label="Contraseña *"
+                type="password"
+                placeholder="Mínimo 6 caracteres"
+                autocomplete="new-password"
+                :error="errors.password"
+              />
+              <FmInput
+                id="reg-confirm"
+                v-model="form.confirmPassword"
+                label="Confirmar contraseña *"
+                type="password"
+                placeholder="Repite tu contraseña"
+                autocomplete="new-password"
+                :error="errors.confirmPassword"
+              />
+            </div>
 
-        <!-- Email -->
-        <FmInput
-          id="reg-email"
-          v-model="email"
-          label="Correo electrónico"
-          type="email"
-          placeholder="tu@correo.cl"
-          autocomplete="email"
-          :error="errors.email"
-          @blur="validateEmail"
-        />
+            <FmInput
+              id="reg-rut"
+              v-model="form.rut"
+              label="RUT"
+              type="text"
+              placeholder="12.345.678-9"
+            />
 
-        <!-- Contraseña -->
-        <FmInput
-          id="reg-pass"
-          v-model="password"
-          label="Contraseña"
-          type="password"
-          placeholder="Mínimo 6 caracteres"
-          autocomplete="new-password"
-          hint="Mínimo 6 caracteres"
-          :error="errors.password"
-          @blur="validatePassword"
-        />
+            <FmInput
+              id="reg-telefono"
+              v-model="form.telefono"
+              label="Teléfono"
+              type="tel"
+              placeholder="+56 9 1234 5678"
+              autocomplete="tel"
+            />
 
-        <!-- Confirmar contraseña -->
-        <FmInput
-          id="reg-confirm"
-          v-model="confirmPassword"
-          label="Confirmar contraseña"
-          type="password"
-          placeholder="Repite tu contraseña"
-          autocomplete="new-password"
-          :error="errors.confirmPassword"
-          @blur="validateConfirm"
-        />
+            <FmInput
+              id="reg-direccion"
+              v-model="form.direccion"
+              label="Dirección de despacho *"
+              type="text"
+              placeholder="Calle, número, depto"
+              autocomplete="street-address"
+              :error="errors.direccion"
+            />
 
-        <!-- Términos y condiciones -->
-        <div class="flex items-start gap-3">
-          <input
-            id="reg-terminos"
-            v-model="terminos"
-            type="checkbox"
-            class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-primary"
-            @change="errors.terminos = ''"
-          />
-          <label for="reg-terminos" class="cursor-pointer text-sm text-on-surface-variant">
-            Acepto los
-            <span class="font-semibold text-primary">términos y condiciones</span>
-            de uso de FERREMAS
-          </label>
-        </div>
-        <p v-if="errors.terminos" class="text-xs text-error" role="alert">{{ errors.terminos }}</p>
+            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+              <FmInput
+                id="reg-comuna"
+                v-model="form.comuna"
+                label="Comuna"
+                type="text"
+                placeholder="Ej: Providencia"
+              />
+              <FmInput
+                id="reg-ciudad"
+                v-model="form.ciudad"
+                label="Ciudad"
+                type="text"
+                placeholder="Ej: Santiago"
+              />
+            </div>
 
-        <!-- Botón submit -->
-        <FmButton native-type="submit" variant="primary" block :loading="loading">
-          Crear cuenta
-        </FmButton>
+            <div class="flex items-start gap-3">
+              <input
+                id="reg-terminos"
+                v-model="terminos"
+                type="checkbox"
+                class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-primary"
+              />
+              <label for="reg-terminos" class="cursor-pointer text-sm text-on-surface-variant">
+                Acepto los <span class="font-semibold text-primary">términos y condiciones</span> de uso de FERREMAS
+              </label>
+            </div>
+            <p v-if="errors.terminos" class="text-xs text-error">{{ errors.terminos }}</p>
 
-      </form>
+            <FmButton native-type="submit" variant="primary" block :loading="loading">
+              Crear cuenta
+            </FmButton>
+          </form>
 
-      <!-- Link a login -->
-      <p v-if="!message" class="mt-8 text-center text-sm text-on-surface-variant">
-        ¿Ya tienes cuenta?
-        <RouterLink to="/login" class="font-semibold text-primary hover:underline">Iniciar sesión</RouterLink>
-      </p>
-
+          <p v-if="!success" class="mt-8 text-center text-sm text-on-surface-variant">
+            ¿Ya tienes cuenta?
+            <RouterLink to="/login" class="font-semibold text-primary hover:underline">Iniciar sesión</RouterLink>
+          </p>
         </div>
       </div>
     </main>
@@ -127,125 +144,61 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
-import { supabase, isMockup } from '@/lib/supabase.js'
+import { api } from '@/lib/api.js'
 import FmInput from '@/components/ui/FmInput.vue'
 import FmButton from '@/components/ui/FmButton.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
 
-const router = useRouter()
-
-// ── Campos del formulario ────────────────────────────────────
-const nombre          = ref('')
-const email           = ref('')
-const password        = ref('')
-const confirmPassword = ref('')
-const terminos        = ref(false)
-
-// ── Estado ───────────────────────────────────────────────────
-const loading     = ref(false)
-const globalError = ref('')
-const message     = ref('')
-
-// ── Errores de campo ─────────────────────────────────────────
-const errors = reactive({
-  nombre:          '',
-  email:           '',
-  password:        '',
+const form = reactive({
+  nombre: '',
+  email: '',
+  password: '',
   confirmPassword: '',
-  terminos:        '',
+  rut: '',
+  telefono: '',
+  direccion: '',
+  comuna: '',
+  ciudad: ''
 })
 
-// ── Validaciones individuales ────────────────────────────────
-function validateNombre() {
-  errors.nombre = nombre.value.trim().length < 2
-    ? 'Ingresa tu nombre completo'
-    : ''
-}
+const terminos = ref(false)
+const loading = ref(false)
+const globalError = ref('')
+const success = ref(false)
 
-function validateEmail() {
-  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  errors.email = !re.test(email.value.trim())
-    ? 'Ingresa un correo electrónico válido'
-    : ''
-}
+const errors = reactive({
+  nombre: '', email: '', password: '', confirmPassword: '', direccion: '', terminos: ''
+})
 
-function validatePassword() {
-  errors.password = password.value.length < 6
-    ? 'La contraseña debe tener al menos 6 caracteres'
-    : ''
-}
-
-function validateConfirm() {
-  errors.confirmPassword = confirmPassword.value !== password.value
-    ? 'Las contraseñas no coinciden'
-    : ''
-}
-
-function validateAll() {
-  validateNombre()
-  validateEmail()
-  validatePassword()
-  validateConfirm()
-  if (!terminos.value) errors.terminos = 'Debes aceptar los términos y condiciones'
+function validate() {
+  errors.nombre = form.nombre.trim().length < 2 ? 'Ingresa tu nombre completo' : ''
+  errors.email = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim()) ? 'Email inválido' : ''
+  errors.password = form.password.length < 6 ? 'Mínimo 6 caracteres' : ''
+  errors.confirmPassword = form.password !== form.confirmPassword ? 'Las contraseñas no coinciden' : ''
+  errors.direccion = form.direccion.trim().length < 5 ? 'Ingresa una dirección válida para despacho' : ''
+  errors.terminos = !terminos.value ? 'Debes aceptar los términos' : ''
   return !Object.values(errors).some(Boolean)
 }
 
-// ── Mapeo de errores de Supabase al español ──────────────────
-function traducirError(msg = '') {
-  if (msg.includes('User already registered') || msg.includes('already been registered'))
-    return 'Este email ya tiene una cuenta registrada. Intenta iniciar sesión.'
-  if (msg.includes('Password should be at least 6'))
-    return 'La contraseña debe tener al menos 6 caracteres.'
-  if (msg.includes('Unable to validate email'))
-    return 'El formato del correo electrónico no es válido.'
-  if (msg.includes('Email rate limit exceeded'))
-    return 'Demasiados intentos. Espera unos minutos antes de intentarlo de nuevo.'
-  return msg
-}
-
-// ── Submit ────────────────────────────────────────────────────
 async function submit() {
   globalError.value = ''
-  message.value     = ''
-
-  if (!validateAll()) return
-
-  // Modo mockup — no hay conexión real a Supabase
-  if (isMockup || !supabase) {
-    message.value = 'Modo demo activo: el registro real requiere credenciales de Supabase en .env.local'
-    return
-  }
+  if (!validate()) return
 
   loading.value = true
   try {
-    // ── PASO 1: Crear cuenta en Supabase Auth ─────────────────
-    const { data, error } = await supabase.auth.signUp({
-      email:    email.value.trim().toLowerCase(),
-      password: password.value,
-      options: {
-        data: {
-          nombre: nombre.value.trim(), // metadata → disponible para el trigger de DB
-        },
-      },
+    await api.clientes.registrar({
+      nombre:    form.nombre.trim(),
+      email:     form.email.trim().toLowerCase(),
+      password:  form.password,
+      direccion: form.direccion.trim(),
+      rut:       form.rut.trim() || undefined,
+      telefono:  form.telefono.trim() || undefined,
+      comuna:    form.comuna.trim() || undefined,
+      ciudad:    form.ciudad.trim() || undefined
     })
-
-    if (error) throw error
-
-    // ── PASO 2: Redirigir / mostrar mensaje ───────────────────
-    // Si Supabase tiene confirmación de email activada, data.user.email_confirmed_at es null
-    const requiereConfirmacion = data?.user && !data.user.email_confirmed_at
-
-    if (requiereConfirmacion) {
-      // El usuario debe confirmar su email antes de poder iniciar sesión
-      message.value = '¡Cuenta creada! Revisa tu email para confirmar tu cuenta antes de iniciar sesión.'
-    } else {
-      // Supabase no requiere confirmación → redirigir directo al login
-      router.push({ path: '/login', query: { registered: '1' } })
-    }
-
+    success.value = true
   } catch (err) {
-    globalError.value = traducirError(err.message || 'No se pudo completar el registro.')
+    globalError.value = err.message || 'No se pudo completar el registro.'
   } finally {
     loading.value = false
   }

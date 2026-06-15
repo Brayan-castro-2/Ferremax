@@ -1,132 +1,107 @@
 <template>
   <DashboardShell title="Administración" :links="shellLinks">
-    <div class="mx-auto max-w-6xl px-margin-mobile md:px-0">
+    <div class="mx-auto max-w-6xl">
 
-      <!-- ── HEADER ── -->
-      <div class="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <!-- Header -->
+      <header class="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 class="font-sora text-headline-xl-mobile text-on-surface md:text-headline-xl">
-            Panel <span class="text-primary">Administrador</span>
-          </h1>
-          <p class="mt-1 font-inter text-body-md text-on-surface-variant">
-            Gestión global del sistema FERREMAS
-          </p>
+          <p class="font-geist text-[11px] font-semibold uppercase tracking-[0.18em] text-tertiary">Panel</p>
+          <h1 class="mt-2 font-sora text-4xl font-semibold tracking-tight text-primary">Administración</h1>
+          <p class="mt-2 text-on-surface-variant">Vista global del sistema FERREMAS — KPIs, clientes, reportes.</p>
         </div>
-        <span class="inline-flex w-fit items-center gap-2 rounded-full bg-primary px-4 py-2 font-geist text-label-sm uppercase tracking-widest text-on-primary">
-          👑 Administrador
+        <span class="inline-flex w-fit items-center gap-2 rounded-full bg-primary px-4 py-2 font-geist text-xs font-semibold uppercase tracking-wider text-on-primary">
+          Administrador
         </span>
-      </div>
+      </header>
 
-      <!-- ── LOADING skeleton ── -->
+      <!-- Loading -->
       <template v-if="cargando">
-        <div class="mb-8 grid grid-cols-2 gap-6 lg:grid-cols-4">
-          <div v-for="n in 4" :key="n" class="h-28 animate-pulse rounded-xl bg-surface-container-high" />
+        <div class="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <div v-for="n in 4" :key="n" class="h-28 animate-pulse rounded-2xl bg-surface-container-low" />
         </div>
-        <div class="h-64 animate-pulse rounded-xl bg-surface-container-high" />
+        <div class="h-64 animate-pulse rounded-2xl bg-surface-container-low" />
       </template>
 
-      <!-- ── ERROR ── -->
-      <div
-        v-else-if="errorMsg"
-        class="rounded-xl border border-error/25 bg-error-container/60 px-5 py-4 font-inter text-body-md text-on-error-container"
-        role="alert"
-      >
-        {{ errorMsg }}
+      <!-- Error -->
+      <div v-else-if="errorMsg" class="rounded-2xl border border-red-500/30 bg-red-500/10 p-6 text-red-700" role="alert">
+        <p class="font-semibold">No pude cargar el panel.</p>
+        <p class="mt-1 text-sm">{{ errorMsg }}</p>
+        <button class="mt-4 rounded-full border border-red-500/40 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider transition hover:bg-red-500/20" @click="cargarTodo">Reintentar</button>
       </div>
 
-      <!-- ── CONTENIDO PRINCIPAL ── -->
       <template v-else>
-
         <!-- KPIs -->
-        <div class="mb-8 grid grid-cols-2 gap-6 lg:grid-cols-4">
-          <div
-            v-for="k in kpis"
-            :key="k.label"
-            :id="`kpi-${k.id}`"
-            class="group flex flex-col gap-4 rounded-xl bg-surface-container-lowest p-6 shadow-ambient transition hover:ring-1 hover:ring-primary/20"
-          >
-            <div class="flex items-start justify-between">
-              <span class="text-4xl leading-none">{{ k.icon }}</span>
-              <span
-                :class="[
-                  'font-geist text-[11px] font-semibold',
-                  k.trend > 0 ? 'text-emerald-600' : 'text-error'
-                ]"
-              >
-                {{ k.trend > 0 ? '▲' : '▼' }} {{ Math.abs(k.trend) }}%
-              </span>
-            </div>
-            <div>
-              <p class="font-sora text-3xl font-semibold text-primary">{{ k.value }}</p>
-              <p class="mt-1 font-geist text-[10px] uppercase tracking-[0.18em] text-on-surface-variant">
-                {{ k.label }}
-              </p>
-            </div>
+        <div class="mb-10 grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <div v-for="k in kpis" :key="k.label" class="rounded-2xl border border-outline-variant/40 bg-surface-container-lowest p-5 transition hover:border-primary/30 hover:shadow-ambient">
+            <p class="font-geist text-[10px] font-semibold uppercase tracking-[0.18em] text-on-surface-variant">{{ k.label }}</p>
+            <p class="mt-2 font-sora text-3xl font-semibold text-primary">{{ k.value }}</p>
+            <p v-if="k.hint" class="mt-2 text-xs text-on-surface-variant">{{ k.hint }}</p>
           </div>
         </div>
 
-        <!-- Tabla usuarios -->
-        <div id="table-usuarios" class="overflow-hidden rounded-xl bg-surface-container-lowest shadow-ambient">
-          <div class="border-b border-outline-variant/40 px-6 py-5">
-            <h2 class="font-sora text-headline-xl-mobile font-semibold text-on-surface">
-              Usuarios del Sistema
-            </h2>
+        <!-- Tabla clientes -->
+        <section class="mb-10 rounded-2xl border border-outline-variant/40 bg-surface-container-lowest overflow-hidden">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-outline-variant/40 px-6 py-4">
+            <div>
+              <p class="font-geist text-[10px] font-semibold uppercase tracking-[0.18em] text-tertiary">Tabla independiente</p>
+              <h2 class="mt-1 font-sora text-xl font-semibold text-primary">Clientes registrados</h2>
+            </div>
+            <span class="rounded-full bg-primary/10 px-3 py-1 font-geist text-xs font-semibold text-primary">
+              {{ clientes.length }} clientes
+            </span>
           </div>
 
-          <div class="overflow-x-auto">
-            <table class="w-full">
-              <thead>
-                <tr class="border-b border-outline-variant/40 bg-surface-container-low">
-                  <th class="px-6 py-3 text-left font-geist text-[10px] uppercase tracking-widest text-on-surface-variant">Nombre</th>
-                  <th class="px-6 py-3 text-left font-geist text-[10px] uppercase tracking-widest text-on-surface-variant">Email</th>
-                  <th class="px-6 py-3 text-left font-geist text-[10px] uppercase tracking-widest text-on-surface-variant">Rol</th>
-                  <th class="px-6 py-3 text-left font-geist text-[10px] uppercase tracking-widest text-on-surface-variant">Estado</th>
-                  <th class="px-6 py-3 text-left font-geist text-[10px] uppercase tracking-widest text-on-surface-variant">Acción</th>
+          <div v-if="clientes.length === 0" class="px-6 py-10 text-center text-sm text-on-surface-variant">
+            No hay clientes registrados aún. Los nuevos clientes aparecen aquí al registrarse.
+          </div>
+
+          <div v-else class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-surface-container-low text-left font-geist text-[10px] font-semibold uppercase tracking-[0.14em] text-on-surface-variant">
+                <tr>
+                  <th class="px-6 py-3">Nombre</th>
+                  <th class="px-6 py-3">Email</th>
+                  <th class="px-6 py-3">Dirección</th>
+                  <th class="px-6 py-3">Teléfono</th>
+                  <th class="px-6 py-3 text-right">Estado</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr
-                  v-for="u in usuarios"
-                  :key="u.id"
-                  class="border-b border-outline-variant/40 transition last:border-0 hover:bg-surface-container"
-                >
-                  <td class="px-6 py-4 font-inter text-body-md font-medium text-on-surface">
-                    {{ u.nombre }}
-                  </td>
-                  <td class="px-6 py-4 font-inter text-body-md text-on-surface-variant">
-                    {{ u.email }}
-                  </td>
-                  <td class="px-6 py-4">
-                    <span class="rounded-full bg-primary/10 px-3 py-1 font-geist text-xs font-medium text-primary">
-                      {{ u.rol_nombre || '—' }}
+              <tbody class="divide-y divide-outline-variant/30">
+                <tr v-for="c in clientes" :key="c.id" class="transition hover:bg-surface-container-low/50">
+                  <td class="px-6 py-4 font-medium text-on-surface">{{ c.nombre }}</td>
+                  <td class="px-6 py-4 text-on-surface-variant">{{ c.email }}</td>
+                  <td class="px-6 py-4 text-on-surface-variant">{{ c.direccion || '—' }}</td>
+                  <td class="px-6 py-4 text-on-surface-variant">{{ c.telefono || '—' }}</td>
+                  <td class="px-6 py-4 text-right">
+                    <span :class="c.activo ? 'bg-emerald-500/15 text-emerald-700' : 'bg-red-500/15 text-red-700'" class="inline-flex rounded-full px-3 py-1 font-geist text-[10px] font-semibold uppercase tracking-wider">
+                      {{ c.activo ? 'Activo' : 'Inactivo' }}
                     </span>
-                  </td>
-                  <td class="px-6 py-4">
-                    <span
-                      :class="[
-                        'rounded-full px-3 py-1 font-geist text-xs font-medium',
-                        u.activo
-                          ? 'bg-tertiary/10 text-tertiary'
-                          : 'bg-error/10 text-error'
-                      ]"
-                    >
-                      {{ u.activo ? 'Activo' : 'Inactivo' }}
-                    </span>
-                  </td>
-                  <td class="px-6 py-4">
-                    <button
-                      type="button"
-                      class="rounded-lg border border-outline-variant px-3 py-1 font-geist text-xs uppercase tracking-wider text-on-surface-variant transition hover:border-primary hover:text-primary"
-                    >
-                      Editar
-                    </button>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
-        </div>
+        </section>
 
+        <!-- Sucursales overview -->
+        <section class="rounded-2xl border border-outline-variant/40 bg-surface-container-lowest p-6">
+          <div class="mb-4 flex items-center justify-between">
+            <h2 class="font-sora text-xl font-semibold text-primary">Red de sucursales</h2>
+            <RouterLink to="/sucursales" class="font-geist text-xs uppercase tracking-wider text-primary hover:underline">Ver todas →</RouterLink>
+          </div>
+          <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
+            <RouterLink
+              v-for="s in sucursales"
+              :key="s.id"
+              :to="`/sucursales/${s.id}/stock`"
+              class="rounded-xl border border-outline-variant/40 bg-surface-container-low p-4 transition hover:border-primary/30"
+            >
+              <p class="font-geist text-[10px] font-semibold uppercase tracking-wider text-tertiary">{{ s.region }}</p>
+              <p class="mt-1 font-sora text-sm font-semibold">{{ s.nombre }}</p>
+              <p class="text-xs text-on-surface-variant">{{ s.ciudad }}</p>
+            </RouterLink>
+          </div>
+        </section>
       </template>
     </div>
   </DashboardShell>
@@ -134,150 +109,57 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { RouterLink } from 'vue-router'
 import DashboardShell from '@/components/layout/DashboardShell.vue'
-import { ServiciosSupabase } from '@/servicios/ServiciosSupabase.js'
-import { supabase, isMockup } from '@/lib/supabase.js'
+import { api } from '@/lib/api.js'
 
 const shellLinks = [
   { label: 'Administración', to: '/admin' },
   { label: 'Resumen', to: '/dashboard' },
   { label: 'Catálogo', to: '/catalogo' },
+  { label: 'Sucursales', to: '/sucursales' }
 ]
 
-const usuarios  = ref([])
-const cargando  = ref(true)
-const errorMsg  = ref('')
+const cargando = ref(true)
+const errorMsg = ref('')
+const clientes = ref([])
+const sucursales = ref([])
+const ventasMes = ref(0)
+const stockBajo = ref(0)
+const pedidosActivos = ref(0)
 
-// KPIs reales desde BD
-const kpiVentasMes = ref(0)
-const kpiPedidosActivos = ref(0)
-const kpiUsuariosActivos = ref(0)
-const kpiProductosStock = ref(0)
+const kpis = computed(() => [
+  { label: 'Ventas del mes', value: `$${ventasMes.value.toLocaleString('es-CL')}`, hint: 'Todos los pedidos no cancelados' },
+  { label: 'Pedidos activos', value: String(pedidosActivos.value), hint: 'En proceso' },
+  { label: 'Clientes registrados', value: String(clientes.value.length), hint: 'Tabla clientes' },
+  { label: 'Productos stock bajo', value: String(stockBajo.value), hint: 'Menos de 5 uds.' }
+])
 
-/** Mock alineado con formas reales de Supabase */
-const USUARIOS_MOCKUP = [
-  { id: 'm1', nombre: 'Carlos Admin',    email: 'admin@ferremas.cl',     rol_nombre: 'Administrador', activo: true },
-  { id: 'm2', nombre: 'Ana Vendedora',   email: 'vendedor@ferremas.cl',  rol_nombre: 'Vendedor',      activo: true },
-  { id: 'm3', nombre: 'Luis Bodeguero',  email: 'bodeguero@ferremas.cl', rol_nombre: 'Bodeguero',     activo: true },
-  { id: 'm4', nombre: 'María Contadora', email: 'contador@ferremas.cl',  rol_nombre: 'Contador',      activo: false },
-]
-
-const kpis = computed(() => {
-  return [
-    {
-      id: 'ventas',
-      icon: '💰',
-      label: 'Ventas del Mes',
-      value: `$${kpiVentasMes.value.toLocaleString('es-CL')}`,
-      trend: 12
-    },
-    {
-      id: 'pedidos',
-      icon: '📦',
-      label: 'Pedidos Activos',
-      value: String(kpiPedidosActivos.value),
-      trend: 8
-    },
-    {
-      id: 'usuarios',
-      icon: '👥',
-      label: 'Usuarios Activos',
-      value: String(kpiUsuariosActivos.value),
-      trend: 3
-    },
-    {
-      id: 'stock',
-      icon: '🏭',
-      label: 'Productos en Stock',
-      value: String(kpiProductosStock.value),
-      trend: -2
-    }
-  ]
-})
-
-function rolBadgeClass(rolNombre) {
-  const map = {
-    Administrador: 'warning',
-    Vendedor: 'info',
-    Bodeguero: 'primary',
-    Contador: 'success',
-    Cliente: 'primary'
-  }
-  return map[rolNombre] || 'primary'
-}
-
-async function cargarDatos() {
+async function cargarTodo() {
   cargando.value = true
   errorMsg.value = ''
   try {
-    if (isMockup) {
-      await new Promise((r) => setTimeout(r, 500))
-      usuarios.value = USUARIOS_MOCKUP
-      // Datos fijos para mockup
-      kpiVentasMes.value = 4280000
-      kpiPedidosActivos.value = 34
-      kpiUsuariosActivos.value = 128
-      kpiProductosStock.value = 312
-    } else {
-      // 1. Obtener listado de usuarios (para la tabla)
-      usuarios.value = await ServiciosSupabase.obtenerUsuarios()
+    const [clientesData, sucursalesData, ventasData, stockBajoData, pedidosData] = await Promise.all([
+      api.clientes.listar().catch(() => ({ clientes: [] })),
+      api.sucursales.listar({ activa: true }).catch(() => ({ sucursales: [] })),
+      api.reportes.ventasMes().catch(() => ({ totalFacturado: 0 })),
+      api.reportes.stockBajo(5).catch(() => ({ totalProductos: 0 })),
+      api.pedidos.listarTodos().catch(() => ({ pedidos: [] }))
+    ])
 
-      // 2. Obtener KPIs usando supabase db calls directas
-      
-      const ahora = new Date()
-      const mesActual = ahora.getMonth() + 1 // en Postgres los meses son 1-12
-      const anioActual = ahora.getFullYear()
-
-      // 2.1 Ventas del mes (para simular el sumatorio que pediste, obtenemos los pedidos del mes)
-      const inicioMes = new Date(anioActual, mesActual - 1, 1).toISOString()
-      const finMes = new Date(anioActual, mesActual, 0, 23, 59, 59, 999).toISOString()
-      
-      const { data: pedidosMes, error: errVentas } = await supabase
-        .from('pedidos')
-        .select('total')
-        .gte('creado_en', inicioMes)
-        .lte('creado_en', finMes)
-
-      if (errVentas) throw errVentas
-      kpiVentasMes.value = pedidosMes.reduce((acc, p) => acc + (Number(p.total) || 0), 0)
-
-      // 2.2 Pedidos activos
-      const { count: pedidosActivos, error: errPedidos } = await supabase
-        .from('pedidos')
-        .select('*', { count: 'exact', head: true })
-        .not('estado', 'in', '("cancelado","entregado")')
-      
-      if (errPedidos) throw errPedidos
-      kpiPedidosActivos.value = pedidosActivos || 0
-
-      // 2.3 Usuarios activos
-      const { count: usuariosActivos, error: errUsuarios } = await supabase
-        .from('usuarios')
-        .select('*', { count: 'exact', head: true })
-        .eq('activo', true)
-
-      if (errUsuarios) throw errUsuarios
-      kpiUsuariosActivos.value = usuariosActivos || 0
-
-      // 2.4 Productos en stock
-      const { count: productosStock, error: errProductos } = await supabase
-        .from('productos')
-        .select('*', { count: 'exact', head: true })
-        .gt('stock', 0)
-        .eq('activo', true)
-
-      if (errProductos) throw errProductos
-      kpiProductosStock.value = productosStock || 0
-    }
+    clientes.value = clientesData.clientes || []
+    sucursales.value = sucursalesData.sucursales || []
+    ventasMes.value = ventasData.totalFacturado || 0
+    stockBajo.value = stockBajoData.totalProductos || 0
+    pedidosActivos.value = (pedidosData.pedidos || []).filter(p =>
+      !['cancelado', 'entregado'].includes(p.estado)
+    ).length
   } catch (err) {
-    errorMsg.value = `Error: ${err.message}`
-    console.error('Error cargando AdminView:', err)
+    errorMsg.value = err.message
   } finally {
     cargando.value = false
   }
 }
 
-onMounted(cargarDatos)
+onMounted(cargarTodo)
 </script>
-
-
